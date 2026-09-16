@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 20px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+            margin-bottom: 25px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin: 20px 10px 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 20px;
+            background: #dc2626;
+            color: white;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .page-title h1 {
+            font-size: 22px;
+        }
+
+        .page-title p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .admin-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .admin-info span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 30px;
+        }
+
+        /* WELCOME */
+        .welcome {
+            background: linear-gradient(135deg, #172033, #2563eb);
+            color: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #dbeafe;
+            font-size: 14px;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            font-size: 17px;
+        }
+
+        .card-header a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* OCCUPANCY */
+        .occupancy-number {
+            font-size: 40px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .progress {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #2563eb;
+            transition: width 0.5s;
+        }
+
+        .occupancy-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* QUICK ACTIONS */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .action {
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 15px;
+            text-decoration: none;
+            color: #172033;
+            transition: 0.2s;
+        }
+
+        .action:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .action strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .action span {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 13px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+        }
+
+        th {
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.completed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* NEXA */
+        .nexa {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+        }
+
+        .nexa h3 {
+            margin-bottom: 8px;
+        }
+
+        .nexa p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .nexa-button {
+            display: inline-block;
+            margin-top: 15px;
+            background: #2563eb;
+            color: white;
+            padding: 9px 15px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* MOBILE BUTTON */
+        .menu-btn {
+            display: none;
+            border: none;
+            background: #172033;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-info {
+                display: none;
+            }
+        }
+
+        @media (max-width: 550px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome h2 {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Hostel<span>Pro</span>
+    </div>
+
+    <div class="menu-title">Main</div>
+
+    <a href="admin_dashboard.html" class="nav-link active">
+        🏠 Dashboard
+    </a>
+
+    <a href="hostels.html" class="nav-link">
+        🏢 Hostels
+    </a>
+
+    <a href="rooms.html" class="nav-link">
+        🚪 Rooms
+    </a>
+
+    <a href="beds.html" class="nav-link">
+        🛏️ Beds
+    </a>
+
+    <div class="menu-title">People</div>
+
+    <a href="students.html" class="nav-link">
+        🎓 Students
+    </a>
+
+    <a href="caretakers.html" class="nav-link">
+        👤 Caretakers
+    </a>
+
+    <a href="wardens.html" class="nav-link">
+        👨‍💼 Wardens
+    </a>
+
+    <div class="menu-title">Management</div>
+
+    <a href="allocations.html" class="nav-link">
+        📋 Allocations
+    </a>
+
+    <a href="maintenance.html" class="nav-link">
+        🔧 Maintenance
+    </a>
+
+    <a href="discipline.html" class="nav-link">
+        ⚠️ Discipline
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ Security
+    </a>
+
+    <a href="tasks.html" class="nav-link">
+        ✅ Tasks
+    </a>
+
+    <div class="menu-title">Communication</div>
+
+    <a href="messages.html" class="nav-link">
+        💬 Messages
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 Announcements
+    </a>
+
+    <div class="menu-title">System</div>
+
+    <a href="reports.html" class="nav-link">
+        📊 Reports
+    </a>
+
+    <a href="settings.html" class="nav-link">
+        ⚙️ Settings
+    </a>
+
+    <a href="nexa.html" class="nav-link">
+        🤖 Nexa AI
+    </a>
+
+    <a href="#" class="nav-link logout" id="logoutBtn">
+        🚪 Logout
+    </a>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+            <button class="menu-btn" id="menuBtn">
+                ☰
+            </button>
+
+            <div class="page-title">
+                <h1>Admin Dashboard</h1>
+                <p>HostelPro management overview</p>
+            </div>
+
+        </div>
+
+        <div class="admin-profile">
+
+            <div class="avatar" id="adminAvatar">
+                A
+            </div>
+
+            <div class="admin-info">
+                <strong id="adminName">Administrator</strong>
+                <span>System Administrator</span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTENT -->
+    <section class="content">
+
+        <!-- WELCOME -->
+        <div class="welcome">
+
+            <h2>
+                Welcome back, <span id="welcomeName">Administrator</span> 
+            </h2>
+
+            <p>
+                Manage hostels, students, rooms, beds, staff and daily hostel
+                operations from one place.
+            </p>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+        <div class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎓
+                </div>
+
+                <h3 id="studentsCount">0</h3>
+
+                <p>Total Students</p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🏢
+                </div>
+
+                <h3 id="hostelsCount">0</h3>
+
+                <p>Total Hostels</p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🛏️
+                </div>
+
+                <h3 id="bedsCount">0</h3>
+
+                <p>Total Beds</p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔧
+                </div>
+
+                <h3 id="maintenanceCount">0</h3>
+
+                <p>Open Maintenance</p>
+
+            </div>
+
+        </div>
+
+
+        <!-- DASHBOARD GRID -->
+        <div class="dashboard-grid">
+
+            <!-- OCCUPANCY -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h3>Bed Occupancy</h3>
+                    <a href="beds.html">View Beds</a>
+                </div>
+
+                <div class="occupancy-number" id="occupancyPercentage">
+                    0%
+                </div>
+
+                <p style="color:#64748b;font-size:13px;">
+                    Current hostel bed occupancy
+                </p>
+
+                <div class="progress">
+                    <div class="progress-bar" id="occupancyBar"></div>
+                </div>
+
+                <div class="occupancy-details">
+
+                    <span>
+                        🟢 Occupied:
+                        <strong id="occupiedBeds">0</strong>
+                    </span>
+
+                    <span>
+                        🔵 Available:
+                        <strong id="availableBeds">0</strong>
+                    </span>
+
+                    <span>
+                        🔧 Maintenance:
+                        <strong id="maintenanceBeds">0</strong>
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+            <div class="card">
+
+                <div class="card-header">
+                    <h3>Quick Actions</h3>
+                </div>
+
+                <div class="quick-actions">
+
+                    <a href="hostels.html" class="action">
+                        <strong>🏢 Add Hostel</strong>
+                        <span>Create a new hostel</span>
+                    </a>
+
+                    <a href="rooms.html" class="action">
+                        <strong>🚪 Add Room</strong>
+                        <span>Create hostel rooms</span>
+                    </a>
+
+                    <a href="students.html" class="action">
+                        <strong>🎓 Students</strong>
+                        <span>Manage students</span>
+                    </a>
+
+                    <a href="allocations.html" class="action">
+                        <strong>🛏️ Allocate Bed</strong>
+                        <span>Assign students beds</span>
+                    </a>
+
+                    <a href="announcements.html" class="action">
+                        <strong>📢 Announcement</strong>
+                        <span>Send an announcement</span>
+                    </a>
+
+                    <a href="reports.html" class="action">
+                        <strong>📊 Reports</strong>
+                        <span>View system reports</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT ALLOCATIONS -->
+        <div class="card" style="margin-bottom:25px;">
+
+            <div class="card-header">
+
+                <h3>Recent Allocations</h3>
+
+                <a href="allocations.html">
+                    View All
+                </a>
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Student</th>
+                            <th>Student ID</th>
+                            <th>Hostel</th>
+                            <th>Room</th>
+                            <th>Bed</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="allocationsTable">
+
+                        <tr>
+                            <td colspan="6" class="loading">
+                                Loading allocations...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- NEXA -->
+        <div class="card nexa">
+
+            <h3>🤖 Nexa AI Assistant</h3>
+
+            <p>
+                Nexa helps HostelPro administrators understand hostel
+                activity, identify problems, monitor occupancy and make
+                better management decisions using system data.
+            </p>
+
+            <a href="nexa.html" class="nexa-button">
+                Open Nexa
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /* =========================================
+       SUPABASE CONFIGURATION
+    ========================================= */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =========================================
+       HELPER
+    ========================================= */
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function getInitials(name) {
+
+        if (!name) return "A";
+
+        const words = name.trim().split(/\s+/);
+
+        if (words.length === 1) {
+            return words[0].substring(0, 2).toUpperCase();
+        }
+
+        return (
+            words[0][0] +
+            words[words.length - 1][0]
+        ).toUpperCase();
+    }
+
+
+    /* =========================================
+       CHECK ADMIN
+    ========================================= */
+
+    async function loadAdmin() {
+
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+
+            window.location.href = "login.html";
+
+            return null;
+        }
+
+
+        const {
+            data: profile,
+            error
+        } = await supabaseClient
+            .from("profiles")
+            .select("full_name,email,role,profile_image")
+            .eq("id", user.id)
+            .single();
+
+
+        if (error || !profile) {
+
+            alert("Your profile could not be found.");
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+            return null;
+        }
+
+
+        if (profile.role !== "admin") {
+
+            alert("Access denied. Only administrators can access this page.");
+
+            window.location.href = "login.html";
+
+            return null;
+        }
+
+
+        const name =
+            profile.full_name ||
+            user.email ||
+            "Administrator";
+
+
+        document.getElementById("adminName").textContent = name;
+
+        document.getElementById("welcomeName").textContent = name;
+
+        document.getElementById("adminAvatar").textContent =
+            getInitials(name);
+
+
+        return profile;
+    }
+
+
+    /* =========================================
+       LOAD STATISTICS
+    ========================================= */
+
+    async function loadStatistics() {
+
+        /* STUDENTS */
+
+        const {
+            count: studentCount,
+            error: studentError
+        } = await supabaseClient
+            .from("profiles")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .eq("role", "student");
+
+
+        if (!studentError) {
+
+            document.getElementById("studentsCount").textContent =
+                studentCount || 0;
+        }
+
+
+        /* HOSTELS */
+
+        const {
+            count: hostelCount,
+            error: hostelError
+        } = await supabaseClient
+            .from("hostels")
+            .select("id", {
+                count: "exact",
+                head: true
+            });
+
+
+        if (!hostelError) {
+
+            document.getElementById("hostelsCount").textContent =
+                hostelCount || 0;
+        }
+
+
+        /* BEDS */
+
+        const {
+            data: beds,
+            error: bedsError
+        } = await supabaseClient
+            .from("beds")
+            .select("id,status");
+
+
+        if (!bedsError && beds) {
+
+            const total = beds.length;
+
+            const occupied = beds.filter(
+                bed =>
+                    String(bed.status).toLowerCase() === "occupied"
+            ).length;
+
+            const available = beds.filter(
+                bed =>
+                    String(bed.status).toLowerCase() === "available"
+            ).length;
+
+            const maintenance = beds.filter(
+                bed =>
+                    String(bed.status).toLowerCase() === "maintenance"
+            ).length;
+
+
+            document.getElementById("bedsCount").textContent =
+                total;
+
+
+            document.getElementById("occupiedBeds").textContent =
+                occupied;
+
+
+            document.getElementById("availableBeds").textContent =
+                available;
+
+
+            document.getElementById("maintenanceBeds").textContent =
+                maintenance;
+
+
+            const percentage =
+                total > 0
+                    ? Math.round((occupied / total) * 100)
+                    : 0;
+
+
+            document.getElementById("occupancyPercentage").textContent =
+                percentage + "%";
+
+
+            document.getElementById("occupancyBar").style.width =
+                percentage + "%";
+        }
+
+
+        /* MAINTENANCE */
+
+        const {
+            count: maintenanceCount,
+            error: maintenanceError
+        } = await supabaseClient
+            .from("maintenance_requests")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .neq("status", "completed");
+
+
+        if (!maintenanceError) {
+
+            document.getElementById("maintenanceCount").textContent =
+                maintenanceCount || 0;
+        }
+
+    }
+
+
+    /* =========================================
+       LOAD RECENT ALLOCATIONS
+    ========================================= */
+
+    async function loadRecentAllocations() {
+
+        const table =
+            document.getElementById("allocationsTable");
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("allocations")
+            .select(`
+                id,
+                status,
+                allocation_date,
+                student_id,
+                bed_id,
+
+                profiles:student_id (
+                    full_name,
+                    email,
+                    student_id
+                ),
+
+                beds:bed_id (
+                    bed_number,
+                    label,
+                    room_id,
+
+                    rooms:room_id (
+                        room_number,
+                        hostel_id,
+
+                        hostels:hostel_id (
+                            name
+                        )
+                    )
+                )
+            `)
+            .order("allocation_date", {
+                ascending: false
+            })
+            .limit(5);
+
+
+        if (error) {
+
+            console.error(
+                "Allocation error:",
+                error
+            );
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        Unable to load allocations.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        No allocations found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        table.innerHTML = data.map(allocation => {
+
+            const student =
+                allocation.profiles || {};
+
+            const bed =
+                allocation.beds || {};
+
+            const room =
+                bed.rooms || {};
+
+            const hostel =
+                room.hostels || {};
+
+
+            let status =
+                allocation.status || "active";
+
+
+            status =
+                String(status).toLowerCase();
+
+
+            let statusClass = "active";
+
+
+            if (status === "pending") {
+                statusClass = "pending";
+            }
+
+            if (status === "completed") {
+                statusClass = "completed";
+            }
+
+            if (
+                status === "cancelled" ||
+                status === "inactive"
+            ) {
+                statusClass = "cancelled";
+            }
+
+
+            return `
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(
+                                student.full_name ||
+                                "Unknown Student"
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            student.student_id || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            hostel.name || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            room.room_number || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            bed.label ||
+                            bed.bed_number ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        <span class="status ${statusClass}">
+                            ${escapeHtml(status)}
+                        </span>
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+    }
+
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async function(event) {
+
+            event.preventDefault();
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+        });
+
+
+    /* =========================================
+       MOBILE MENU
+    ========================================= */
+
+    document
+        .getElementById("menuBtn")
+        .addEventListener("click", function() {
+
+            document
+                .getElementById("sidebar")
+                .classList.toggle("open");
+
+        });
+
+
+    /* =========================================
+       START DASHBOARD
+    ========================================= */
+
+    async function initDashboard() {
+
+        const admin =
+            await loadAdmin();
+
+
+        if (!admin) {
+            return;
+        }
+
+
+        await Promise.all([
+            loadStatistics(),
+            loadRecentAllocations()
+        ]);
+
+    }
+
+
+    initDashboard();
+
+</script>
+
+</body>
+</html>

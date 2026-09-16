@@ -1,0 +1,1608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reports & Analysis | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #172033;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand h2 {
+            font-size: 21px;
+            margin-bottom: 4px;
+        }
+
+        .brand span {
+            color: #93c5fd;
+            font-size: 12px;
+        }
+
+        .nav {
+            padding: 15px 10px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #dbe4f0;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            color: #fca5a5 !important;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar h1 {
+            font-size: 21px;
+        }
+
+        .admin-badge {
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-intro {
+            margin-bottom: 25px;
+        }
+
+        .page-intro h2 {
+            font-size: 27px;
+            margin-bottom: 7px;
+        }
+
+        .page-intro p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        button,
+        .btn {
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #172033;
+            border: 1px solid #dbe1ea;
+        }
+
+        .btn-nexa {
+            background: #00843d;
+            color: white;
+        }
+
+        /* KPI CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .stat-note {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* SECTIONS */
+        .section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-size: 18px;
+        }
+
+        .section-header p {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* OVERVIEW GRID */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .mini-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 17px;
+        }
+
+        .mini-card h4 {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .mini-card .number {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        /* PROGRESS */
+        .progress-row {
+            margin-bottom: 18px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 13px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #2563eb;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-fill.green {
+            background: #00843d;
+        }
+
+        .progress-fill.red {
+            background: #dc2626;
+        }
+
+        .progress-fill.orange {
+            background: #f59e0b;
+        }
+
+        /* TABLE */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #edf0f4;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            color: #64748b;
+            font-weight: 600;
+            background: #f8fafc;
+        }
+
+        td {
+            color: #334155;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-orange {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .badge-gray {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        /* TWO COLUMN */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* NEXA CARD */
+        .nexa-card {
+            background: linear-gradient(135deg, #172033, #243552);
+            color: white;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .nexa-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .nexa-card p {
+            color: #cbd5e1;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .nexa-card .btn {
+            background: white;
+            color: #172033;
+        }
+
+        /* LOADING */
+        .loading {
+            padding: 25px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error {
+            padding: 15px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .updated {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* MOBILE */
+        .mobile-menu {
+            display: none;
+            background: #172033;
+            color: white;
+            border: none;
+            font-size: 22px;
+        }
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.25s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid,
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-intro h2 {
+                font-size: 23px;
+            }
+
+            .section {
+                padding: 17px;
+            }
+
+            .admin-badge {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <h2>HostelPro</h2>
+            <span>Hostel Management System</span>
+        </div>
+
+        <nav class="nav">
+
+            <a href="admin_dashboard.html">🏠 Dashboard</a>
+            <a href="hostels.html">🏢 Hostels</a>
+            <a href="rooms.html">🚪 Rooms</a>
+            <a href="beds.html">🛏️ Beds</a>
+            <a href="students.html">👨‍🎓 Students</a>
+            <a href="allocations.html">📋 Allocations</a>
+            <a href="maintenance.html">🔧 Maintenance</a>
+            <a href="discipline.html">⚠️ Discipline</a>
+            <a href="security.html">🛡️ Security</a>
+            <a href="tasks.html">✅ Tasks</a>
+            <a href="messages.html">💬 Messages</a>
+            <a href="announcements.html">📢 Announcements</a>
+
+            <a href="reports.html" class="active">📊 Reports & Analysis</a>
+
+            <a href="settings.html">⚙️ Settings</a>
+            <a href="nexa.html">✨ Nexa</a>
+
+            <a href="#" class="logout" id="logoutBtn">🚪 Logout</a>
+
+        </nav>
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div style="display:flex;align-items:center;gap:15px;">
+                <button class="mobile-menu" id="mobileMenu">☰</button>
+                <h1>Reports & Analysis</h1>
+            </div>
+
+            <div class="admin-badge">
+                🔐 Administrator
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+            <div class="page-intro">
+                <h2>Reports & Analysis</h2>
+                <p>
+                    Monitor students, beds, allocations, hostels and maintenance
+                    using live data from HostelPro.
+                </p>
+            </div>
+
+
+            <div id="errorBox" class="error"></div>
+
+
+            <div class="actions">
+
+                <button class="btn btn-primary" id="refreshBtn">
+                    🔄 Refresh Reports
+                </button>
+
+                <a href="nexa.html?context=reports" class="btn btn-nexa">
+                    ✨ Ask Nexa
+                </a>
+
+                <span class="updated" id="lastUpdated">
+                    Loading...
+                </span>
+
+            </div>
+
+
+            <!-- MAIN KPI -->
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Students</div>
+                    <div class="stat-value" id="totalStudents">0</div>
+                    <div class="stat-note">Registered student profiles</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Students</div>
+                    <div class="stat-value" id="activeStudents">0</div>
+                    <div class="stat-note">Currently active accounts</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Beds</div>
+                    <div class="stat-value" id="totalBeds">0</div>
+                    <div class="stat-note">All registered beds</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Occupied Beds</div>
+                    <div class="stat-value" id="occupiedBeds">0</div>
+                    <div class="stat-note">Beds with active allocations</div>
+                </div>
+
+            </div>
+
+
+            <!-- OVERVIEW -->
+            <section class="section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h3>System Overview</h3>
+                        <p>Current state of the hostel management system.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="overview-grid">
+
+                    <div class="mini-card">
+                        <h4>Total Hostels</h4>
+                        <div class="number" id="totalHostels">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Total Rooms</h4>
+                        <div class="number" id="totalRooms">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Available Beds</h4>
+                        <div class="number" id="availableBeds">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Allocated Students</h4>
+                        <div class="number" id="allocatedStudents">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Unallocated Students</h4>
+                        <div class="number" id="unallocatedStudents">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Occupancy Rate</h4>
+                        <div class="number" id="occupancyRate">0%</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- OCCUPANCY -->
+            <section class="section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h3>Bed Occupancy Analysis</h3>
+                        <p>Distribution of beds according to their current allocation.</p>
+                    </div>
+
+                </div>
+
+
+                <div class="progress-row">
+
+                    <div class="progress-info">
+                        <span>Occupied</span>
+                        <strong id="occupiedPercent">0%</strong>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="occupiedProgress" style="width:0%"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="progress-row">
+
+                    <div class="progress-info">
+                        <span>Available</span>
+                        <strong id="availablePercent">0%</strong>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill green" id="availableProgress" style="width:0%"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="progress-row">
+
+                    <div class="progress-info">
+                        <span>Maintenance / Reserved</span>
+                        <strong id="otherPercent">0%</strong>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill orange" id="otherProgress" style="width:0%"></div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- TWO COLUMN -->
+            <div class="two-column">
+
+                <!-- ALLOCATION -->
+                <section class="section">
+
+                    <div class="section-header">
+                        <div>
+                            <h3>Allocation Analysis</h3>
+                            <p>Current allocation statuses.</p>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+
+                        <div class="mini-card">
+                            <h4>Active</h4>
+                            <div class="number" id="activeAllocations">0</div>
+                        </div>
+
+                        <div class="mini-card">
+                            <h4>Pending</h4>
+                            <div class="number" id="pendingAllocations">0</div>
+                        </div>
+
+                        <div class="mini-card">
+                            <h4>Ended</h4>
+                            <div class="number" id="endedAllocations">0</div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- MAINTENANCE -->
+                <section class="section">
+
+                    <div class="section-header">
+                        <div>
+                            <h3>Maintenance Analysis</h3>
+                            <p>Current maintenance workload.</p>
+                        </div>
+                    </div>
+
+                    <div class="overview-grid">
+
+                        <div class="mini-card">
+                            <h4>Open</h4>
+                            <div class="number" id="openMaintenance">0</div>
+                        </div>
+
+                        <div class="mini-card">
+                            <h4>In Progress</h4>
+                            <div class="number" id="progressMaintenance">0</div>
+                        </div>
+
+                        <div class="mini-card">
+                            <h4>Completed</h4>
+                            <div class="number" id="completedMaintenance">0</div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- HOSTEL ANALYSIS -->
+            <section class="section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h3>Hostel Analysis</h3>
+                        <p>
+                            Student and bed distribution across registered hostels.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Hostel</th>
+                                <th>Rooms</th>
+                                <th>Total Beds</th>
+                                <th>Occupied</th>
+                                <th>Available</th>
+                                <th>Occupancy</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="hostelTable">
+
+                            <tr>
+                                <td colspan="6" class="loading">
+                                    Loading hostel analysis...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- STUDENT ANALYSIS -->
+            <section class="section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h3>Student Analysis</h3>
+                        <p>
+                            Student account and allocation information.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="overview-grid">
+
+                    <div class="mini-card">
+                        <h4>Active Students</h4>
+                        <div class="number" id="studentActiveAnalysis">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Inactive Students</h4>
+                        <div class="number" id="studentInactiveAnalysis">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Allocated</h4>
+                        <div class="number" id="studentAllocatedAnalysis">0</div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h4>Unallocated</h4>
+                        <div class="number" id="studentUnallocatedAnalysis">0</div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- NEXA -->
+            <section class="nexa-card">
+
+                <h3>✨ Analyze with Nexa</h3>
+
+                <p>
+                    Nexa can use the same live HostelPro data to help the
+                    administrator understand students, beds, allocations,
+                    hostels and maintenance information.
+                </p>
+
+                <a href="nexa.html?context=reports" class="btn">
+                    Ask Nexa About These Reports →
+                </a>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       SUPABASE CONFIG
+       ========================================================= */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =========================================================
+       GLOBAL DATA
+       ========================================================= */
+
+    let reportData = {
+        students: [],
+        hostels: [],
+        rooms: [],
+        beds: [],
+        allocations: [],
+        maintenance: []
+    };
+
+
+    /* =========================================================
+       HELPERS
+       ========================================================= */
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+
+    function showError(message) {
+
+        const box = $("errorBox");
+
+        box.textContent = message;
+        box.style.display = "block";
+    }
+
+
+    function hideError() {
+
+        $("errorBox").style.display = "none";
+    }
+
+
+    function percentage(value, total) {
+
+        if (!total) return 0;
+
+        return Math.round((value / total) * 100);
+    }
+
+
+    function formatStatus(status) {
+
+        if (!status) return "Unknown";
+
+        return status
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+
+    function getBadge(status) {
+
+        const value = String(status || "").toLowerCase();
+
+        if (value === "active" || value === "available") {
+            return `<span class="badge badge-green">${formatStatus(status)}</span>`;
+        }
+
+        if (value === "completed" || value === "ended") {
+            return `<span class="badge badge-blue">${formatStatus(status)}</span>`;
+        }
+
+        if (value === "inactive" || value === "maintenance") {
+            return `<span class="badge badge-red">${formatStatus(status)}</span>`;
+        }
+
+        if (value === "pending" || value === "reserved") {
+            return `<span class="badge badge-orange">${formatStatus(status)}</span>`;
+        }
+
+        return `<span class="badge badge-gray">${formatStatus(status)}</span>`;
+    }
+
+
+    /* =========================================================
+       ADMIN AUTHENTICATION
+       ========================================================= */
+
+    async function checkAdmin() {
+
+        const {
+            data: { user },
+            error
+        } = await supabaseClient.auth.getUser();
+
+        if (error || !user) {
+
+            window.location.href = "login.html";
+            return false;
+        }
+
+
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, full_name, role, status")
+                .eq("id", user.id)
+                .single();
+
+
+        if (
+            profileError ||
+            !profile ||
+            profile.role !== "admin"
+        ) {
+
+            alert("Access denied. Only administrators can view Reports & Analysis.");
+
+            window.location.href = "login.html";
+
+            return false;
+        }
+
+
+        if (
+            profile.status &&
+            String(profile.status).toLowerCase() === "inactive"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    /* =========================================================
+       LOAD REPORT DATA
+       ========================================================= */
+
+    async function loadReportData() {
+
+        hideError();
+
+
+        try {
+
+            const [
+                studentsResult,
+                hostelsResult,
+                roomsResult,
+                bedsResult,
+                allocationsResult,
+                maintenanceResult
+            ] = await Promise.all([
+
+                supabaseClient
+                    .from("profiles")
+                    .select("id, full_name, email, phone, gender, role, status")
+                    .eq("role", "student"),
+
+                supabaseClient
+                    .from("hostels")
+                    .select("id, name, location"),
+
+                supabaseClient
+                    .from("rooms")
+                    .select("id, room_number, hostel_id"),
+
+                supabaseClient
+                    .from("beds")
+                    .select("id, room_id, bed_number, label, bed_position, status"),
+
+                supabaseClient
+                    .from("allocations")
+                    .select(`
+                        id,
+                        student_id,
+                        bed_id,
+                        status,
+                        allocation_date,
+                        check_in_date,
+                        check_out_date
+                    `),
+
+                supabaseClient
+                    .from("maintenance_requests")
+                    .select(`
+                        id,
+                        student_id,
+                        room_id,
+                        priority,
+                        status,
+                        created_at
+                    `)
+            ]);
+
+
+            if (studentsResult.error) throw studentsResult.error;
+            if (hostelsResult.error) throw hostelsResult.error;
+            if (roomsResult.error) throw roomsResult.error;
+            if (bedsResult.error) throw bedsResult.error;
+            if (allocationsResult.error) throw allocationsResult.error;
+            if (maintenanceResult.error) throw maintenanceResult.error;
+
+
+            reportData.students = studentsResult.data || [];
+            reportData.hostels = hostelsResult.data || [];
+            reportData.rooms = roomsResult.data || [];
+            reportData.beds = bedsResult.data || [];
+            reportData.allocations = allocationsResult.data || [];
+            reportData.maintenance = maintenanceResult.data || [];
+
+
+            calculateReports();
+
+
+            $("lastUpdated").textContent =
+                "Last updated: " +
+                new Date().toLocaleString();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showError(
+                "Unable to load reports. Check your Supabase connection and table permissions."
+            );
+        }
+    }
+
+
+    /* =========================================================
+       CALCULATE REPORTS
+       ========================================================= */
+
+    function calculateReports() {
+
+        const students = reportData.students;
+        const hostels = reportData.hostels;
+        const rooms = reportData.rooms;
+        const beds = reportData.beds;
+        const allocations = reportData.allocations;
+        const maintenance = reportData.maintenance;
+
+
+        /* STUDENTS */
+
+        const activeStudents =
+            students.filter(s =>
+                String(s.status || "").toLowerCase() !== "inactive"
+            );
+
+        const activeAllocations =
+            allocations.filter(a =>
+                String(a.status || "").toLowerCase() === "active"
+            );
+
+        const allocatedStudentIds =
+            new Set(
+                activeAllocations
+                    .map(a => a.student_id)
+                    .filter(Boolean)
+            );
+
+
+        const unallocatedStudents =
+            students.filter(s =>
+                !allocatedStudentIds.has(s.id)
+            );
+
+
+        /* BEDS */
+
+        const occupiedBedIds =
+            new Set(
+                activeAllocations
+                    .map(a => a.bed_id)
+                    .filter(Boolean)
+            );
+
+
+        const occupiedBeds =
+            beds.filter(b =>
+                occupiedBedIds.has(b.id)
+            );
+
+
+        const availableBeds =
+            beds.filter(b => {
+
+                if (occupiedBedIds.has(b.id)) {
+                    return false;
+                }
+
+                const status =
+                    String(b.status || "").toLowerCase();
+
+                return (
+                    status === "available" ||
+                    status === ""
+                );
+            });
+
+
+        const otherBeds =
+            beds.length -
+            occupiedBeds.length -
+            availableBeds.length;
+
+
+        /* MAIN STATS */
+
+        $("totalStudents").textContent = students.length;
+        $("activeStudents").textContent = activeStudents.length;
+
+        $("totalBeds").textContent = beds.length;
+        $("occupiedBeds").textContent = occupiedBeds.length;
+
+        $("totalHostels").textContent = hostels.length;
+        $("totalRooms").textContent = rooms.length;
+
+        $("availableBeds").textContent = availableBeds.length;
+
+        $("allocatedStudents").textContent =
+            allocatedStudentIds.size;
+
+        $("unallocatedStudents").textContent =
+            unallocatedStudents.length;
+
+
+        const occupancy =
+            percentage(
+                occupiedBeds.length,
+                beds.length
+            );
+
+        $("occupancyRate").textContent =
+            occupancy + "%";
+
+
+        /* OCCUPANCY BARS */
+
+        const occupiedPct =
+            percentage(occupiedBeds.length, beds.length);
+
+        const availablePct =
+            percentage(availableBeds.length, beds.length);
+
+        const otherPct =
+            percentage(
+                Math.max(otherBeds, 0),
+                beds.length
+            );
+
+
+        $("occupiedPercent").textContent =
+            occupiedPct + "%";
+
+        $("availablePercent").textContent =
+            availablePct + "%";
+
+        $("otherPercent").textContent =
+            otherPct + "%";
+
+
+        $("occupiedProgress").style.width =
+            occupiedPct + "%";
+
+        $("availableProgress").style.width =
+            availablePct + "%";
+
+        $("otherProgress").style.width =
+            otherPct + "%";
+
+
+        /* ALLOCATIONS */
+
+        const pendingAllocations =
+            allocations.filter(a =>
+                String(a.status || "").toLowerCase() === "pending"
+            ).length;
+
+        const endedAllocations =
+            allocations.filter(a =>
+                String(a.status || "").toLowerCase() === "ended"
+            ).length;
+
+
+        $("activeAllocations").textContent =
+            activeAllocations.length;
+
+        $("pendingAllocations").textContent =
+            pendingAllocations;
+
+        $("endedAllocations").textContent =
+            endedAllocations;
+
+
+        /* MAINTENANCE */
+
+        const openMaintenance =
+            maintenance.filter(m => {
+
+                const status =
+                    String(m.status || "").toLowerCase();
+
+                return (
+                    status === "open" ||
+                    status === "pending"
+                );
+
+            }).length;
+
+
+        const progressMaintenance =
+            maintenance.filter(m => {
+
+                const status =
+                    String(m.status || "").toLowerCase();
+
+                return (
+                    status === "in_progress" ||
+                    status === "in progress"
+                );
+
+            }).length;
+
+
+        const completedMaintenance =
+            maintenance.filter(m =>
+                String(m.status || "").toLowerCase() === "completed"
+            ).length;
+
+
+        $("openMaintenance").textContent =
+            openMaintenance;
+
+        $("progressMaintenance").textContent =
+            progressMaintenance;
+
+        $("completedMaintenance").textContent =
+            completedMaintenance;
+
+
+        /* STUDENT ANALYSIS */
+
+        const inactiveStudents =
+            students.length -
+            activeStudents.length;
+
+
+        $("studentActiveAnalysis").textContent =
+            activeStudents.length;
+
+        $("studentInactiveAnalysis").textContent =
+            inactiveStudents;
+
+        $("studentAllocatedAnalysis").textContent =
+            allocatedStudentIds.size;
+
+        $("studentUnallocatedAnalysis").textContent =
+            unallocatedStudents.length;
+
+
+        /* HOSTEL TABLE */
+
+        buildHostelAnalysis();
+    }
+
+
+    /* =========================================================
+       HOSTEL ANALYSIS
+       ========================================================= */
+
+    function buildHostelAnalysis() {
+
+        const tbody = $("hostelTable");
+
+        tbody.innerHTML = "";
+
+
+        if (!reportData.hostels.length) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="loading">
+                        No hostels found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        const activeAllocations =
+            reportData.allocations.filter(a =>
+                String(a.status || "").toLowerCase() === "active"
+            );
+
+
+        reportData.hostels.forEach(hostel => {
+
+            const hostelRooms =
+                reportData.rooms.filter(
+                    room =>
+                        room.hostel_id === hostel.id
+                );
+
+
+            const roomIds =
+                new Set(
+                    hostelRooms.map(r => r.id)
+                );
+
+
+            const hostelBeds =
+                reportData.beds.filter(
+                    bed =>
+                        roomIds.has(bed.room_id)
+                );
+
+
+            const hostelBedIds =
+                new Set(
+                    hostelBeds.map(b => b.id)
+                );
+
+
+            const occupied =
+                activeAllocations.filter(
+                    allocation =>
+                        hostelBedIds.has(
+                            allocation.bed_id
+                        )
+                ).length;
+
+
+            const available =
+                hostelBeds.filter(bed => {
+
+                    const occupiedHere =
+                        activeAllocations.some(
+                            allocation =>
+                                allocation.bed_id === bed.id
+                        );
+
+                    if (occupiedHere) {
+                        return false;
+                    }
+
+                    const status =
+                        String(
+                            bed.status || ""
+                        ).toLowerCase();
+
+                    return (
+                        status === "available" ||
+                        status === ""
+                    );
+
+                }).length;
+
+
+            const rate =
+                percentage(
+                    occupied,
+                    hostelBeds.length
+                );
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    <strong>${escapeHtml(hostel.name || "Unnamed Hostel")}</strong>
+                </td>
+
+                <td>
+                    ${hostelRooms.length}
+                </td>
+
+                <td>
+                    ${hostelBeds.length}
+                </td>
+
+                <td>
+                    ${occupied}
+                </td>
+
+                <td>
+                    ${available}
+                </td>
+
+                <td>
+                    ${getBadge(rate + "%")}
+                </td>
+
+            `;
+
+
+            tbody.appendChild(row);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       HTML ESCAPE
+       ========================================================= */
+
+    function escapeHtml(value) {
+
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* =========================================================
+       REFRESH
+       ========================================================= */
+
+    $("refreshBtn").addEventListener(
+        "click",
+        loadReportData
+    );
+
+
+    /* =========================================================
+       MOBILE MENU
+       ========================================================= */
+
+    $("mobileMenu").addEventListener(
+        "click",
+        () => {
+
+            $("sidebar")
+                .classList
+                .toggle("open");
+
+        }
+    );
+
+
+    /* =========================================================
+       LOGOUT
+       ========================================================= */
+
+    $("logoutBtn").addEventListener(
+        "click",
+        async event => {
+
+            event.preventDefault();
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+        }
+    );
+
+
+    /* =========================================================
+       START
+       ========================================================= */
+
+    async function startReports() {
+
+        const authorized =
+            await checkAdmin();
+
+        if (!authorized) return;
+
+        await loadReportData();
+
+    }
+
+
+    startReports();
+
+</script>
+
+</body>
+</html>

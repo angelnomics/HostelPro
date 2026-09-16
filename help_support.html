@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Help & Support | HostelPro</title>
+
+    <style>
+        :root {
+            --navy: #172033;
+            --blue: #2563eb;
+            --blue-dark: #1d4ed8;
+            --green: #00843d;
+            --red: #dc2626;
+            --background: #f8fafc;
+            --white: #ffffff;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* HEADER */
+
+        header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 22px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--blue);
+            color: white;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo h2 {
+            font-size: 19px;
+            color: var(--navy);
+        }
+
+        .logo span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        nav a {
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        nav a:hover {
+            background: #f1f5f9;
+            color: var(--blue);
+        }
+
+        nav a.active {
+            background: #eff6ff;
+            color: var(--blue);
+            font-weight: 600;
+        }
+
+        .login-btn {
+            background: var(--blue);
+            color: white !important;
+            padding: 10px 16px !important;
+        }
+
+        .login-btn:hover {
+            background: var(--blue-dark) !important;
+        }
+
+        .hamburger {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: linear-gradient(135deg, var(--navy), #263b68);
+            color: white;
+            padding: 65px 22px;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 760px;
+            margin: auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            color: #cbd5e1;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 16px;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        /* CONTAINER */
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+            padding: 45px 22px;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            max-width: 700px;
+            margin: -25px auto 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 17px 20px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            background: white;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: var(--blue);
+        }
+
+        /* QUICK HELP */
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .section-title h2 {
+            font-size: 25px;
+            margin-bottom: 7px;
+        }
+
+        .section-title p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 55px;
+        }
+
+        .help-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 23px;
+            box-shadow: var(--shadow);
+            transition: 0.2s;
+        }
+
+        .help-card:hover {
+            transform: translateY(-3px);
+            border-color: #bfdbfe;
+        }
+
+        .help-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+            margin-bottom: 15px;
+        }
+
+        .help-card h3 {
+            font-size: 15px;
+            margin-bottom: 7px;
+        }
+
+        .help-card p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* FAQ */
+
+        .faq-section {
+            max-width: 850px;
+            margin: auto;
+            margin-bottom: 55px;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            border: none;
+            background: white;
+            padding: 17px 20px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .faq-question:hover {
+            background: #f8fafc;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 0 20px 18px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-arrow {
+            transition: 0.2s;
+        }
+
+        /* CONTACT */
+
+        .support-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 50px;
+        }
+
+        .support-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 25px;
+            text-align: center;
+        }
+
+        .support-card .icon {
+            font-size: 27px;
+            margin-bottom: 12px;
+        }
+
+        .support-card h3 {
+            font-size: 16px;
+            margin-bottom: 7px;
+        }
+
+        .support-card p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .support-btn {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: var(--blue);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .support-btn:hover {
+            background: var(--blue);
+            color: white;
+        }
+
+        /* NEXA */
+
+        .nexa {
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            border: 1px solid #c7d2fe;
+            border-radius: var(--radius);
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .nexa-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nexa-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 15px;
+            background: #7c3aed;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+
+        .nexa h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nexa p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .nexa-btn {
+            background: var(--blue);
+            color: white;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .nexa-btn:hover {
+            background: var(--blue-dark);
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: var(--navy);
+            color: white;
+            padding: 35px 22px;
+        }
+
+        .footer-container {
+            max-width: 1150px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .footer-brand h3 {
+            margin-bottom: 6px;
+        }
+
+        .footer-brand p {
+            color: #94a3b8;
+            font-size: 12px;
+            max-width: 400px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            font-size: 12px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            max-width: 1150px;
+            margin: 25px auto 0;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 950px) {
+
+            .help-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .support-grid {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                border-bottom: 1px solid var(--border);
+                padding: 12px 20px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            nav.open {
+                display: flex;
+            }
+
+            nav a {
+                padding: 12px;
+            }
+
+            .hamburger {
+                display: block;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .hero {
+                padding: 48px 20px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nexa {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .footer-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header>
+
+    <div class="nav-container">
+
+        <a href="index.html" class="logo">
+
+            <div class="logo-icon"></div>
+
+            <div>
+                <h2>HostelPro</h2>
+                <span>Hostel Management System</span>
+            </div>
+
+        </a>
+
+        <button class="hamburger" id="hamburger">
+            ☰
+        </button>
+
+        <nav id="navigation">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="hostels.html">
+                Hostels
+            </a>
+
+            <a href="rooms.html">
+                Rooms
+            </a>
+
+            <a href="beds.html">
+                Rooms & Beds
+            </a>
+
+            <a href="announcements.html">
+                Announcements
+            </a>
+
+            <a href="help_support.html" class="active">
+                Help & Support
+            </a>
+
+            <a href="login.html" class="login-btn">
+                Login
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="hero-badge">
+            💡 HOSTELPRO SUPPORT CENTER
+        </div>
+
+        <h1>
+            How can we help you?
+        </h1>
+
+        <p>
+            Find answers, learn how HostelPro works, or get assistance
+            with your hostel account and daily hostel activities.
+        </p>
+
+    </div>
+
+</section>
+
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="helpSearch"
+            placeholder="Search for help... e.g. allocation, maintenance, login"
+        >
+
+    </div>
+
+
+    <!-- QUICK HELP -->
+
+    <section>
+
+        <div class="section-title">
+
+            <h2>
+                Quick Help
+            </h2>
+
+            <p>
+                Find help for the most common HostelPro activities.
+            </p>
+
+        </div>
+
+
+        <div class="help-grid" id="helpGrid">
+
+            <a href="login.html" class="help-card">
+
+                <div class="help-icon">
+                    🔐
+                </div>
+
+                <h3>
+                    Login & Accounts
+                </h3>
+
+                <p>
+                    Learn how to log in and access the correct HostelPro
+                    dashboard for your role.
+                </p>
+
+            </a>
+
+
+            <a href="hostels.html" class="help-card">
+
+                <div class="help-icon">
+                    🏢
+                </div>
+
+                <h3>
+                    Hostels
+                </h3>
+
+                <p>
+                    Browse hostel information, locations and available
+                    accommodation.
+                </p>
+
+            </a>
+
+
+            <a href="rooms.html" class="help-card">
+
+                <div class="help-icon">
+                    🚪
+                </div>
+
+                <h3>
+                    Rooms & Beds
+                </h3>
+
+                <p>
+                    Understand rooms, beds and the double-decker bed
+                    arrangement.
+                </p>
+
+            </a>
+
+
+            <a href="allocations.html" class="help-card">
+
+                <div class="help-icon">
+                    🛏️
+                </div>
+
+                <h3>
+                    Bed Allocation
+                </h3>
+
+                <p>
+                    Learn how students are assigned to rooms and beds.
+                </p>
+
+            </a>
+
+
+            <a href="maintenance.html" class="help-card">
+
+                <div class="help-icon">
+                    🔧
+                </div>
+
+                <h3>
+                    Maintenance
+                </h3>
+
+                <p>
+                    Find out how maintenance requests are submitted
+                    and handled.
+                </p>
+
+            </a>
+
+
+            <a href="announcements.html" class="help-card">
+
+                <div class="help-icon">
+                    📢
+                </div>
+
+                <h3>
+                    Announcements
+                </h3>
+
+                <p>
+                    View important hostel notices and announcements.
+                </p>
+
+            </a>
+
+
+            <a href="messages.html" class="help-card">
+
+                <div class="help-icon">
+                    💬
+                </div>
+
+                <h3>
+                    Messages
+                </h3>
+
+                <p>
+                    Learn how HostelPro messages are used for communication.
+                </p>
+
+            </a>
+
+
+            <a href="nexa.html?context=help" class="help-card">
+
+                <div class="help-icon">
+                    ✨
+                </div>
+
+                <h3>
+                    Nexa
+                </h3>
+
+                <p>
+                    Get quick assistance with HostelPro features and
+                    common questions.
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- FAQ -->
+
+    <section class="faq-section">
+
+        <div class="section-title">
+
+            <h2>
+                Frequently Asked Questions
+            </h2>
+
+            <p>
+                Answers to common HostelPro questions.
+            </p>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    How do I log in to HostelPro?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                Open the Login page and enter the email address and
+                password associated with your HostelPro account.
+                Your account role determines which dashboard you can access.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    Can a student create their own account?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                No. Student accounts are created and managed by authorized
+                HostelPro staff. Admins and caretakers can add students.
+                Students do not use public registration.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    How does bed allocation work?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                Authorized staff select a student, hostel, room and
+                available bed. The allocation is then recorded in the
+                HostelPro system.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    What does A-1 and A-2 mean?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                HostelPro uses a simple double-decker bed convention.
+                A-1 represents the lower/down bed and A-2 represents
+                the upper bed.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    How do I report a maintenance problem?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                Use the Maintenance section available to your account role.
+                Provide the problem description and relevant room information
+                so hostel staff can review the request.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    What should I do if I cannot log in?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                First confirm that your email and password are correct.
+                You can also use the password recovery option on the Login
+                page. If the problem continues, contact your hostel
+                administrator or caretaker.
+
+            </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+            <button class="faq-question">
+
+                <span>
+                    What is Nexa?
+                </span>
+
+                <span class="faq-arrow">
+                    ▼
+                </span>
+
+            </button>
+
+            <div class="faq-answer">
+
+                Nexa is the HostelPro assistant. It helps users understand
+                HostelPro features and can provide assistance with hostel
+                operations and information available to their account.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SUPPORT -->
+
+    <section>
+
+        <div class="section-title">
+
+            <h2>
+                Need More Help?
+            </h2>
+
+            <p>
+                Use one of the available support options.
+            </p>
+
+        </div>
+
+
+        <div class="support-grid">
+
+            <div class="support-card">
+
+                <div class="icon">
+                    ✨
+                </div>
+
+                <h3>
+                    Ask Nexa
+                </h3>
+
+                <p>
+                    Get immediate assistance with common HostelPro
+                    questions.
+                </p>
+
+                <a href="nexa.html?context=help" class="support-btn">
+                    Open Nexa
+                </a>
+
+            </div>
+
+
+            <div class="support-card">
+
+                <div class="icon">
+                    💬
+                </div>
+
+                <h3>
+                    Contact Staff
+                </h3>
+
+                <p>
+                    Contact your caretaker or administrator when you
+                    need account or hostel assistance.
+                </p>
+
+                <a href="messages.html" class="support-btn">
+                    Open Messages
+                </a>
+
+            </div>
+
+
+            <div class="support-card">
+
+                <div class="icon">
+                    📢
+                </div>
+
+                <h3>
+                    Check Announcements
+                </h3>
+
+                <p>
+                    Important hostel information may be published in
+                    the announcements section.
+                </p>
+
+                <a href="announcements.html" class="support-btn">
+                    View Announcements
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- NEXA -->
+
+    <section class="nexa">
+
+        <div class="nexa-left">
+
+            <div class="nexa-icon">
+                ✨
+            </div>
+
+            <div>
+
+                <h2>
+                    Need help right now?
+                </h2>
+
+                <p>
+                    Ask Nexa about HostelPro features, allocations,
+                    maintenance, announcements and more.
+                </p>
+
+            </div>
+
+        </div>
+
+        <a href="nexa.html?context=help" class="nexa-btn">
+            Talk to Nexa
+        </a>
+
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <div class="footer-container">
+
+        <div class="footer-brand">
+
+            <h3>
+                🏠 HostelPro
+            </h3>
+
+            <p>
+                A centralized hostel management system for managing
+                students, hostels, rooms, beds, maintenance and
+                hostel communication.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="hostels.html">
+                Hostels
+            </a>
+
+            <a href="rooms.html">
+                Rooms
+            </a>
+
+            <a href="announcements.html">
+                Announcements
+            </a>
+
+            <a href="help_support.html">
+                Help & Support
+            </a>
+
+            <a href="login.html">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="copyright">
+
+        © 2026 HostelPro. All rights reserved.
+
+    </div>
+
+</footer>
+
+
+<script>
+
+    /* =========================================
+       MOBILE MENU
+       ========================================= */
+
+    const hamburger =
+        document.getElementById("hamburger");
+
+    const navigation =
+        document.getElementById("navigation");
+
+
+    hamburger.addEventListener("click", function () {
+
+        navigation.classList.toggle("open");
+
+    });
+
+
+    /* =========================================
+       FAQ
+       ========================================= */
+
+    const faqQuestions =
+        document.querySelectorAll(".faq-question");
+
+
+    faqQuestions.forEach(question => {
+
+        question.addEventListener("click", function () {
+
+            const item =
+                this.parentElement;
+
+
+            document
+                .querySelectorAll(".faq-item")
+                .forEach(otherItem => {
+
+                    if (otherItem !== item) {
+                        otherItem.classList.remove("open");
+                    }
+
+                });
+
+
+            item.classList.toggle("open");
+
+        });
+
+    });
+
+
+    /* =========================================
+       HELP SEARCH
+       ========================================= */
+
+    const searchInput =
+        document.getElementById("helpSearch");
+
+
+    const helpCards =
+        document.querySelectorAll(".help-card");
+
+
+    searchInput.addEventListener("input", function () {
+
+        const search =
+            this.value.toLowerCase().trim();
+
+
+        helpCards.forEach(card => {
+
+            const text =
+                card.textContent.toLowerCase();
+
+
+            if (text.includes(search)) {
+
+                card.style.display = "";
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

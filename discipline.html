@@ -1,0 +1,3566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Discipline | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --navy: #172033;
+            --blue: #2563eb;
+            --green: #00843d;
+            --red: #dc2626;
+            --orange: #f59e0b;
+            --purple: #7c3aed;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--navy);
+            color: white;
+            padding: 20px 14px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            margin-bottom: 15px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-size: 20px;
+        }
+
+        .brand span {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #64748b;
+            padding: 10px 12px 7px;
+            letter-spacing: .7px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 12px;
+            margin: 3px 0;
+            border-radius: 9px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,.08);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        .logout {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding-top: 15px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .menu-btn {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-info small {
+            color: var(--muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .nexa-btn {
+            text-decoration: none;
+            background: var(--navy);
+            color: white;
+            padding: 11px 17px;
+            border-radius: 9px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-card h3 {
+            font-size: 27px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .icon-red {
+            background: #fee2e2;
+        }
+
+        .icon-orange {
+            background: #fef3c7;
+        }
+
+        .icon-purple {
+            background: #ede9fe;
+        }
+
+        .icon-green {
+            background: #dcfce7;
+        }
+
+        .icon-blue {
+            background: #dbeafe;
+        }
+
+        /* CARD */
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+        }
+
+        .card-header p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 17px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+
+        /* FILTERS */
+
+        .filters {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* TABLE */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+
+        .severity-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .severity-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .severity-high {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .severity-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-reported {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-investigating {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-closed {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .action-btn {
+            border: none;
+            background: #eff6ff;
+            color: var(--blue);
+            padding: 7px 10px;
+            border-radius: 7px;
+            margin-right: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty {
+            padding: 45px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        /* RULES */
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .rule-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 17px;
+            background: #f8fafc;
+        }
+
+        .rule-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: #dbeafe;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .rule-card h3 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .rule-card p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .admin-note {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        /* MODAL */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,.65);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 19px;
+        }
+
+        .close-btn {
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            color: var(--muted);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail {
+            padding: 13px;
+            background: #f8fafc;
+            border-radius: 9px;
+        }
+
+        .detail.full {
+            grid-column: 1 / -1;
+        }
+
+        .detail small {
+            color: var(--muted);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail strong {
+            line-height: 1.5;
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: var(--navy);
+            color: white;
+            padding: 13px 18px;
+            border-radius: 9px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 3000;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background: var(--green);
+        }
+
+        .toast.error {
+            background: var(--red);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1200px) {
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .25s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid,
+            .filters,
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail.full {
+                grid-column: auto;
+            }
+
+        }
+
+        @media (max-width: 420px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 14px;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🏠
+        </div>
+
+        <div>
+            <h2>HostelPro</h2>
+            <span>Hostel Management System</span>
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Management
+    </div>
+
+
+    <a href="admin_dashboard.html" class="nav-link">
+        📊 <span>Dashboard</span>
+    </a>
+
+    <a href="hostels.html" class="nav-link">
+        🏢 <span>Hostels</span>
+    </a>
+
+    <a href="rooms.html" class="nav-link">
+        🚪 <span>Rooms</span>
+    </a>
+
+    <a href="beds.html" class="nav-link">
+        🛏️ <span>Beds</span>
+    </a>
+
+    <a href="students.html" class="nav-link">
+        👨‍🎓 <span>Students</span>
+    </a>
+
+    <a href="allocations.html" class="nav-link">
+        📋 <span>Allocations</span>
+    </a>
+
+    <a href="maintenance.html" class="nav-link">
+        🔧 <span>Maintenance</span>
+    </a>
+
+    <a href="discipline.html" class="nav-link active">
+        ⚖️ <span>Discipline</span>
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ <span>Security</span>
+    </a>
+
+    <a href="messages.html" class="nav-link">
+        💬 <span>Messages</span>
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 <span>Announcements</span>
+    </a>
+
+
+    <div class="nav-title">
+        Analysis
+    </div>
+
+
+    <a href="reports.html" class="nav-link">
+        📈 <span>Reports & Analysis</span>
+    </a>
+
+    <a href="nexa.html?context=discipline" class="nav-link">
+        🤖 <span>Nexa</span>
+    </a>
+
+
+    <div class="logout">
+
+        <a href="#" class="nav-link" id="logoutBtn">
+            🚪 <span>Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+
+    <header class="topbar">
+
+        <button class="menu-btn" id="menuBtn">
+            ☰
+        </button>
+
+        <strong>
+            Discipline Management
+        </strong>
+
+
+        <div class="user-info">
+
+            <div class="avatar" id="userAvatar">
+                U
+            </div>
+
+            <div>
+
+                <strong id="userName">
+                    Loading...
+                </strong>
+
+                <small id="userRole">
+                    Loading...
+                </small>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="content">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    ⚖️ Discipline Management
+                </h1>
+
+                <p>
+                    Record, monitor and manage student discipline cases
+                    while maintaining clear hostel standards.
+                </p>
+
+            </div>
+
+
+            <a
+                href="nexa.html?context=discipline"
+                class="nexa-btn"
+            >
+                🤖 Ask Nexa
+            </a>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="stats">
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+
+                        <h3 id="openCases">
+                            0
+                        </h3>
+
+                        <p>
+                            Open Cases
+                        </p>
+
+                    </div>
+
+                    <div class="stat-icon icon-red">
+                        ⚠️
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+
+                        <h3 id="highCases">
+                            0
+                        </h3>
+
+                        <p>
+                            Serious Cases
+                        </p>
+
+                    </div>
+
+                    <div class="stat-icon icon-orange">
+                        🚨
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+
+                        <h3 id="investigatingCases">
+                            0
+                        </h3>
+
+                        <p>
+                            Investigating
+                        </p>
+
+                    </div>
+
+                    <div class="stat-icon icon-purple">
+                        🔍
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+
+                        <h3 id="resolvedCases">
+                            0
+                        </h3>
+
+                        <p>
+                            Resolved
+                        </p>
+
+                    </div>
+
+                    <div class="stat-icon icon-green">
+                        ✅
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+
+                    <div>
+
+                        <h3 id="totalCases">
+                            0
+                        </h3>
+
+                        <p>
+                            Total Cases
+                        </p>
+
+                    </div>
+
+                    <div class="stat-icon icon-blue">
+                        ⚖️
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- REPORT CASE -->
+
+        <div class="card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        📝 Report Discipline Case
+                    </h2>
+
+                    <p>
+                        Record a student discipline matter for follow-up.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <form id="disciplineForm">
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Student *
+                            </label>
+
+                            <select
+                                id="student"
+                                required
+                            >
+
+                                <option value="">
+                                    Select student
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Hostel *
+                            </label>
+
+                            <select
+                                id="hostel"
+                                required
+                            >
+
+                                <option value="">
+                                    Select hostel
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Room
+                            </label>
+
+                            <select id="room">
+
+                                <option value="">
+                                    Select hostel first
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Case Type *
+                            </label>
+
+                            <select
+                                id="caseType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select case type
+                                </option>
+
+                                <option value="noise">
+                                    Excessive Noise
+                                </option>
+
+                                <option value="fighting">
+                                    Fighting
+                                </option>
+
+                                <option value="unauthorized_guest">
+                                    Unauthorized Guest
+                                </option>
+
+                                <option value="property_damage">
+                                    Property Damage
+                                </option>
+
+                                <option value="substance_violation">
+                                    Substance Violation
+                                </option>
+
+                                <option value="theft">
+                                    Theft / Property Misconduct
+                                </option>
+
+                                <option value="disrespect">
+                                    Disrespectful Conduct
+                                </option>
+
+                                <option value="curfew">
+                                    Curfew Violation
+                                </option>
+
+                                <option value="room_violation">
+                                    Room Rule Violation
+                                </option>
+
+                                <option value="other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Severity *
+                            </label>
+
+                            <select
+                                id="severity"
+                                required
+                            >
+
+                                <option value="low">
+                                    Low
+                                </option>
+
+                                <option value="medium" selected>
+                                    Medium
+                                </option>
+
+                                <option value="high">
+                                    High
+                                </option>
+
+                                <option value="critical">
+                                    Critical
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Date & Time *
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                id="caseDate"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Case Title *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="caseTitle"
+                                placeholder="e.g. Unauthorized guest in Room 101"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label>
+                                Description *
+                            </label>
+
+                            <textarea
+                                id="description"
+                                placeholder="Describe what happened and provide relevant details..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Witnesses
+                            </label>
+
+                            <input
+                                type="text"
+                                id="witnesses"
+                                placeholder="Names if known"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Action Taken
+                            </label>
+
+                            <input
+                                type="text"
+                                id="actionTaken"
+                                placeholder="e.g. Warning issued"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Case Status
+                            </label>
+
+                            <select id="status">
+
+                                <option value="reported">
+                                    Reported
+                                </option>
+
+                                <option value="investigating">
+                                    Investigating
+                                </option>
+
+                                <option value="resolved">
+                                    Resolved
+                                </option>
+
+                                <option value="closed">
+                                    Closed
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            id="submitBtn"
+                        >
+                            ⚖️ Record Case
+                        </button>
+
+                        <button
+                            type="reset"
+                            class="btn btn-secondary"
+                            id="resetBtn"
+                        >
+                            Clear
+                        </button>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- CASES -->
+
+        <div class="card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        Discipline Cases
+                    </h2>
+
+                    <p>
+                        Review reported and resolved student discipline cases.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="loadCases()"
+                >
+                    🔄 Refresh
+                </button>
+
+            </div>
+
+
+            <div class="filters">
+
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="🔎 Search cases..."
+                >
+
+
+                <select id="severityFilter">
+
+                    <option value="">
+                        All Severity
+                    </option>
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option value="medium">
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                    <option value="critical">
+                        Critical
+                    </option>
+
+                </select>
+
+
+                <select id="statusFilter">
+
+                    <option value="">
+                        All Statuses
+                    </option>
+
+                    <option value="reported">
+                        Reported
+                    </option>
+
+                    <option value="investigating">
+                        Investigating
+                    </option>
+
+                    <option value="resolved">
+                        Resolved
+                    </option>
+
+                    <option value="closed">
+                        Closed
+                    </option>
+
+                </select>
+
+
+                <select id="hostelFilter">
+
+                    <option value="">
+                        All Hostels
+                    </option>
+
+                </select>
+
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Student</th>
+
+                            <th>Case</th>
+
+                            <th>Hostel / Room</th>
+
+                            <th>Severity</th>
+
+                            <th>Status</th>
+
+                            <th>Date</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="caseTable">
+
+                        <tr>
+
+                            <td colspan="7">
+
+                                <div class="empty">
+                                    Loading discipline cases...
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- HOSTEL RULES -->
+
+        <div class="card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        📜 Hostel Rules
+                    </h2>
+
+                    <p>
+                        The rules displayed here will later be managed by the Administrator.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="admin-note">
+
+                    <strong>
+                        🔐 Administrator Rule Management
+                    </strong>
+
+                    <br>
+
+                    The Administrator will be able to create, edit,
+                    publish and update the official hostel rules.
+                    Students and staff will see the currently published
+                    rules here.
+
+                </div>
+
+
+                <div class="rules-grid">
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            1
+                        </div>
+
+                        <h3>
+                            Respect Other Residents
+                        </h3>
+
+                        <p>
+                            Official hostel rules will be added and maintained
+                            by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            2
+                        </div>
+
+                        <h3>
+                            Noise & Quiet Hours
+                        </h3>
+
+                        <p>
+                            Official quiet-hour requirements will be configured
+                            by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            3
+                        </div>
+
+                        <h3>
+                            Visitors & Guests
+                        </h3>
+
+                        <p>
+                            Visitor requirements and guest restrictions will be
+                            managed by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            4
+                        </div>
+
+                        <h3>
+                            Hostel Property
+                        </h3>
+
+                        <p>
+                            Rules concerning hostel property and damage will be
+                            configured by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            5
+                        </div>
+
+                        <h3>
+                            Safety & Security
+                        </h3>
+
+                        <p>
+                            Safety and security requirements will be maintained
+                            by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                    <div class="rule-card">
+
+                        <div class="rule-number">
+                            6
+                        </div>
+
+                        <h3>
+                            General Conduct
+                        </h3>
+
+                        <p>
+                            General student conduct requirements will be added
+                            by the Administrator.
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+<!-- DETAILS MODAL -->
+
+<div class="modal" id="caseModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Discipline Case Details
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            class="modal-body"
+            id="modalBody"
+        >
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+    class="toast"
+    id="toast"
+>
+</div>
+
+
+<script>
+
+    /* =====================================================
+       SUPABASE
+       ===================================================== */
+
+    const SUPABASE_URL =
+        "YOUR_SUPABASE_URL";
+
+    const SUPABASE_ANON_KEY =
+        "YOUR_SUPABASE_ANON_KEY";
+
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =====================================================
+       GLOBAL VARIABLES
+       ===================================================== */
+
+    let currentUser = null;
+
+    let currentProfile = null;
+
+    let cases = [];
+
+    let students = [];
+
+    let hostels = [];
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            setCurrentDateTime();
+
+            await checkAuthentication();
+
+            if (!currentUser) {
+                return;
+            }
+
+            await loadStudents();
+
+            await loadHostels();
+
+            await loadCases();
+
+        }
+    );
+
+
+    /* =====================================================
+       AUTHENTICATION
+       ===================================================== */
+
+    async function checkAuthentication() {
+
+        const {
+            data: {
+                user
+            },
+            error
+        } =
+            await supabaseClient.auth.getUser();
+
+
+        if (error || !user) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        currentUser = user;
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    full_name,
+                    email,
+                    role,
+                    status
+                `)
+                .eq("id", user.id)
+                .single();
+
+
+        if (profileError || !profile) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        currentProfile = profile;
+
+
+        const allowedRoles = [
+            "admin",
+            "caretaker",
+            "warden"
+        ];
+
+
+        if (
+            !allowedRoles.includes(
+                profile.role
+            )
+        ) {
+
+            if (
+                profile.role === "student"
+            ) {
+
+                window.location.href =
+                    "student_dashboard.html";
+
+            } else {
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+            return;
+
+        }
+
+
+        if (
+            profile.status &&
+            profile.status.toLowerCase()
+            === "inactive"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "userName"
+        ).textContent =
+            profile.full_name ||
+            "User";
+
+
+        document.getElementById(
+            "userRole"
+        ).textContent =
+            formatRole(profile.role);
+
+
+        document.getElementById(
+            "userAvatar"
+        ).textContent =
+            getInitials(
+                profile.full_name
+            );
+
+    }
+
+
+    /* =====================================================
+       LOAD STUDENTS
+       ===================================================== */
+
+    async function loadStudents() {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    full_name,
+                    email,
+                    student_id,
+                    phone,
+                    status
+                `)
+                .eq("role", "student")
+                .order(
+                    "full_name",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            showToast(
+                "Could not load students.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        students =
+            data || [];
+
+
+        const studentSelect =
+            document.getElementById(
+                "student"
+            );
+
+
+        studentSelect.innerHTML = `
+            <option value="">
+                Select student
+            </option>
+        `;
+
+
+        students.forEach(student => {
+
+            studentSelect.innerHTML += `
+                <option value="${escapeHtml(student.id)}">
+                    ${escapeHtml(
+                        student.full_name
+                    )}
+                    ${
+                        student.student_id
+                            ? " — " +
+                              escapeHtml(
+                                  student.student_id
+                              )
+                            : ""
+                    }
+                </option>
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================================
+       LOAD HOSTELS
+       ===================================================== */
+
+    async function loadHostels() {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("hostels")
+                .select(
+                    "id,name"
+                )
+                .order(
+                    "name",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            showToast(
+                "Could not load hostels.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        hostels =
+            data || [];
+
+
+        const hostelSelect =
+            document.getElementById(
+                "hostel"
+            );
+
+
+        const hostelFilter =
+            document.getElementById(
+                "hostelFilter"
+            );
+
+
+        hostelSelect.innerHTML = `
+            <option value="">
+                Select hostel
+            </option>
+        `;
+
+
+        hostelFilter.innerHTML = `
+            <option value="">
+                All Hostels
+            </option>
+        `;
+
+
+        hostels.forEach(hostel => {
+
+            hostelSelect.innerHTML += `
+                <option value="${escapeHtml(hostel.id)}">
+                    ${escapeHtml(hostel.name)}
+                </option>
+            `;
+
+
+            hostelFilter.innerHTML += `
+                <option value="${escapeHtml(hostel.id)}">
+                    ${escapeHtml(hostel.name)}
+                </option>
+            `;
+
+        });
+
+    }
+
+
+    /* =====================================================
+       LOAD ROOMS
+       ===================================================== */
+
+    document
+        .getElementById("hostel")
+        .addEventListener(
+            "change",
+            async function() {
+
+                const hostelId =
+                    this.value;
+
+
+                const roomSelect =
+                    document.getElementById(
+                        "room"
+                    );
+
+
+                if (!hostelId) {
+
+                    roomSelect.innerHTML = `
+                        <option value="">
+                            Select hostel first
+                        </option>
+                    `;
+
+                    return;
+
+                }
+
+
+                roomSelect.innerHTML = `
+                    <option value="">
+                        Loading rooms...
+                    </option>
+                `;
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("rooms")
+                        .select(`
+                            id,
+                            room_number
+                        `)
+                        .eq(
+                            "hostel_id",
+                            hostelId
+                        )
+                        .order(
+                            "room_number",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    roomSelect.innerHTML = `
+                        <option value="">
+                            Could not load rooms
+                        </option>
+                    `;
+
+                    return;
+
+                }
+
+
+                roomSelect.innerHTML = `
+                    <option value="">
+                        No specific room
+                    </option>
+                `;
+
+
+                (data || []).forEach(room => {
+
+                    roomSelect.innerHTML += `
+                        <option value="${escapeHtml(room.id)}">
+                            Room ${escapeHtml(
+                                room.room_number
+                            )}
+                        </option>
+                    `;
+
+                });
+
+            }
+        );
+
+
+    /* =====================================================
+       LOAD DISCIPLINE CASES
+       ===================================================== */
+
+    async function loadCases() {
+
+        const table =
+            document.getElementById(
+                "caseTable"
+            );
+
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    <div class="empty">
+                        Loading discipline cases...
+                    </div>
+                </td>
+            </tr>
+        `;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "discipline_cases"
+                )
+                .select(`
+                    id,
+                    student_id,
+                    hostel_id,
+                    room_id,
+                    case_type,
+                    title,
+                    description,
+                    severity,
+                    status,
+                    incident_date,
+                    witnesses,
+                    action_taken,
+                    resolution,
+                    created_at,
+                    updated_at,
+
+                    student:student_id (
+                        id,
+                        full_name,
+                        student_id,
+                        email
+                    ),
+
+                    hostels:hostel_id (
+                        id,
+                        name
+                    ),
+
+                    rooms:room_id (
+                        id,
+                        room_number
+                    ),
+
+                    reporter:reported_by (
+                        id,
+                        full_name,
+                        role
+                    )
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Discipline loading error:",
+                error
+            );
+
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="7">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                ⚠️
+                            </div>
+
+                            <strong>
+                                Could not load discipline cases.
+                            </strong>
+
+                            <p style="margin-top:8px;">
+                                Make sure the discipline_cases
+                                table exists in Supabase.
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+            `;
+
+            updateStats([]);
+
+            return;
+
+        }
+
+
+        cases =
+            data || [];
+
+
+        updateStats(cases);
+
+        renderCases();
+
+    }
+
+
+    /* =====================================================
+       UPDATE STATISTICS
+       ===================================================== */
+
+    function updateStats(data) {
+
+        const open =
+            data.filter(item =>
+                [
+                    "reported",
+                    "investigating"
+                ].includes(
+                    String(
+                        item.status
+                    ).toLowerCase()
+                )
+            ).length;
+
+
+        const serious =
+            data.filter(item =>
+                [
+                    "high",
+                    "critical"
+                ].includes(
+                    String(
+                        item.severity
+                    ).toLowerCase()
+                )
+            ).length;
+
+
+        const investigating =
+            data.filter(item =>
+                String(
+                    item.status
+                ).toLowerCase()
+                === "investigating"
+            ).length;
+
+
+        const resolved =
+            data.filter(item =>
+                [
+                    "resolved",
+                    "closed"
+                ].includes(
+                    String(
+                        item.status
+                    ).toLowerCase()
+                )
+            ).length;
+
+
+        document.getElementById(
+            "openCases"
+        ).textContent =
+            open;
+
+
+        document.getElementById(
+            "highCases"
+        ).textContent =
+            serious;
+
+
+        document.getElementById(
+            "investigatingCases"
+        ).textContent =
+            investigating;
+
+
+        document.getElementById(
+            "resolvedCases"
+        ).textContent =
+            resolved;
+
+
+        document.getElementById(
+            "totalCases"
+        ).textContent =
+            data.length;
+
+    }
+
+
+    /* =====================================================
+       RENDER CASES
+       ===================================================== */
+
+    function renderCases() {
+
+        const table =
+            document.getElementById(
+                "caseTable"
+            );
+
+
+        const search =
+            document.getElementById(
+                "searchInput"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+        const severity =
+            document.getElementById(
+                "severityFilter"
+            ).value;
+
+
+        const status =
+            document.getElementById(
+                "statusFilter"
+            ).value;
+
+
+        const hostel =
+            document.getElementById(
+                "hostelFilter"
+            ).value;
+
+
+        const filtered =
+            cases.filter(item => {
+
+                const searchText = [
+
+                    item.title,
+
+                    item.case_type,
+
+                    item.description,
+
+                    item.student?.full_name,
+
+                    item.student?.student_id,
+
+                    item.hostels?.name,
+
+                    item.rooms?.room_number
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+                return (
+
+                    (!search ||
+                        searchText.includes(
+                            search
+                        )) &&
+
+                    (!severity ||
+                        item.severity ===
+                        severity) &&
+
+                    (!status ||
+                        item.status ===
+                        status) &&
+
+                    (!hostel ||
+                        item.hostel_id ===
+                        hostel)
+
+                );
+
+            });
+
+
+        if (!filtered.length) {
+
+            table.innerHTML = `
+                <tr>
+
+                    <td colspan="7">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                ⚖️
+                            </div>
+
+                            <strong>
+                                No discipline cases found.
+                            </strong>
+
+                            <p style="margin-top:8px;">
+                                Cases will appear here when they are reported.
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        table.innerHTML =
+            filtered.map(item => {
+
+                const studentName =
+                    item.student?.full_name ||
+                    "Unknown Student";
+
+
+                const hostelName =
+                    item.hostels?.name ||
+                    "—";
+
+
+                const room =
+                    item.rooms?.room_number
+                        ? "Room " +
+                          item.rooms.room_number
+                        : "—";
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                ${escapeHtml(
+                                    studentName
+                                )}
+                            </strong>
+
+                            <div style="
+                                color:#64748b;
+                                margin-top:4px;
+                                font-size:11px;
+                            ">
+                                ${escapeHtml(
+                                    item.student?.student_id ||
+                                    ""
+                                )}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                ${escapeHtml(
+                                    item.title
+                                )}
+                            </strong>
+
+                            <div style="
+                                color:#64748b;
+                                margin-top:4px;
+                                font-size:11px;
+                            ">
+                                ${escapeHtml(
+                                    formatCaseType(
+                                        item.case_type
+                                    )
+                                )}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHtml(
+                                hostelName
+                            )}
+
+                            <div style="
+                                color:#64748b;
+                                margin-top:4px;
+                            ">
+                                ${escapeHtml(room)}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge severity-${escapeHtml(
+                                item.severity ||
+                                "medium"
+                            )}">
+                                ${escapeHtml(
+                                    item.severity ||
+                                    "medium"
+                                )}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="badge status-${escapeHtml(
+                                item.status ||
+                                "reported"
+                            )}">
+                                ${escapeHtml(
+                                    item.status ||
+                                    "reported"
+                                )}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                formatDate(
+                                    item.incident_date
+                                )
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            <button
+                                class="action-btn"
+                                onclick="viewCase('${item.id}')"
+                            >
+                                👁️ View
+                            </button>
+
+
+                            <button
+                                class="action-btn"
+                                onclick="updateCase('${item.id}')"
+                            >
+                                ✏️ Update
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }).join("");
+
+    }
+
+
+    /* =====================================================
+       REPORT CASE
+       ===================================================== */
+
+    document
+        .getElementById("disciplineForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                if (!currentUser) {
+
+                    return;
+
+                }
+
+
+                const button =
+                    document.getElementById(
+                        "submitBtn"
+                    );
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Saving case...";
+
+
+                const caseData = {
+
+                    student_id:
+                        document.getElementById(
+                            "student"
+                        ).value,
+
+                    hostel_id:
+                        document.getElementById(
+                            "hostel"
+                        ).value,
+
+                    room_id:
+                        document.getElementById(
+                            "room"
+                        ).value || null,
+
+                    case_type:
+                        document.getElementById(
+                            "caseType"
+                        ).value,
+
+                    title:
+                        document.getElementById(
+                            "caseTitle"
+                        ).value.trim(),
+
+                    description:
+                        document.getElementById(
+                            "description"
+                        ).value.trim(),
+
+                    severity:
+                        document.getElementById(
+                            "severity"
+                        ).value,
+
+                    status:
+                        document.getElementById(
+                            "status"
+                        ).value,
+
+                    incident_date:
+                        document.getElementById(
+                            "caseDate"
+                        ).value,
+
+                    witnesses:
+                        document.getElementById(
+                            "witnesses"
+                        ).value.trim() ||
+                        null,
+
+                    action_taken:
+                        document.getElementById(
+                            "actionTaken"
+                        ).value.trim() ||
+                        null,
+
+                    reported_by:
+                        currentUser.id
+
+                };
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "discipline_cases"
+                        )
+                        .insert([
+                            caseData
+                        ]);
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    showToast(
+                        "Could not save case: " +
+                        error.message,
+                        "error"
+                    );
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "⚖️ Record Case";
+
+                    return;
+
+                }
+
+
+                showToast(
+                    "Discipline case recorded successfully.",
+                    "success"
+                );
+
+
+                document
+                    .getElementById(
+                        "disciplineForm"
+                    )
+                    .reset();
+
+
+                setCurrentDateTime();
+
+
+                document.getElementById(
+                    "room"
+                ).innerHTML = `
+                    <option value="">
+                        Select hostel first
+                    </option>
+                `;
+
+
+                await loadCases();
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "⚖️ Record Case";
+
+            }
+        );
+
+
+    /* =====================================================
+       VIEW CASE
+       ===================================================== */
+
+    function viewCase(id) {
+
+        const item =
+            cases.find(
+                caseItem =>
+                    caseItem.id === id
+            );
+
+
+        if (!item) {
+            return;
+        }
+
+
+        document.getElementById(
+            "modalBody"
+        ).innerHTML = `
+
+            <div class="detail-grid">
+
+
+                <div class="detail full">
+
+                    <small>
+                        Case
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.title
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Student
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.student?.full_name ||
+                            "Unknown"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Student ID
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.student?.student_id ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Case Type
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            formatCaseType(
+                                item.case_type
+                            )
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Severity
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.severity ||
+                            "Medium"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Status
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.status ||
+                            "Reported"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Date
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            formatDate(
+                                item.incident_date
+                            )
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Hostel
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.hostels?.name ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Room
+                    </small>
+
+                    <strong>
+                        ${
+                            item.rooms?.room_number
+                                ? "Room " +
+                                  escapeHtml(
+                                      item.rooms.room_number
+                                  )
+                                : "—"
+                        }
+                    </strong>
+
+                </div>
+
+
+                <div class="detail full">
+
+                    <small>
+                        Description
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.description ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Witnesses
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.witnesses ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <small>
+                        Action Taken
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.action_taken ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail full">
+
+                    <small>
+                        Resolution
+                    </small>
+
+                    <strong>
+                        ${escapeHtml(
+                            item.resolution ||
+                            "—"
+                        )}
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        `;
+
+
+        document
+            .getElementById(
+                "caseModal"
+            )
+            .classList.add("show");
+
+    }
+
+
+    /* =====================================================
+       UPDATE CASE
+       ===================================================== */
+
+    async function updateCase(id) {
+
+        const item =
+            cases.find(
+                caseItem =>
+                    caseItem.id === id
+            );
+
+
+        if (!item) {
+            return;
+        }
+
+
+        const newStatus =
+            prompt(
+                "Enter new status:\n\n" +
+                "reported\n" +
+                "investigating\n" +
+                "resolved\n" +
+                "closed",
+                item.status
+            );
+
+
+        if (!newStatus) {
+            return;
+        }
+
+
+        const status =
+            newStatus
+                .trim()
+                .toLowerCase();
+
+
+        const allowedStatuses = [
+            "reported",
+            "investigating",
+            "resolved",
+            "closed"
+        ];
+
+
+        if (
+            !allowedStatuses.includes(
+                status
+            )
+        ) {
+
+            showToast(
+                "Invalid status.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        let resolution =
+            item.resolution || null;
+
+
+        if (
+            status === "resolved" ||
+            status === "closed"
+        ) {
+
+            resolution =
+                prompt(
+                    "Enter resolution details:",
+                    item.resolution || ""
+                );
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "discipline_cases"
+                )
+                .update({
+
+                    status:
+                        status,
+
+                    resolution:
+                        resolution,
+
+                    updated_at:
+                        new Date()
+                            .toISOString()
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            showToast(
+                "Could not update case: " +
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            "Discipline case updated.",
+            "success"
+        );
+
+
+        await loadCases();
+
+    }
+
+
+    /* =====================================================
+       CLOSE MODAL
+       ===================================================== */
+
+    function closeModal() {
+
+        document
+            .getElementById(
+                "caseModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    document
+        .getElementById(
+            "caseModal"
+        )
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target === this
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+    /* =====================================================
+       FILTERS
+       ===================================================== */
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .addEventListener(
+            "input",
+            renderCases
+        );
+
+
+    document
+        .getElementById(
+            "severityFilter"
+        )
+        .addEventListener(
+            "change",
+            renderCases
+        );
+
+
+    document
+        .getElementById(
+            "statusFilter"
+        )
+        .addEventListener(
+            "change",
+            renderCases
+        );
+
+
+    document
+        .getElementById(
+            "hostelFilter"
+        )
+        .addEventListener(
+            "change",
+            renderCases
+        );
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    document
+        .getElementById(
+            "logoutBtn"
+        )
+        .addEventListener(
+            "click",
+            async function(event) {
+
+                event.preventDefault();
+
+                await supabaseClient
+                    .auth
+                    .signOut();
+
+                window.location.href =
+                    "login.html";
+
+            }
+        );
+
+
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
+
+    document
+        .getElementById(
+            "menuBtn"
+        )
+        .addEventListener(
+            "click",
+            function() {
+
+                document
+                    .getElementById(
+                        "sidebar"
+                    )
+                    .classList.toggle(
+                        "open"
+                    );
+
+            }
+        );
+
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function setCurrentDateTime() {
+
+        const input =
+            document.getElementById(
+                "caseDate"
+            );
+
+
+        const now =
+            new Date();
+
+
+        const year =
+            now.getFullYear();
+
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const hours =
+            String(
+                now.getHours()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const minutes =
+            String(
+                now.getMinutes()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        input.value =
+            `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    }
+
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+
+        const date =
+            new Date(value);
+
+
+        if (
+            isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return value;
+
+        }
+
+
+        return date.toLocaleString(
+            "en-KE",
+            {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        );
+
+    }
+
+
+    function formatCaseType(value) {
+
+        if (!value) {
+            return "Other";
+        }
+
+
+        return value
+            .replaceAll(
+                "_",
+                " "
+            )
+            .replace(
+                /\b\w/g,
+                letter =>
+                    letter.toUpperCase()
+            );
+
+    }
+
+
+    function formatRole(role) {
+
+        if (!role) {
+            return "User";
+        }
+
+
+        return role
+            .charAt(0)
+            .toUpperCase() +
+            role.slice(1);
+
+    }
+
+
+    function getInitials(name) {
+
+        if (!name) {
+            return "U";
+        }
+
+
+        return name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(
+                word =>
+                    word
+                        .charAt(0)
+                        .toUpperCase()
+            )
+            .join("");
+
+    }
+
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
+    }
+
+
+    function showToast(
+        message,
+        type = ""
+    ) {
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+
+        toast.textContent =
+            message;
+
+
+        toast.className =
+            "toast show " +
+            type;
+
+
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            4000
+        );
+
+    }
+
+</script>
+
+</body>
+</html>

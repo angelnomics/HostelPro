@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nexa | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            height: 70px;
+            background: #172033;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #60a5fa;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        /* MOBILE MENU */
+        .mobile-menu {
+            display: none;
+            background: #172033;
+            padding: 10px 25px 20px;
+        }
+
+        .mobile-menu.open {
+            display: block;
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 12px 0;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* MAIN */
+        main {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        /* CHAT BOX */
+        .chat-box {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #2563eb;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .chat-header h2 {
+            font-size: 25px;
+        }
+
+        .chat-area {
+            height: 430px;
+            overflow-y: auto;
+            padding: 25px;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 18px;
+            display: flex;
+        }
+
+        .message.nexa-message {
+            justify-content: flex-start;
+        }
+
+        .message.user-message {
+            justify-content: flex-end;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .nexa-message .bubble {
+            background: #e8f0ff;
+            color: #172033;
+            border-bottom-left-radius: 3px;
+        }
+
+        .user-message .bubble {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 3px;
+        }
+
+        /* QUICK QUESTIONS */
+        .quick-section {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .quick-section h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quick-btn {
+            border: 1px solid #dbe2ea;
+            background: #f8fafc;
+            color: #172033;
+            padding: 9px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .quick-btn:hover {
+            background: #eff6ff;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        /* INPUT */
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 18px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 13px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-area input:focus {
+            border-color: #2563eb;
+        }
+
+        .send-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .send-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* TYPING */
+        .typing {
+            color: #64748b;
+            font-size: 13px;
+            font-style: italic;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 45px;
+            background: #172033;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        footer p {
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 800px) {
+
+            header {
+                padding: 0 20px;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .welcome h1 {
+                font-size: 30px;
+            }
+
+            .chat-area {
+                height: 420px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            main {
+                margin: 25px auto;
+                padding: 0 12px;
+            }
+
+            .chat-area {
+                height: 400px;
+                padding: 15px;
+            }
+
+            .bubble {
+                max-width: 88%;
+            }
+
+            .input-area {
+                padding: 12px;
+            }
+
+            .send-btn {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Hostel<span>Pro</span>
+    </div>
+
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="hostels.html">Hostels</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="beds.html">Beds</a>
+        <a href="announcements.html">Announcements</a>
+        <a href="login.html">Login</a>
+    </nav>
+
+    <div class="hamburger" id="hamburger">
+        ☰
+    </div>
+
+</header>
+
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <a href="index.html">Home</a>
+    <a href="hostels.html">Hostels</a>
+    <a href="rooms.html">Rooms</a>
+    <a href="beds.html">Rooms & Beds</a>
+    <a href="announcements.html">Announcements</a>
+    <a href="contact.html">Contact</a>
+    <a href="help.html">Help & Support</a>
+    <a href="login.html">Login</a>
+    <a href="register.html">Create Account</a>
+
+</div>
+
+
+<main>
+
+    <div class="welcome">
+
+        <h1>Nexa</h1>
+
+        <p>
+            Ask questions and get help using HostelPro.
+        </p>
+
+    </div>
+
+
+    <div class="chat-box">
+
+        <div class="chat-header">
+            <h2>Nexa</h2>
+        </div>
+
+
+        <div class="chat-area" id="chatArea">
+
+            <div class="message nexa-message">
+
+                <div class="bubble">
+                    Hello! I'm Nexa. How can I help you with HostelPro?
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="typing" id="typing">
+            Nexa is typing...
+        </div>
+
+
+        <div class="quick-section">
+
+            <h3>Quick questions</h3>
+
+            <div class="quick-buttons">
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How do I register?')">
+                    How do I register?
+                </button>
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How do I find a hostel?')">
+                    Find a hostel
+                </button>
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How do I find a room?')">
+                    Find a room
+                </button>
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How does bed allocation work?')">
+                    Bed allocation
+                </button>
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How do I report maintenance?')">
+                    Maintenance
+                </button>
+
+                <button class="quick-btn"
+                    onclick="askQuestion('How do I contact the hostel?')">
+                    Contact hostel
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Ask Nexa..."
+                autocomplete="off"
+            >
+
+            <button
+                class="send-btn"
+                onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    <p>
+        © 2026 HostelPro. Hostel Management System.
+    </p>
+
+</footer>
+
+
+<script>
+
+    /* =====================================
+       SUPABASE
+    ====================================== */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const { createClient } = supabase;
+
+    const db = createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+    /* =====================================
+       MOBILE MENU
+    ====================================== */
+
+    const hamburger =
+        document.getElementById("hamburger");
+
+    const mobileMenu =
+        document.getElementById("mobileMenu");
+
+    hamburger.addEventListener("click", function () {
+
+        mobileMenu.classList.toggle("open");
+
+    });
+
+
+    /* =====================================
+       CHAT ELEMENTS
+    ====================================== */
+
+    const chatArea =
+        document.getElementById("chatArea");
+
+    const userInput =
+        document.getElementById("userInput");
+
+    const typing =
+        document.getElementById("typing");
+
+
+    /* =====================================
+       SEND MESSAGE
+    ====================================== */
+
+    function sendMessage() {
+
+        const message =
+            userInput.value.trim();
+
+        if (!message) {
+            return;
+        }
+
+        addUserMessage(message);
+
+        userInput.value = "";
+
+        showTyping();
+
+        setTimeout(function () {
+
+            hideTyping();
+
+            const response =
+                generateResponse(message);
+
+            addNexaMessage(response);
+
+        }, 700);
+
+    }
+
+
+    /* =====================================
+       ENTER KEY
+    ====================================== */
+
+    userInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       QUICK QUESTIONS
+    ====================================== */
+
+    function askQuestion(question) {
+
+        userInput.value = question;
+
+        sendMessage();
+
+    }
+
+
+    /* =====================================
+       ADD USER MESSAGE
+    ====================================== */
+
+    function addUserMessage(message) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "message user-message";
+
+        wrapper.innerHTML = `
+            <div class="bubble">
+                ${escapeHtml(message)}
+            </div>
+        `;
+
+        chatArea.appendChild(wrapper);
+
+        scrollChat();
+
+    }
+
+
+    /* =====================================
+       ADD NEXA MESSAGE
+    ====================================== */
+
+    function addNexaMessage(message) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "message nexa-message";
+
+        wrapper.innerHTML = `
+            <div class="bubble">
+                ${message}
+            </div>
+        `;
+
+        chatArea.appendChild(wrapper);
+
+        scrollChat();
+
+    }
+
+
+    /* =====================================
+       TYPING
+    ====================================== */
+
+    function showTyping() {
+
+        typing.style.display = "block";
+
+        scrollChat();
+
+    }
+
+
+    function hideTyping() {
+
+        typing.style.display = "none";
+
+    }
+
+
+    /* =====================================
+       SCROLL
+    ====================================== */
+
+    function scrollChat() {
+
+        chatArea.scrollTop =
+            chatArea.scrollHeight;
+
+    }
+
+
+    /* =====================================
+       NEXA RESPONSE ENGINE
+    ====================================== */
+
+    function generateResponse(message) {
+
+        const text =
+            message.toLowerCase();
+
+
+        /* GREETING */
+
+        if (
+            text.includes("hello") ||
+            text.includes("hi") ||
+            text.includes("hey")
+        ) {
+
+            return `
+                Hello! I'm Nexa.
+                How can I help you with HostelPro?
+            `;
+
+        }
+
+
+        /* REGISTRATION */
+
+        if (
+            text.includes("register") ||
+            text.includes("create account") ||
+            text.includes("sign up")
+        ) {
+
+            return `
+                To create an account, open the
+                <strong>Create Account</strong> page
+                and complete the registration form.
+                Student accounts can then be used to
+                access the student dashboard.
+            `;
+
+        }
+
+
+        /* LOGIN */
+
+        if (
+            text.includes("login") ||
+            text.includes("log in") ||
+            text.includes("sign in")
+        ) {
+
+            return `
+                Open the <strong>Login</strong> page
+                and enter your registered email and
+                password. HostelPro will take you to
+                the dashboard associated with your role.
+            `;
+
+        }
+
+
+        /* HOSTEL */
+
+        if (
+            text.includes("hostel") &&
+            (
+                text.includes("find") ||
+                text.includes("search") ||
+                text.includes("available")
+            )
+        ) {
+
+            return `
+                You can browse available hostels from
+                the <strong>Hostels</strong> page.
+                You can search by hostel name or location
+                and view the rooms and beds associated
+                with each hostel.
+            `;
+
+        }
+
+
+        /* ROOM */
+
+        if (
+            text.includes("room") ||
+            text.includes("rooms")
+        ) {
+
+            return `
+                Open the <strong>Rooms</strong> page
+                to view rooms and their hostel,
+                bed availability and occupancy information.
+                You can also open an individual room to
+                see more details.
+            `;
+
+        }
+
+
+        /* BED */
+
+        if (
+            text.includes("bed") ||
+            text.includes("allocation") ||
+            text.includes("allocate")
+        ) {
+
+            return `
+                HostelPro uses individual beds for
+                student allocation. For double-decker
+                beds, labels such as <strong>A-1</strong>
+                represent the lower bed while
+                <strong>A-2</strong> represents the upper bed.
+            `;
+
+        }
+
+
+        /* MAINTENANCE */
+
+        if (
+            text.includes("maintenance") ||
+            text.includes("repair") ||
+            text.includes("broken")
+        ) {
+
+            return `
+                Students can report maintenance problems
+                through the maintenance section.
+                Include the problem, room and relevant
+                details so the responsible staff can
+                follow up.
+            `;
+
+        }
+
+
+        /* ANNOUNCEMENTS */
+
+        if (
+            text.includes("announcement") ||
+            text.includes("notice")
+        ) {
+
+            return `
+                Hostel announcements can be viewed from
+                the <strong>Announcements</strong> page.
+                This is where important hostel notices
+                can be displayed.
+            `;
+
+        }
+
+
+        /* ADMIN */
+
+        if (
+            text.includes("admin") ||
+            text.includes("administrator")
+        ) {
+
+            return `
+                The administrator manages HostelPro,
+                including hostels, rooms, beds, students,
+                staff, allocations, maintenance,
+                reports, announcements and settings.
+            `;
+
+        }
+
+
+        /* WARDEN */
+
+        if (
+            text.includes("warden")
+        ) {
+
+            return `
+                Wardens handle responsibilities related
+                to students and hostel operations assigned
+                to them.
+            `;
+
+        }
+
+
+        /* CARETAKER */
+
+        if (
+            text.includes("caretaker")
+        ) {
+
+            return `
+                Caretakers help manage hostel facilities,
+                rooms, students and operational tasks
+                assigned to them.
+            `;
+
+        }
+
+
+        /* CONTACT */
+
+        if (
+            text.includes("contact") ||
+            text.includes("help")
+        ) {
+
+            return `
+                You can use the Contact or Help & Support
+                section to find assistance and information
+                about using HostelPro.
+            `;
+
+        }
+
+
+        /* THANK YOU */
+
+        if (
+            text.includes("thank") ||
+            text.includes("thanks")
+        ) {
+
+            return `
+                You're welcome. I'm here whenever you
+                need help with HostelPro.
+            `;
+
+        }
+
+
+        /* DEFAULT */
+
+        return `
+            I can help you with HostelPro topics such as
+            <strong>hostels, rooms, beds, registration,
+            login, allocations, maintenance,
+            announcements and user roles</strong>.
+            Try asking me about one of these.
+        `;
+
+    }
+
+
+    /* =====================================
+       SECURITY
+    ====================================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>
+
+</body>
+</html>

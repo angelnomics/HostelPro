@@ -1,0 +1,2842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Allocations | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #172033;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .brand {
+            padding: 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .brand span {
+            color: #60a5fa;
+        }
+
+        .brand small {
+            display: block;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        .nav {
+            padding: 15px 10px;
+        }
+
+        .nav a {
+            display: block;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin: 15px 10px;
+            padding: 12px 14px;
+            border: none;
+            width: calc(100% - 20px);
+            border-radius: 8px;
+            background: #dc2626;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .user-info {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        .stat-title {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+        }
+
+        /* BUTTONS */
+        button {
+            font-family: inherit;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #172033;
+        }
+
+        /* FORM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 17px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* FILTERS */
+        .filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        /* TABLE */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 13px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-ended {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 4px;
+            font-size: 12px;
+        }
+
+        .end-btn {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .view-btn {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+        }
+
+        /* NEXA */
+        .nexa {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #2563eb;
+            color: white;
+            padding: 13px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(37,99,235,.3);
+            z-index: 999;
+        }
+
+        /* MOBILE */
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 18px;
+            }
+
+            .mobile-menu {
+                display: block;
+                background: #172033;
+                color: white;
+                border: none;
+                padding: 10px 13px;
+                border-radius: 7px;
+                cursor: pointer;
+                margin-bottom: 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid,
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                align-items: flex-start;
+                gap: 10px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            <h2>Hostel<span>Pro</span></h2>
+            <small>Hostel Management System</small>
+        </div>
+
+        <nav class="nav">
+
+            <a href="admin_dashboard.html">📊 Dashboard</a>
+
+            <a href="hostels.html">🏢 Hostels</a>
+
+            <a href="rooms.html">🚪 Rooms</a>
+
+            <a href="beds.html">🛏️ Beds</a>
+
+            <a href="students.html">🎓 Students</a>
+
+            <a href="allocations.html" class="active">📋 Allocations</a>
+
+            <a href="caretakers.html">👷 Caretakers</a>
+
+            <a href="wardens.html">👮 Wardens</a>
+
+            <a href="maintenance.html">🔧 Maintenance</a>
+
+            <a href="discipline.html">⚠️ Discipline</a>
+
+            <a href="security.html">🛡️ Security</a>
+
+            <a href="tasks.html">✅ Tasks</a>
+
+            <a href="messages.html">💬 Messages</a>
+
+            <a href="announcements.html">📢 Announcements</a>
+
+            <a href="reports.html">📈 Reports</a>
+
+            <a href="settings.html">⚙️ Settings</a>
+
+            <a href="nexa.html">🤖 Nexa</a>
+
+        </nav>
+
+        <button class="logout" id="logoutBtn">
+            🚪 Logout
+        </button>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <button class="mobile-menu" id="mobileMenu">
+            ☰ Menu
+        </button>
+
+        <div class="topbar">
+
+            <div>
+                <h1>Bed Allocations</h1>
+                <p>Manage student hostel and bed allocations.</p>
+            </div>
+
+            <div class="user-info">
+                <strong id="staffName">Loading...</strong>
+            </div>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+        <section class="stats">
+
+            <div class="stat">
+                <div class="stat-title">Total Allocations</div>
+                <div class="stat-number" id="totalAllocations">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">Active</div>
+                <div class="stat-number" id="activeAllocations">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">Pending</div>
+                <div class="stat-number" id="pendingAllocations">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-title">Ended</div>
+                <div class="stat-number" id="endedAllocations">0</div>
+            </div>
+
+        </section>
+
+
+        <!-- CREATE ALLOCATION -->
+        <section class="card">
+
+            <div class="card-header">
+                <h2>➕ Allocate Student</h2>
+            </div>
+
+            <div id="formMessage" class="message"></div>
+
+            <form id="allocationForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="student">Student</label>
+
+                        <select id="student" required>
+                            <option value="">Select student</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="hostel">Hostel</label>
+
+                        <select id="hostel" required>
+                            <option value="">Select hostel</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="room">Room</label>
+
+                        <select id="room" required disabled>
+                            <option value="">Select hostel first</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="bed">Available Bed</label>
+
+                        <select id="bed" required disabled>
+                            <option value="">Select room first</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="allocationDate">
+                            Allocation Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="allocationDate"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="checkInDate">
+                            Check-in Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="checkInDate"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="checkOutDate">
+                            Expected Check-out Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="checkOutDate"
+                        >
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="status">
+                            Allocation Status
+                        </label>
+
+                        <select id="status">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="pending">
+                                Pending
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="notes">
+                            Notes
+                        </label>
+
+                        <textarea
+                            id="notes"
+                            placeholder="Optional allocation notes..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="allocateBtn"
+                    >
+                        Allocate Student
+                    </button>
+
+                    <button
+                        type="reset"
+                        class="btn btn-secondary"
+                        id="resetBtn"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- ALLOCATIONS TABLE -->
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>📋 Allocation Records</h2>
+                </div>
+
+                <button
+                    class="btn btn-secondary"
+                    id="refreshBtn"
+                >
+                    🔄 Refresh
+                </button>
+
+            </div>
+
+
+            <!-- FILTERS -->
+            <div class="filters">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search student, ID, hostel or room..."
+                >
+
+                <select id="statusFilter">
+
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="ended">
+                        Ended
+                    </option>
+
+                </select>
+
+
+                <select id="hostelFilter">
+
+                    <option value="all">
+                        All Hostels
+                    </option>
+
+                </select>
+
+
+                <select id="sortFilter">
+
+                    <option value="newest">
+                        Newest First
+                    </option>
+
+                    <option value="oldest">
+                        Oldest First
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Student</th>
+
+                            <th>Student ID</th>
+
+                            <th>Hostel</th>
+
+                            <th>Room</th>
+
+                            <th>Bed</th>
+
+                            <th>Check-in</th>
+
+                            <th>Check-out</th>
+
+                            <th>Status</th>
+
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="allocationTable">
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="loading"
+                            >
+                                Loading allocations...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<a href="nexa.html" class="nexa">
+    🤖 Nexa
+</a>
+
+
+<script>
+
+    /* =========================================================
+       SUPABASE CONFIG
+       ========================================================= */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =========================================================
+       GLOBAL VARIABLES
+       ========================================================= */
+
+    let currentUser = null;
+
+    let currentProfile = null;
+
+    let allocations = [];
+
+    let students = [];
+
+    let hostels = [];
+
+    let rooms = [];
+
+    let beds = [];
+
+
+    /* =========================================================
+       ELEMENTS
+       ========================================================= */
+
+    const studentSelect =
+        document.getElementById("student");
+
+    const hostelSelect =
+        document.getElementById("hostel");
+
+    const roomSelect =
+        document.getElementById("room");
+
+    const bedSelect =
+        document.getElementById("bed");
+
+    const allocationForm =
+        document.getElementById("allocationForm");
+
+    const allocationTable =
+        document.getElementById("allocationTable");
+
+    const formMessage =
+        document.getElementById("formMessage");
+
+
+    /* =========================================================
+       INITIALIZE
+       ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            setToday();
+
+            await checkAuthentication();
+
+        }
+    );
+
+
+    /* =========================================================
+       AUTHENTICATION
+       ========================================================= */
+
+    async function checkAuthentication() {
+
+        const {
+            data: {
+                user
+            }
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if (!user) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        currentUser = user;
+
+
+        const {
+            data: profile,
+            error
+        } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                status
+            `)
+            .eq("id", user.id)
+            .single();
+
+
+        if (error || !profile) {
+
+            alert(
+                "Your profile could not be loaded."
+            );
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        currentProfile = profile;
+
+
+        /*
+         * Admin, caretaker and warden may
+         * access this page.
+         *
+         * Students should use their own
+         * student allocation page.
+         */
+
+        const allowedRoles = [
+            "admin",
+            "caretaker",
+            "warden"
+        ];
+
+
+        if (
+            !allowedRoles.includes(
+                profile.role
+            )
+        ) {
+
+            alert(
+                "You are not authorized to access allocations."
+            );
+
+            window.location.href =
+                "student_dashboard.html";
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "staffName"
+        ).textContent =
+            profile.full_name ||
+            profile.email;
+
+
+        /*
+         * Warden is allowed to VIEW
+         * allocations but should not
+         * create/end them.
+         */
+
+        if (
+            profile.role === "warden"
+        ) {
+
+            disableAllocationForm();
+
+        }
+
+
+        await loadAllData();
+
+    }
+
+
+    /* =========================================================
+       LOAD ALL DATA
+       ========================================================= */
+
+    async function loadAllData() {
+
+        await Promise.all([
+            loadStudents(),
+            loadHostels(),
+            loadRooms(),
+            loadBeds(),
+            loadAllocations()
+        ]);
+
+        populateHostelFilter();
+
+    }
+
+
+    /* =========================================================
+       LOAD STUDENTS
+       ========================================================= */
+
+    async function loadStudents() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                student_id,
+                phone,
+                status
+            `)
+            .eq("role", "student")
+            .order("full_name", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Students error:",
+                error
+            );
+
+            showMessage(
+                "Unable to load students.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        students =
+            (data || []).filter(
+                student =>
+                    student.status !== "inactive"
+            );
+
+
+        studentSelect.innerHTML =
+            `<option value="">
+                Select student
+            </option>`;
+
+
+        students.forEach(student => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                student.id;
+
+            option.textContent =
+                `${student.full_name || "Unnamed Student"}${
+                    student.student_id
+                        ? " — " + student.student_id
+                        : ""
+                }`;
+
+            studentSelect.appendChild(
+                option
+            );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       LOAD HOSTELS
+       ========================================================= */
+
+    async function loadHostels() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("hostels")
+            .select(`
+                id,
+                name,
+                location,
+                status
+            `)
+            .order("name", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Hostels error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        hostels = data || [];
+
+
+        hostelSelect.innerHTML =
+            `<option value="">
+                Select hostel
+            </option>`;
+
+
+        hostels.forEach(hostel => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                hostel.id;
+
+            option.textContent =
+                hostel.name;
+
+            hostelSelect.appendChild(
+                option
+            );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       LOAD ROOMS
+       ========================================================= */
+
+    async function loadRooms() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("rooms")
+            .select(`
+                id,
+                room_number,
+                hostel_id
+            `)
+            .order("room_number", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Rooms error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        rooms = data || [];
+
+    }
+
+
+    /* =========================================================
+       LOAD BEDS
+       ========================================================= */
+
+    async function loadBeds() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("beds")
+            .select(`
+                id,
+                room_id,
+                bed_number,
+                status,
+                label,
+                bed_position
+            `);
+
+
+        if (error) {
+
+            console.error(
+                "Beds error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        beds = data || [];
+
+    }
+
+
+    /* =========================================================
+       LOAD ALLOCATIONS
+       ========================================================= */
+
+    async function loadAllocations() {
+
+        allocationTable.innerHTML =
+            `<tr>
+                <td colspan="9" class="loading">
+                    Loading allocations...
+                </td>
+            </tr>`;
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("allocations")
+            .select(`
+                id,
+                student_id,
+                bed_id,
+                allocated_by,
+                allocation_date,
+                check_in_date,
+                check_out_date,
+                status,
+                notes,
+                created_at,
+
+                profiles:student_id (
+                    id,
+                    full_name,
+                    email,
+                    student_id,
+                    phone
+                ),
+
+                beds:bed_id (
+                    id,
+                    bed_number,
+                    label,
+                    bed_position,
+
+                    rooms:room_id (
+                        id,
+                        room_number,
+
+                        hostels:hostel_id (
+                            id,
+                            name,
+                            location
+                        )
+                    )
+                )
+            `)
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Allocations error:",
+                error
+            );
+
+            allocationTable.innerHTML =
+                `<tr>
+                    <td colspan="9" class="empty">
+                        Unable to load allocation records.
+                        <br><br>
+                        ${escapeHtml(error.message)}
+                    </td>
+                </tr>`;
+
+            return;
+
+        }
+
+
+        allocations = data || [];
+
+        updateStatistics();
+
+        renderAllocations();
+
+    }
+
+
+    /* =========================================================
+       HOSTEL CHANGE
+       ========================================================= */
+
+    hostelSelect.addEventListener(
+        "change",
+        () => {
+
+            const hostelId =
+                hostelSelect.value;
+
+
+            roomSelect.innerHTML =
+                `<option value="">
+                    Select room
+                </option>`;
+
+
+            bedSelect.innerHTML =
+                `<option value="">
+                    Select room first
+                </option>`;
+
+
+            roomSelect.disabled =
+                !hostelId;
+
+            bedSelect.disabled =
+                true;
+
+
+            if (!hostelId) {
+
+                return;
+
+            }
+
+
+            const hostelRooms =
+                rooms.filter(
+                    room =>
+                        String(
+                            room.hostel_id
+                        ) === String(
+                            hostelId
+                        )
+                );
+
+
+            if (!hostelRooms.length) {
+
+                roomSelect.innerHTML =
+                    `<option value="">
+                        No rooms available
+                    </option>`;
+
+                return;
+
+            }
+
+
+            hostelRooms.forEach(room => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    room.id;
+
+                option.textContent =
+                    `Room ${room.room_number}`;
+
+                roomSelect.appendChild(
+                    option
+                );
+
+            });
+
+        }
+    );
+
+
+    /* =========================================================
+       ROOM CHANGE
+       ========================================================= */
+
+    roomSelect.addEventListener(
+        "change",
+        () => {
+
+            const roomId =
+                roomSelect.value;
+
+
+            bedSelect.innerHTML =
+                `<option value="">
+                    Select available bed
+                </option>`;
+
+
+            bedSelect.disabled =
+                !roomId;
+
+
+            if (!roomId) {
+
+                return;
+
+            }
+
+
+            /*
+             * Find beds already actively
+             * allocated.
+             */
+
+            const activeBedIds =
+                new Set(
+                    allocations
+                        .filter(
+                            allocation =>
+                                allocation.status ===
+                                "active"
+                        )
+                        .map(
+                            allocation =>
+                                String(
+                                    allocation.bed_id
+                                )
+                        )
+                );
+
+
+            const roomBeds =
+                beds.filter(
+                    bed =>
+                        String(
+                            bed.room_id
+                        ) === String(
+                            roomId
+                        )
+                );
+
+
+            const availableBeds =
+                roomBeds.filter(
+                    bed =>
+                        !activeBedIds.has(
+                            String(
+                                bed.id
+                            )
+                        ) &&
+                        bed.status !==
+                        "maintenance" &&
+                        bed.status !==
+                        "reserved"
+                );
+
+
+            if (!availableBeds.length) {
+
+                bedSelect.innerHTML =
+                    `<option value="">
+                        No available beds
+                    </option>`;
+
+                return;
+
+            }
+
+
+            availableBeds.forEach(bed => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    bed.id;
+
+                const position =
+                    getBedPosition(
+                        bed
+                    );
+
+
+                option.textContent =
+                    `${bed.label || bed.bed_number} — ${position}`;
+
+                bedSelect.appendChild(
+                    option
+                );
+
+            });
+
+        }
+    );
+
+
+    /* =========================================================
+       CREATE ALLOCATION
+       ========================================================= */
+
+    allocationForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            if (
+                currentProfile.role ===
+                "warden"
+            ) {
+
+                showMessage(
+                    "Wardens can view allocations but cannot create them.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const studentId =
+                studentSelect.value;
+
+            const bedId =
+                bedSelect.value;
+
+            const allocationDate =
+                document.getElementById(
+                    "allocationDate"
+                ).value;
+
+            const checkInDate =
+                document.getElementById(
+                    "checkInDate"
+                ).value;
+
+            const checkOutDate =
+                document.getElementById(
+                    "checkOutDate"
+                ).value;
+
+            const status =
+                document.getElementById(
+                    "status"
+                ).value;
+
+            const notes =
+                document.getElementById(
+                    "notes"
+                ).value.trim();
+
+
+            if (
+                !studentId ||
+                !bedId
+            ) {
+
+                showMessage(
+                    "Please select a student and available bed.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                checkOutDate &&
+                checkInDate &&
+                checkOutDate < checkInDate
+            ) {
+
+                showMessage(
+                    "Check-out date cannot be before check-in date.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Check whether student already
+             * has an active allocation.
+             */
+
+            const {
+                data: existingStudent,
+                error: studentCheckError
+            } =
+            await supabaseClient
+                .from("allocations")
+                .select("id")
+                .eq(
+                    "student_id",
+                    studentId
+                )
+                .eq(
+                    "status",
+                    "active"
+                )
+                .limit(1);
+
+
+            if (studentCheckError) {
+
+                showMessage(
+                    studentCheckError.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                existingStudent &&
+                existingStudent.length > 0
+            ) {
+
+                showMessage(
+                    "This student already has an active allocation.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Check whether the bed is already
+             * actively allocated.
+             */
+
+            const {
+                data: existingBed,
+                error: bedCheckError
+            } =
+            await supabaseClient
+                .from("allocations")
+                .select("id")
+                .eq(
+                    "bed_id",
+                    bedId
+                )
+                .eq(
+                    "status",
+                    "active"
+                )
+                .limit(1);
+
+
+            if (bedCheckError) {
+
+                showMessage(
+                    bedCheckError.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                existingBed &&
+                existingBed.length > 0
+            ) {
+
+                showMessage(
+                    "This bed has already been allocated.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const allocateBtn =
+                document.getElementById(
+                    "allocateBtn"
+                );
+
+
+            allocateBtn.disabled = true;
+
+            allocateBtn.textContent =
+                "Allocating...";
+
+
+            const {
+                error
+            } =
+            await supabaseClient
+                .from("allocations")
+                .insert({
+
+                    student_id:
+                        studentId,
+
+                    bed_id:
+                        bedId,
+
+                    allocated_by:
+                        currentUser.id,
+
+                    allocation_date:
+                        allocationDate,
+
+                    check_in_date:
+                        checkInDate,
+
+                    check_out_date:
+                        checkOutDate ||
+                        null,
+
+                    status:
+                        status,
+
+                    notes:
+                        notes ||
+                        null
+
+                });
+
+
+            allocateBtn.disabled = false;
+
+            allocateBtn.textContent =
+                "Allocate Student";
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                showMessage(
+                    "Allocation failed: " +
+                    error.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+                "Student allocated successfully.",
+                "success"
+            );
+
+
+            allocationForm.reset();
+
+            setToday();
+
+            roomSelect.innerHTML =
+                `<option value="">
+                    Select hostel first
+                </option>`;
+
+            roomSelect.disabled =
+                true;
+
+            bedSelect.innerHTML =
+                `<option value="">
+                    Select room first
+                </option>`;
+
+            bedSelect.disabled =
+                true;
+
+
+            await loadAllData();
+
+        }
+    );
+
+
+    /* =========================================================
+       END ALLOCATION
+       ========================================================= */
+
+    async function endAllocation(
+        allocationId
+    ) {
+
+        if (
+            currentProfile.role ===
+            "warden"
+        ) {
+
+            alert(
+                "Wardens cannot end allocations."
+            );
+
+            return;
+
+        }
+
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to end this allocation?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("allocations")
+            .update({
+
+                status:
+                    "ended",
+
+                check_out_date:
+                    new Date()
+                        .toISOString()
+                        .split("T")[0]
+
+            })
+            .eq(
+                "id",
+                allocationId
+            );
+
+
+        if (error) {
+
+            alert(
+                "Unable to end allocation: " +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Allocation ended successfully."
+        );
+
+
+        await loadAllData();
+
+    }
+
+
+    /* =========================================================
+       RENDER TABLE
+       ========================================================= */
+
+    function renderAllocations() {
+
+        const search =
+            document.getElementById(
+                "searchInput"
+            ).value
+            .trim()
+            .toLowerCase();
+
+
+        const statusFilter =
+            document.getElementById(
+                "statusFilter"
+            ).value;
+
+
+        const hostelFilter =
+            document.getElementById(
+                "hostelFilter"
+            ).value;
+
+
+        const sortFilter =
+            document.getElementById(
+                "sortFilter"
+            ).value;
+
+
+        let filtered =
+            [...allocations];
+
+
+        if (search) {
+
+            filtered =
+                filtered.filter(
+                    allocation => {
+
+                        const student =
+                            allocation.profiles;
+
+                        const bed =
+                            allocation.beds;
+
+                        const room =
+                            bed?.rooms;
+
+                        const hostel =
+                            room?.hostels;
+
+
+                        const text = [
+
+                            student?.full_name,
+
+                            student?.student_id,
+
+                            student?.email,
+
+                            hostel?.name,
+
+                            room?.room_number,
+
+                            bed?.label,
+
+                            bed?.bed_number
+
+                        ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
+
+
+                        return text.includes(
+                            search
+                        );
+
+                    }
+                );
+
+        }
+
+
+        if (
+            statusFilter !==
+            "all"
+        ) {
+
+            filtered =
+                filtered.filter(
+                    allocation =>
+                        allocation.status ===
+                        statusFilter
+                );
+
+        }
+
+
+        if (
+            hostelFilter !==
+            "all"
+        ) {
+
+            filtered =
+                filtered.filter(
+                    allocation =>
+                        String(
+                            allocation
+                                .beds
+                                ?.rooms
+                                ?.hostels
+                                ?.id
+                        ) ===
+                        String(
+                            hostelFilter
+                        )
+                );
+
+        }
+
+
+        filtered.sort(
+            (a, b) => {
+
+                const dateA =
+                    new Date(
+                        a.created_at ||
+                        a.allocation_date ||
+                        0
+                    );
+
+                const dateB =
+                    new Date(
+                        b.created_at ||
+                        b.allocation_date ||
+                        0
+                    );
+
+
+                return sortFilter ===
+                    "oldest"
+                    ? dateA - dateB
+                    : dateB - dateA;
+
+            }
+        );
+
+
+        if (!filtered.length) {
+
+            allocationTable.innerHTML =
+                `<tr>
+                    <td colspan="9" class="empty">
+                        No allocation records found.
+                    </td>
+                </tr>`;
+
+            return;
+
+        }
+
+
+        allocationTable.innerHTML =
+            filtered.map(
+                allocation => {
+
+                    const student =
+                        allocation.profiles;
+
+                    const bed =
+                        allocation.beds;
+
+                    const room =
+                        bed?.rooms;
+
+                    const hostel =
+                        room?.hostels;
+
+
+                    const statusClass =
+                        allocation.status ===
+                        "active"
+                            ? "status-active"
+                            : allocation.status ===
+                              "pending"
+                                ? "status-pending"
+                                : "status-ended";
+
+
+                    const statusText =
+                        capitalize(
+                            allocation.status
+                        );
+
+
+                    const bedName =
+                        bed?.label ||
+                        bed?.bed_number ||
+                        "—";
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        student?.full_name ||
+                                        "Unknown Student"
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    student?.student_id ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    hostel?.name ||
+                                    "—"
+                                )}
+                            </td>
+
+                            <td>
+                                ${
+                                    room?.room_number
+                                        ? "Room " +
+                                          escapeHtml(
+                                              room.room_number
+                                          )
+                                        : "—"
+                                }
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        bedName
+                                    )}
+                                </strong>
+                                <br>
+                                <small>
+                                    ${escapeHtml(
+                                        getBedPosition(
+                                            bed
+                                        )
+                                    )}
+                                </small>
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    allocation.check_in_date
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    allocation.check_out_date
+                                )}
+                            </td>
+
+                            <td>
+                                <span class="status ${statusClass}">
+                                    ${escapeHtml(
+                                        statusText
+                                    )}
+                                </span>
+                            </td>
+
+                            <td>
+
+                                ${
+                                    allocation.status ===
+                                    "active" &&
+                                    currentProfile.role !==
+                                    "warden"
+                                    ? `
+                                        <button
+                                            class="action-btn end-btn"
+                                            onclick="endAllocation('${allocation.id}')"
+                                        >
+                                            End
+                                        </button>
+                                    `
+                                    : ""
+                                }
+
+                                ${
+                                    allocation.status !==
+                                    "active"
+                                    ? `
+                                        <button
+                                            class="action-btn view-btn"
+                                            onclick="viewAllocation('${allocation.id}')"
+                                        >
+                                            View
+                                        </button>
+                                    `
+                                    : ""
+                                }
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            )
+            .join("");
+
+    }
+
+
+    /* =========================================================
+       VIEW ALLOCATION
+       ========================================================= */
+
+    function viewAllocation(
+        allocationId
+    ) {
+
+        const allocation =
+            allocations.find(
+                item =>
+                    String(item.id) ===
+                    String(allocationId)
+            );
+
+
+        if (!allocation) {
+
+            return;
+
+        }
+
+
+        const student =
+            allocation.profiles;
+
+        const bed =
+            allocation.beds;
+
+        const room =
+            bed?.rooms;
+
+        const hostel =
+            room?.hostels;
+
+
+        alert(
+            "Allocation Details\n\n" +
+
+            "Student: " +
+            (student?.full_name || "—") +
+
+            "\nStudent ID: " +
+            (student?.student_id || "—") +
+
+            "\nHostel: " +
+            (hostel?.name || "—") +
+
+            "\nRoom: " +
+            (room?.room_number || "—") +
+
+            "\nBed: " +
+            (bed?.label ||
+             bed?.bed_number ||
+             "—") +
+
+            "\nStatus: " +
+            (allocation.status || "—") +
+
+            "\nCheck-in: " +
+            formatDate(
+                allocation.check_in_date
+            ) +
+
+            "\nCheck-out: " +
+            formatDate(
+                allocation.check_out_date
+            ) +
+
+            "\nNotes: " +
+            (allocation.notes || "—")
+        );
+
+    }
+
+
+    /* =========================================================
+       STATISTICS
+       ========================================================= */
+
+    function updateStatistics() {
+
+        const total =
+            allocations.length;
+
+
+        const active =
+            allocations.filter(
+                item =>
+                    item.status ===
+                    "active"
+            ).length;
+
+
+        const pending =
+            allocations.filter(
+                item =>
+                    item.status ===
+                    "pending"
+            ).length;
+
+
+        const ended =
+            allocations.filter(
+                item =>
+                    item.status ===
+                    "ended"
+            ).length;
+
+
+        document.getElementById(
+            "totalAllocations"
+        ).textContent =
+            total;
+
+
+        document.getElementById(
+            "activeAllocations"
+        ).textContent =
+            active;
+
+
+        document.getElementById(
+            "pendingAllocations"
+        ).textContent =
+            pending;
+
+
+        document.getElementById(
+            "endedAllocations"
+        ).textContent =
+            ended;
+
+    }
+
+
+    /* =========================================================
+       HOSTEL FILTER
+       ========================================================= */
+
+    function populateHostelFilter() {
+
+        const filter =
+            document.getElementById(
+                "hostelFilter"
+            );
+
+
+        filter.innerHTML =
+            `<option value="all">
+                All Hostels
+            </option>`;
+
+
+        hostels.forEach(hostel => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                hostel.id;
+
+            option.textContent =
+                hostel.name;
+
+            filter.appendChild(
+                option
+            );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       FILTER EVENTS
+       ========================================================= */
+
+    document.getElementById(
+        "searchInput"
+    ).addEventListener(
+        "input",
+        renderAllocations
+    );
+
+
+    document.getElementById(
+        "statusFilter"
+    ).addEventListener(
+        "change",
+        renderAllocations
+    );
+
+
+    document.getElementById(
+        "hostelFilter"
+    ).addEventListener(
+        "change",
+        renderAllocations
+    );
+
+
+    document.getElementById(
+        "sortFilter"
+    ).addEventListener(
+        "change",
+        renderAllocations
+    );
+
+
+    /* =========================================================
+       REFRESH
+       ========================================================= */
+
+    document.getElementById(
+        "refreshBtn"
+    ).addEventListener(
+        "click",
+        async () => {
+
+            await loadAllData();
+
+        }
+    );
+
+
+    /* =========================================================
+       RESET
+       ========================================================= */
+
+    document.getElementById(
+        "resetBtn"
+    ).addEventListener(
+        "click",
+        () => {
+
+            setTimeout(
+                () => {
+
+                    roomSelect.innerHTML =
+                        `<option value="">
+                            Select hostel first
+                        </option>`;
+
+                    roomSelect.disabled =
+                        true;
+
+                    bedSelect.innerHTML =
+                        `<option value="">
+                            Select room first
+                        </option>`;
+
+                    bedSelect.disabled =
+                        true;
+
+                    hideMessage();
+
+                    setToday();
+
+                },
+                0
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       DISABLE FORM FOR WARDEN
+       ========================================================= */
+
+    function disableAllocationForm() {
+
+        const controls =
+            allocationForm.querySelectorAll(
+                "input, select, textarea, button"
+            );
+
+
+        controls.forEach(
+            control => {
+
+                control.disabled = true;
+
+            }
+        );
+
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+
+        message.className =
+            "message success";
+
+
+        message.style.display =
+            "block";
+
+
+        message.textContent =
+            "View-only mode: Wardens can view allocation records but cannot create or end allocations.";
+
+
+        allocationForm.prepend(
+            message
+        );
+
+    }
+
+
+    /* =========================================================
+       TODAY
+       ========================================================= */
+
+    function setToday() {
+
+        const today =
+            new Date()
+                .toISOString()
+                .split("T")[0];
+
+
+        document.getElementById(
+            "allocationDate"
+        ).value =
+            today;
+
+
+        document.getElementById(
+            "checkInDate"
+        ).value =
+            today;
+
+    }
+
+
+    /* =========================================================
+       BED POSITION
+       ========================================================= */
+
+    function getBedPosition(
+        bed
+    ) {
+
+        if (!bed) {
+
+            return "Unknown";
+
+        }
+
+
+        if (
+            bed.bed_position
+        ) {
+
+            const position =
+                String(
+                    bed.bed_position
+                ).toLowerCase();
+
+
+            if (
+                position.includes(
+                    "lower"
+                ) ||
+                position.includes(
+                    "down"
+                )
+            ) {
+
+                return "Lower / Down";
+
+            }
+
+
+            if (
+                position.includes(
+                    "upper"
+                ) ||
+                position.includes(
+                    "up"
+                )
+            ) {
+
+                return "Upper / Up";
+
+            }
+
+        }
+
+
+        const value =
+            String(
+                bed.label ||
+                bed.bed_number ||
+                ""
+            ).toLowerCase();
+
+
+        if (
+            value.endsWith("-1")
+        ) {
+
+            return "Lower / Down";
+
+        }
+
+
+        if (
+            value.endsWith("-2")
+        ) {
+
+            return "Upper / Up";
+
+        }
+
+
+        return "Position not specified";
+
+    }
+
+
+    /* =========================================================
+       DATE FORMAT
+       ========================================================= */
+
+    function formatDate(
+        value
+    ) {
+
+        if (!value) {
+
+            return "—";
+
+        }
+
+
+        const date =
+            new Date(value);
+
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return value;
+
+        }
+
+
+        return date.toLocaleDateString(
+            "en-KE",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CAPITALIZE
+       ========================================================= */
+
+    function capitalize(
+        value
+    ) {
+
+        if (!value) {
+
+            return "—";
+
+        }
+
+
+        return value.charAt(0).toUpperCase() +
+            value.slice(1);
+
+    }
+
+
+    /* =========================================================
+       MESSAGE
+       ========================================================= */
+
+    function showMessage(
+        text,
+        type
+    ) {
+
+        formMessage.textContent =
+            text;
+
+        formMessage.className =
+            "message " +
+            type;
+
+        formMessage.style.display =
+            "block";
+
+    }
+
+
+    function hideMessage() {
+
+        formMessage.style.display =
+            "none";
+
+        formMessage.textContent =
+            "";
+
+    }
+
+
+    /* =========================================================
+       HTML ESCAPE
+       ========================================================= */
+
+    function escapeHtml(
+        value
+    ) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.textContent =
+            value ?? "";
+
+        return div.innerHTML;
+
+    }
+
+
+    /* =========================================================
+       LOGOUT
+       ========================================================= */
+
+    document.getElementById(
+        "logoutBtn"
+    ).addEventListener(
+        "click",
+        async () => {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+    /* =========================================================
+       MOBILE MENU
+       ========================================================= */
+
+    document.getElementById(
+        "mobileMenu"
+    ).addEventListener(
+        "click",
+        () => {
+
+            document
+                .getElementById("sidebar")
+                .classList
+                .toggle("open");
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

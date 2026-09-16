@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            background: #172033;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .brand {
+            padding: 24px 20px;
+            font-size: 23px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+        }
+
+        .brand span {
+            color: #22c55e;
+        }
+
+        .nav {
+            padding: 15px 10px;
+        }
+
+        .nav-title {
+            color: #94a3b8;
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 15px 12px 8px;
+            letter-spacing: 1px;
+        }
+
+        .nav a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: #cbd5e1;
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar h1 {
+            font-size: 22px;
+        }
+
+        .admin-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-heading {
+            margin-bottom: 25px;
+        }
+
+        .page-heading h2 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .page-heading p {
+            color: #64748b;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .stat-card .label {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* CONTROLS */
+        .controls {
+            background: white;
+            padding: 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dbe1e8;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2563eb;
+        }
+
+        /* TABLE */
+        .table-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 17px;
+        }
+
+        .student-count {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 15px 18px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f4;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        tr:hover td {
+            background: #fafcff;
+        }
+
+        .student-name {
+            font-weight: 600;
+        }
+
+        .student-id {
+            color: #2563eb;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-inactive {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .status-suspended {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .location {
+            font-weight: 600;
+        }
+
+        .room {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .not-assigned {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .loading,
+        .empty,
+        .error {
+            padding: 40px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        /* NEXA */
+        .nexa {
+            position: fixed;
+            left: 22px;
+            bottom: 22px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            box-shadow: 0 8px 25px rgba(37,99,235,.3);
+            z-index: 1100;
+        }
+
+        .nexa:hover {
+            background: #1d4ed8;
+        }
+
+        /* MOBILE */
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 25px;
+            cursor: pointer;
+            color: #172033;
+        }
+
+        .mobile-overlay {
+            display: none;
+        }
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .mobile-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,.4);
+                z-index: 900;
+            }
+
+            .mobile-overlay.show {
+                display: block;
+            }
+        }
+
+        @media (max-width: 550px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .page-heading h2 {
+                font-size: 23px;
+            }
+
+            .admin-label {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="brand">
+            Hostel<span>Pro</span>
+        </div>
+
+        <nav class="nav">
+
+            <div class="nav-title">Main</div>
+
+            <a href="admin_dashboard.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="hostels.html">
+                🏢 Hostels
+            </a>
+
+            <a href="rooms.html">
+                🚪 Rooms
+            </a>
+
+            <a href="beds.html">
+                🛏️ Beds
+            </a>
+
+            <a href="students.html" class="active">
+                🎓 Students
+            </a>
+
+            <a href="allocations.html">
+                📋 Allocations
+            </a>
+
+            <div class="nav-title">Management</div>
+
+            <a href="caretakers.html">
+                👨‍💼 Caretakers
+            </a>
+
+            <a href="wardens.html">
+                👨‍🏫 Wardens
+            </a>
+
+            <a href="maintenance.html">
+                🔧 Maintenance
+            </a>
+
+            <a href="discipline.html">
+                ⚠️ Discipline
+            </a>
+
+            <a href="security.html">
+                🛡️ Security
+            </a>
+
+            <a href="tasks.html">
+                ✅ Tasks
+            </a>
+
+            <div class="nav-title">Communication</div>
+
+            <a href="messages.html">
+                💬 Messages
+            </a>
+
+            <a href="announcements.html">
+                📢 Announcements
+            </a>
+
+            <div class="nav-title">System</div>
+
+            <a href="reports.html">
+                📊 Reports
+            </a>
+
+            <a href="settings.html">
+                ⚙️ Settings
+            </a>
+
+            <a href="nexa.html">
+                ✨ Nexa
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <div class="mobile-overlay" id="overlay"></div>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <header class="topbar">
+
+            <div style="display:flex;align-items:center;gap:15px;">
+                <button class="menu-btn" id="menuBtn">☰</button>
+                <h1>Students</h1>
+            </div>
+
+            <div class="admin-label">
+                HostelPro Management
+            </div>
+
+        </header>
+
+        <section class="content">
+
+            <div class="page-heading">
+                <h2>Students</h2>
+                <p>View registered students and their current hostel and room.</p>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats">
+
+                <div class="stat-card">
+                    <div class="label">Total Students</div>
+                    <div class="number" id="totalStudents">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="label">Active Students</div>
+                    <div class="number" id="activeStudents">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="label">Allocated Students</div>
+                    <div class="number" id="allocatedStudents">0</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="label">Not Allocated</div>
+                    <div class="number" id="notAllocatedStudents">0</div>
+                </div>
+
+            </div>
+
+            <!-- SEARCH / FILTER -->
+            <div class="controls">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by name, student ID, email or phone..."
+                >
+
+                <select id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="suspended">Suspended</option>
+                </select>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-card">
+
+                <div class="table-header">
+                    <h3>Registered Students</h3>
+                    <div class="student-count" id="studentCount">
+                        0 students
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Student ID</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Gender</th>
+                                <th>Status</th>
+                                <th>Hostel</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="studentsTable">
+
+                            <tr>
+                                <td colspan="8" class="loading">
+                                    Loading students...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- NEXA -->
+<a href="nexa.html" class="nexa" title="Nexa">
+    Nexa
+</a>
+
+<script>
+
+    /* ==============================
+       SUPABASE
+    ============================== */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const { createClient } = supabase;
+
+    const db = createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+    /* ==============================
+       VARIABLES
+    ============================== */
+
+    let students = [];
+    let allocations = [];
+
+
+    /* ==============================
+       LOAD STUDENTS
+    ============================== */
+
+    async function loadStudents() {
+
+        const table = document.getElementById("studentsTable");
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="8" class="loading">
+                    Loading students...
+                </td>
+            </tr>
+        `;
+
+        try {
+
+            /* LOAD STUDENTS */
+
+            const { data: studentData, error: studentError } =
+                await db
+                    .from("profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        email,
+                        phone,
+                        gender,
+                        student_id,
+                        status
+                    `)
+                    .eq("role", "student")
+                    .order("full_name", {
+                        ascending: true
+                    });
+
+
+            if (studentError) {
+                throw studentError;
+            }
+
+
+            students = studentData || [];
+
+
+            /* LOAD ACTIVE ALLOCATIONS */
+
+            const { data: allocationData, error: allocationError } =
+                await db
+                    .from("allocations")
+                    .select(`
+                        id,
+                        student_id,
+                        bed_id,
+                        status,
+
+                        beds:bed_id (
+                            id,
+                            bed_number,
+                            label,
+                            bed_position,
+
+                            rooms:room_id (
+                                id,
+                                room_number,
+                                hostel_id,
+
+                                hostels:hostel_id (
+                                    id,
+                                    name,
+                                    location
+                                )
+                            )
+                        )
+                    `)
+                    .eq("status", "active");
+
+
+            if (allocationError) {
+                throw allocationError;
+            }
+
+
+            allocations = allocationData || [];
+
+
+            updateStats();
+
+            renderStudents();
+
+        } catch (error) {
+
+            console.error("Error loading students:", error);
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="8" class="error">
+                        Failed to load students.
+                        <br>
+                        ${escapeHtml(error.message || "Unknown error")}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+
+    /* ==============================
+       FIND STUDENT LOCATION
+    ============================== */
+
+    function getStudentLocation(studentId) {
+
+        const allocation = allocations.find(
+            item => item.student_id === studentId
+        );
+
+        if (!allocation || !allocation.beds) {
+
+            return {
+                hostel: null,
+                room: null
+            };
+
+        }
+
+
+        const bed = allocation.beds;
+
+        const room = bed.rooms;
+
+        const hostel = room ? room.hostels : null;
+
+
+        return {
+
+            hostel: hostel ? hostel.name : null,
+
+            room: room ? room.room_number : null
+
+        };
+
+    }
+
+
+    /* ==============================
+       UPDATE STATISTICS
+    ============================== */
+
+    function updateStats() {
+
+        const total = students.length;
+
+        const active = students.filter(
+            student => student.status === "active"
+        ).length;
+
+
+        const allocated = students.filter(
+            student =>
+                allocations.some(
+                    allocation =>
+                        allocation.student_id === student.id
+                )
+        ).length;
+
+
+        const notAllocated = total - allocated;
+
+
+        document.getElementById("totalStudents").textContent = total;
+
+        document.getElementById("activeStudents").textContent = active;
+
+        document.getElementById("allocatedStudents").textContent = allocated;
+
+        document.getElementById("notAllocatedStudents").textContent = notAllocated;
+
+    }
+
+
+    /* ==============================
+       RENDER STUDENTS
+    ============================== */
+
+    function renderStudents() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .toLowerCase()
+                .trim();
+
+
+        const status =
+            document.getElementById("statusFilter").value;
+
+
+        const filtered = students.filter(student => {
+
+            const searchableText = `
+
+                ${student.full_name || ""}
+
+                ${student.student_id || ""}
+
+                ${student.email || ""}
+
+                ${student.phone || ""}
+
+            `.toLowerCase();
+
+
+            const matchesSearch =
+                !search ||
+                searchableText.includes(search);
+
+
+            const matchesStatus =
+                status === "all" ||
+                (student.status || "").toLowerCase() === status;
+
+
+            return matchesSearch && matchesStatus;
+
+        });
+
+
+        const table =
+            document.getElementById("studentsTable");
+
+
+        document.getElementById("studentCount").textContent =
+            `${filtered.length} student${filtered.length === 1 ? "" : "s"}`;
+
+
+        if (filtered.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="8" class="empty">
+                        No students found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        table.innerHTML = filtered.map(student => {
+
+            const location =
+                getStudentLocation(student.id);
+
+
+            let statusClass = "status-inactive";
+
+            if (student.status === "active") {
+                statusClass = "status-active";
+            }
+
+            if (student.status === "suspended") {
+                statusClass = "status-suspended";
+            }
+
+
+            return `
+
+                <tr>
+
+                    <td>
+
+                        <div class="student-name">
+                            ${escapeHtml(student.full_name || "Unnamed Student")}
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="student-id">
+                            ${escapeHtml(student.student_id || "Not assigned")}
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(student.email || "—")}
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(student.phone || "—")}
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(student.gender || "—")}
+                    </td>
+
+
+                    <td>
+
+                        <span class="status ${statusClass}">
+                            ${escapeHtml(
+                                student.status || "Unknown"
+                            )}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            location.hostel
+
+                            ?
+
+                            `<div class="location">
+                                ${escapeHtml(location.hostel)}
+                            </div>`
+
+                            :
+
+                            `<span class="not-assigned">
+                                Not assigned
+                            </span>`
+                        }
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            location.room
+
+                            ?
+
+                            `<div class="room">
+                                Room ${escapeHtml(String(location.room))}
+                            </div>`
+
+                            :
+
+                            `<span class="not-assigned">
+                                Not assigned
+                            </span>`
+                        }
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+    }
+
+
+    /* ==============================
+       ESCAPE HTML
+    ============================== */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* ==============================
+       SEARCH
+    ============================== */
+
+    document
+        .getElementById("searchInput")
+        .addEventListener("input", renderStudents);
+
+
+    document
+        .getElementById("statusFilter")
+        .addEventListener("change", renderStudents);
+
+
+    /* ==============================
+       MOBILE MENU
+    ============================== */
+
+    const menuBtn =
+        document.getElementById("menuBtn");
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const overlay =
+        document.getElementById("overlay");
+
+
+    menuBtn.addEventListener("click", () => {
+
+        sidebar.classList.toggle("open");
+
+        overlay.classList.toggle("show");
+
+    });
+
+
+    overlay.addEventListener("click", () => {
+
+        sidebar.classList.remove("open");
+
+        overlay.classList.remove("show");
+
+    });
+
+
+    /* ==============================
+       START
+    ============================== */
+
+    loadStudents();
+
+</script>
+
+</body>
+</html>

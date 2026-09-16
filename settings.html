@@ -1,0 +1,2707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --navy: #172033;
+            --blue: #2563eb;
+            --green: #00843d;
+            --red: #dc2626;
+            --orange: #f59e0b;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text: #172033;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: var(--navy);
+            color: white;
+            padding: 20px 14px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            margin-bottom: 15px;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-size: 20px;
+        }
+
+        .brand span {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #64748b;
+            padding: 10px 12px 7px;
+            letter-spacing: .7px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 12px;
+            margin: 3px 0;
+            border-radius: 9px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,.08);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        .logout {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding-top: 15px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .menu-btn {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .user-info small {
+            color: var(--muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .content {
+            padding: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 7px;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* SETTINGS LAYOUT */
+
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 22px;
+            align-items: start;
+        }
+
+        .settings-menu {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 95px;
+        }
+
+        .settings-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 12px;
+            text-align: left;
+            border-radius: 8px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .settings-menu button:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .settings-menu button.active {
+            background: #eff6ff;
+            color: var(--blue);
+        }
+
+        .settings-content {
+            min-width: 0;
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .card-header p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 17px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* PROFILE */
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .large-avatar {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #dbeafe;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .profile-header h3 {
+            margin-bottom: 5px;
+        }
+
+        .profile-header p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* TOGGLE */
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 17px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .setting-info p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            background: #cbd5e1;
+            border-radius: 30px;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .2s;
+        }
+
+        .switch input:checked + .slider {
+            background: var(--blue);
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* BUTTONS */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: var(--blue);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: var(--text);
+        }
+
+        .btn-danger {
+            background: var(--red);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* INFO */
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            padding: 15px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .warning-box {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 15px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .danger-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* SYSTEM INFO */
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .system-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 9px;
+        }
+
+        .system-item small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 5px;
+        }
+
+        .system-item strong {
+            font-size: 14px;
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: var(--navy);
+            color: white;
+            padding: 13px 18px;
+            border-radius: 9px;
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 3000;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.success {
+            background: var(--green);
+        }
+
+        .toast.error {
+            background: var(--red);
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .25s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .settings-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-menu {
+                position: static;
+                display: flex;
+                overflow-x: auto;
+                gap: 5px;
+            }
+
+            .settings-menu button {
+                white-space: nowrap;
+                width: auto;
+                margin: 0;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .content {
+                padding: 18px;
+            }
+
+            .form-grid,
+            .system-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .topbar {
+                padding: 0 18px;
+            }
+
+            .user-info div {
+                display: none;
+            }
+
+            .profile-header {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🏠
+        </div>
+
+        <div>
+            <h2>HostelPro</h2>
+            <span>Hostel Management System</span>
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Management
+    </div>
+
+
+    <a href="admin_dashboard.html" class="nav-link">
+        📊 <span>Dashboard</span>
+    </a>
+
+    <a href="hostels.html" class="nav-link">
+        🏢 <span>Hostels</span>
+    </a>
+
+    <a href="rooms.html" class="nav-link">
+        🚪 <span>Rooms</span>
+    </a>
+
+    <a href="beds.html" class="nav-link">
+        🛏️ <span>Beds</span>
+    </a>
+
+    <a href="students.html" class="nav-link">
+        👨‍🎓 <span>Students</span>
+    </a>
+
+    <a href="allocations.html" class="nav-link">
+        📋 <span>Allocations</span>
+    </a>
+
+    <a href="maintenance.html" class="nav-link">
+        🔧 <span>Maintenance</span>
+    </a>
+
+    <a href="discipline.html" class="nav-link">
+        ⚖️ <span>Discipline</span>
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ <span>Security</span>
+    </a>
+
+    <a href="messages.html" class="nav-link">
+        💬 <span>Messages</span>
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 <span>Announcements</span>
+    </a>
+
+
+    <div class="nav-title">
+        Analysis
+    </div>
+
+
+    <a href="reports.html" class="nav-link">
+        📈 <span>Reports & Analysis</span>
+    </a>
+
+    <a href="nexa.html" class="nav-link">
+        🤖 <span>Nexa</span>
+    </a>
+
+
+    <div class="nav-title">
+        System
+    </div>
+
+
+    <a href="settings.html" class="nav-link active">
+        ⚙️ <span>Settings</span>
+    </a>
+
+
+    <div class="logout">
+
+        <a href="#" class="nav-link" id="logoutBtn">
+            🚪 <span>Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+    <header class="topbar">
+
+        <button class="menu-btn" id="menuBtn">
+            ☰
+        </button>
+
+        <strong>
+            System Settings
+        </strong>
+
+
+        <div class="user-info">
+
+            <div class="avatar" id="userAvatar">
+                U
+            </div>
+
+            <div>
+
+                <strong id="userName">
+                    Loading...
+                </strong>
+
+                <small id="userRole">
+                    Loading...
+                </small>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="content">
+
+        <div class="page-header">
+
+            <h1>⚙️ Settings</h1>
+
+            <p>
+                Manage your HostelPro account and system preferences.
+            </p>
+
+        </div>
+
+
+        <div class="settings-layout">
+
+
+            <!-- SETTINGS MENU -->
+
+            <div class="settings-menu">
+
+                <button
+                    class="setting-tab active"
+                    data-section="profile"
+                >
+                    👤 Profile
+                </button>
+
+                <button
+                    class="setting-tab"
+                    data-section="hostel"
+                >
+                    🏠 Hostel
+                </button>
+
+                <button
+                    class="setting-tab"
+                    data-section="notifications"
+                >
+                    🔔 Notifications
+                </button>
+
+                <button
+                    class="setting-tab"
+                    data-section="security"
+                >
+                    🔐 Security
+                </button>
+
+                <button
+                    class="setting-tab"
+                    data-section="nexa"
+                >
+                    🤖 Nexa
+                </button>
+
+                <button
+                    class="setting-tab"
+                    data-section="system"
+                >
+                    🖥️ System
+                </button>
+
+            </div>
+
+
+            <!-- SETTINGS CONTENT -->
+
+            <div class="settings-content">
+
+
+                <!-- PROFILE -->
+
+                <div
+                    class="settings-section active"
+                    id="profile"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>👤 Profile Settings</h2>
+
+                            <p>
+                                Manage your administrator profile information.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="profile-header">
+
+                                <div
+                                    class="large-avatar"
+                                    id="largeAvatar"
+                                >
+                                    U
+                                </div>
+
+                                <div>
+
+                                    <h3 id="profileDisplayName">
+                                        Loading...
+                                    </h3>
+
+                                    <p id="profileDisplayEmail">
+                                        Loading...
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <form id="profileForm">
+
+                                <div class="form-grid">
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Full Name
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="fullName"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Email
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            disabled
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Phone
+                                        </label>
+
+                                        <input
+                                            type="tel"
+                                            id="phone"
+                                            placeholder="e.g. 07XXXXXXXX"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Role
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="role"
+                                            disabled
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="actions">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        💾 Save Profile
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HOSTEL -->
+
+                <div
+                    class="settings-section"
+                    id="hostel"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>🏠 Hostel Settings</h2>
+
+                            <p>
+                                Configure the main information used by HostelPro.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="info-box">
+
+                                These settings describe the hostel system.
+                                Detailed hostel, room and bed management is
+                                handled from the respective management pages.
+
+                            </div>
+
+
+                            <form id="hostelForm">
+
+                                <div class="form-grid">
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            System Name
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="systemName"
+                                            value="HostelPro"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Organization / Institution
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="institutionName"
+                                            placeholder="Enter institution name"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Main Location
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="mainLocation"
+                                            placeholder="Enter hostel location"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Default Currency
+                                        </label>
+
+                                        <select id="currency">
+
+                                            <option value="KES">
+                                                KES - Kenyan Shilling
+                                            </option>
+
+                                            <option value="USD">
+                                                USD - US Dollar
+                                            </option>
+
+                                            <option value="EUR">
+                                                EUR - Euro
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Academic / Operating Year
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="operatingYear"
+                                            value="2026"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group">
+
+                                        <label>
+                                            Timezone
+                                        </label>
+
+                                        <select id="timezone">
+
+                                            <option value="Africa/Nairobi">
+                                                Africa/Nairobi
+                                            </option>
+
+                                            <option value="UTC">
+                                                UTC
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="actions">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        💾 Save Hostel Settings
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTIFICATIONS -->
+
+                <div
+                    class="settings-section"
+                    id="notifications"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>🔔 Notification Settings</h2>
+
+                            <p>
+                                Choose which system notifications you want to receive.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Maintenance Alerts
+                                    </strong>
+
+                                    <p>
+                                        Notify administrators when maintenance
+                                        requests are submitted or updated.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="maintenanceNotifications"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Security Alerts
+                                    </strong>
+
+                                    <p>
+                                        Receive alerts for high-priority
+                                        security incidents.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="securityNotifications"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        New Student Alerts
+                                    </strong>
+
+                                    <p>
+                                        Notify administrators when a new
+                                        student account is created.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="studentNotifications"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Allocation Alerts
+                                    </strong>
+
+                                    <p>
+                                        Notify staff when a student is
+                                        allocated or removed from a bed.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="allocationNotifications"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Announcement Notifications
+                                    </strong>
+
+                                    <p>
+                                        Receive notifications when important
+                                        announcements are published.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="announcementNotifications"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn btn-primary"
+                                    id="saveNotifications"
+                                >
+                                    💾 Save Notifications
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SECURITY -->
+
+                <div
+                    class="settings-section"
+                    id="security"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>🔐 Security Settings</h2>
+
+                            <p>
+                                Manage your account security preferences.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="info-box">
+
+                                HostelPro authentication is handled through
+                                Supabase Auth. Your password should never be
+                                stored directly in this website's database.
+
+                            </div>
+
+
+                            <form id="passwordForm">
+
+                                <div class="form-grid">
+
+                                    <div class="form-group full">
+
+                                        <label>
+                                            New Password
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            id="newPassword"
+                                            minlength="8"
+                                            placeholder="At least 8 characters"
+                                        >
+
+                                    </div>
+
+
+                                    <div class="form-group full">
+
+                                        <label>
+                                            Confirm New Password
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            id="confirmPassword"
+                                            minlength="8"
+                                            placeholder="Repeat new password"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="actions">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
+                                        🔑 Change Password
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+
+                            <hr
+                                style="
+                                    border:0;
+                                    border-top:1px solid var(--border);
+                                    margin:25px 0;
+                                "
+                            >
+
+
+                            <div class="danger-box">
+
+                                <strong>
+                                    ⚠️ Account Security
+                                </strong>
+
+                                <p style="margin-top:7px;">
+                                    Never share your HostelPro password,
+                                    Supabase keys or administrator credentials
+                                    with other users.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NEXA -->
+
+                <div
+                    class="settings-section"
+                    id="nexa"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>🤖 Nexa Settings</h2>
+
+                            <p>
+                                Configure how Nexa is presented and used within HostelPro.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="info-box">
+
+                                Nexa can assist authorized users with hostel
+                                information, reports, maintenance, allocations,
+                                security information and other supported
+                                HostelPro operations.
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Enable Nexa
+                                    </strong>
+
+                                    <p>
+                                        Show Nexa throughout the HostelPro system.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="nexaEnabled"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Reports Access
+                                    </strong>
+
+                                    <p>
+                                        Allow authorized administrators to ask
+                                        Nexa about Reports & Analysis.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="nexaReports"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="setting-row">
+
+                                <div class="setting-info">
+
+                                    <strong>
+                                        Security Information
+                                    </strong>
+
+                                    <p>
+                                        Allow authorized staff to use Nexa
+                                        for security-related information.
+                                    </p>
+
+                                </div>
+
+
+                                <label class="switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="nexaSecurity"
+                                        checked
+                                    >
+
+                                    <span class="slider"></span>
+
+                                </label>
+
+                            </div>
+
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn btn-primary"
+                                    id="saveNexa"
+                                >
+                                    💾 Save Nexa Settings
+                                </button>
+
+                                <a
+                                    href="nexa.html"
+                                    class="btn btn-secondary"
+                                    style="text-decoration:none;"
+                                >
+                                    🤖 Open Nexa
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SYSTEM -->
+
+                <div
+                    class="settings-section"
+                    id="system"
+                >
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>🖥️ System Information</h2>
+
+                            <p>
+                                Information about your HostelPro installation.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <div class="system-grid">
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Application
+                                    </small>
+
+                                    <strong>
+                                        HostelPro
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Version
+                                    </small>
+
+                                    <strong>
+                                        1.0.0
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Backend
+                                    </small>
+
+                                    <strong>
+                                        Supabase
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Authentication
+                                    </small>
+
+                                    <strong>
+                                        Supabase Auth
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Assistant
+                                    </small>
+
+                                    <strong>
+                                        Nexa
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="system-item">
+
+                                    <small>
+                                        Current Role
+                                    </small>
+
+                                    <strong id="systemRole">
+                                        Loading...
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <h2>⚠️ System Actions</h2>
+
+                            <p>
+                                Actions that affect your current session.
+                            </p>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+                            <button
+                                class="btn btn-danger"
+                                id="systemLogout"
+                            >
+                                🚪 Sign Out
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- TOAST -->
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+    /* =====================================================
+       SUPABASE CONFIGURATION
+       ===================================================== */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =====================================================
+       GLOBAL VARIABLES
+       ===================================================== */
+
+    let currentUser = null;
+
+    let currentProfile = null;
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        async () => {
+
+            await checkAuthentication();
+
+            setupTabs();
+
+            loadSavedPreferences();
+
+        }
+    );
+
+
+    /* =====================================================
+       AUTHENTICATION
+       ===================================================== */
+
+    async function checkAuthentication() {
+
+        try {
+
+            const {
+                data: {
+                    user
+                },
+                error
+            } =
+                await supabaseClient.auth.getUser();
+
+
+            if (error || !user) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            currentUser = user;
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        email,
+                        phone,
+                        role,
+                        status
+                    `)
+                    .eq("id", user.id)
+                    .single();
+
+
+            if (profileError || !profile) {
+
+                showToast(
+                    "Could not load your profile.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            currentProfile = profile;
+
+
+            /*
+             * Settings is currently an ADMIN page.
+             */
+
+            if (profile.role !== "admin") {
+
+                showToast(
+                    "Only administrators can access Settings.",
+                    "error"
+                );
+
+
+                setTimeout(() => {
+
+                    if (profile.role === "caretaker") {
+
+                        window.location.href =
+                            "caretaker_dashboard.html";
+
+                    } else if (
+                        profile.role === "warden"
+                    ) {
+
+                        window.location.href =
+                            "warden.html";
+
+                    } else if (
+                        profile.role === "student"
+                    ) {
+
+                        window.location.href =
+                            "student_dashboard.html";
+
+                    } else {
+
+                        window.location.href =
+                            "login.html";
+
+                    }
+
+                }, 1200);
+
+                return;
+
+            }
+
+
+            if (
+                profile.status &&
+                profile.status.toLowerCase()
+                === "inactive"
+            ) {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            displayProfile(profile);
+
+        } catch (error) {
+
+            console.error(error);
+
+            window.location.href =
+                "login.html";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DISPLAY PROFILE
+       ===================================================== */
+
+    function displayProfile(profile) {
+
+        const name =
+            profile.full_name ||
+            "Administrator";
+
+
+        document.getElementById(
+            "userName"
+        ).textContent = name;
+
+
+        document.getElementById(
+            "userRole"
+        ).textContent =
+            formatRole(profile.role);
+
+
+        const initials =
+            getInitials(name);
+
+
+        document.getElementById(
+            "userAvatar"
+        ).textContent =
+            initials;
+
+
+        document.getElementById(
+            "largeAvatar"
+        ).textContent =
+            initials;
+
+
+        document.getElementById(
+            "profileDisplayName"
+        ).textContent =
+            name;
+
+
+        document.getElementById(
+            "profileDisplayEmail"
+        ).textContent =
+            profile.email || currentUser.email || "";
+
+
+        document.getElementById(
+            "fullName"
+        ).value =
+            name;
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            profile.email ||
+            currentUser.email ||
+            "";
+
+
+        document.getElementById(
+            "phone"
+        ).value =
+            profile.phone || "";
+
+
+        document.getElementById(
+            "role"
+        ).value =
+            formatRole(profile.role);
+
+
+        document.getElementById(
+            "systemRole"
+        ).textContent =
+            formatRole(profile.role);
+
+    }
+
+
+    /* =====================================================
+       TABS
+       ===================================================== */
+
+    function setupTabs() {
+
+        const tabs =
+            document.querySelectorAll(
+                ".setting-tab"
+            );
+
+
+        const sections =
+            document.querySelectorAll(
+                ".settings-section"
+            );
+
+
+        tabs.forEach(tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    const sectionId =
+                        tab.dataset.section;
+
+
+                    tabs.forEach(item =>
+                        item.classList.remove(
+                            "active"
+                        )
+                    );
+
+
+                    sections.forEach(section =>
+                        section.classList.remove(
+                            "active"
+                        )
+                    );
+
+
+                    tab.classList.add(
+                        "active"
+                    );
+
+
+                    document
+                        .getElementById(
+                            sectionId
+                        )
+                        .classList.add(
+                            "active"
+                        );
+
+                }
+            );
+
+        });
+
+    }
+
+
+    /* =====================================================
+       PROFILE UPDATE
+       ===================================================== */
+
+    document
+        .getElementById("profileForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                if (!currentUser) {
+
+                    return;
+
+                }
+
+
+                const fullName =
+                    document
+                        .getElementById(
+                            "fullName"
+                        )
+                        .value
+                        .trim();
+
+
+                const phone =
+                    document
+                        .getElementById(
+                            "phone"
+                        )
+                        .value
+                        .trim();
+
+
+                if (!fullName) {
+
+                    showToast(
+                        "Full name is required.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .update({
+                            full_name:
+                                fullName,
+                            phone:
+                                phone || null
+                        })
+                        .eq(
+                            "id",
+                            currentUser.id
+                        );
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    showToast(
+                        "Could not update profile: " +
+                        error.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                currentProfile.full_name =
+                    fullName;
+
+                currentProfile.phone =
+                    phone;
+
+
+                displayProfile(
+                    currentProfile
+                );
+
+
+                showToast(
+                    "Profile updated successfully.",
+                    "success"
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       HOSTEL SETTINGS
+       ===================================================== */
+
+    document
+        .getElementById("hostelForm")
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const settings = {
+
+                    systemName:
+                        document
+                            .getElementById(
+                                "systemName"
+                            )
+                            .value,
+
+                    institutionName:
+                        document
+                            .getElementById(
+                                "institutionName"
+                            )
+                            .value,
+
+                    mainLocation:
+                        document
+                            .getElementById(
+                                "mainLocation"
+                            )
+                            .value,
+
+                    currency:
+                        document
+                            .getElementById(
+                                "currency"
+                            )
+                            .value,
+
+                    operatingYear:
+                        document
+                            .getElementById(
+                                "operatingYear"
+                            )
+                            .value,
+
+                    timezone:
+                        document
+                            .getElementById(
+                                "timezone"
+                            )
+                            .value
+
+                };
+
+
+                localStorage.setItem(
+                    "hostelpro_hostel_settings",
+                    JSON.stringify(settings)
+                );
+
+
+                showToast(
+                    "Hostel settings saved.",
+                    "success"
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       PASSWORD UPDATE
+       ===================================================== */
+
+    document
+        .getElementById("passwordForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const password =
+                    document
+                        .getElementById(
+                            "newPassword"
+                        )
+                        .value;
+
+
+                const confirmation =
+                    document
+                        .getElementById(
+                            "confirmPassword"
+                        )
+                        .value;
+
+
+                if (password.length < 8) {
+
+                    showToast(
+                        "Password must be at least 8 characters.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (password !== confirmation) {
+
+                    showToast(
+                        "Passwords do not match.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient.auth
+                        .updateUser({
+                            password: password
+                        });
+
+
+                if (error) {
+
+                    console.error(error);
+
+                    showToast(
+                        "Could not change password: " +
+                        error.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                document
+                    .getElementById(
+                        "passwordForm"
+                    )
+                    .reset();
+
+
+                showToast(
+                    "Password changed successfully.",
+                    "success"
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       NOTIFICATION SETTINGS
+       ===================================================== */
+
+    document
+        .getElementById("saveNotifications")
+        .addEventListener(
+            "click",
+            function() {
+
+                const settings = {
+
+                    maintenance:
+                        document.getElementById(
+                            "maintenanceNotifications"
+                        ).checked,
+
+                    security:
+                        document.getElementById(
+                            "securityNotifications"
+                        ).checked,
+
+                    students:
+                        document.getElementById(
+                            "studentNotifications"
+                        ).checked,
+
+                    allocations:
+                        document.getElementById(
+                            "allocationNotifications"
+                        ).checked,
+
+                    announcements:
+                        document.getElementById(
+                            "announcementNotifications"
+                        ).checked
+
+                };
+
+
+                localStorage.setItem(
+                    "hostelpro_notifications",
+                    JSON.stringify(settings)
+                );
+
+
+                showToast(
+                    "Notification settings saved.",
+                    "success"
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       NEXA SETTINGS
+       ===================================================== */
+
+    document
+        .getElementById("saveNexa")
+        .addEventListener(
+            "click",
+            function() {
+
+                const settings = {
+
+                    enabled:
+                        document.getElementById(
+                            "nexaEnabled"
+                        ).checked,
+
+                    reports:
+                        document.getElementById(
+                            "nexaReports"
+                        ).checked,
+
+                    security:
+                        document.getElementById(
+                            "nexaSecurity"
+                        ).checked
+
+                };
+
+
+                localStorage.setItem(
+                    "hostelpro_nexa",
+                    JSON.stringify(settings)
+                );
+
+
+                showToast(
+                    "Nexa settings saved.",
+                    "success"
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       LOAD SAVED PREFERENCES
+       ===================================================== */
+
+    function loadSavedPreferences() {
+
+        const hostelSettings =
+            JSON.parse(
+                localStorage.getItem(
+                    "hostelpro_hostel_settings"
+                ) || "null"
+            );
+
+
+        if (hostelSettings) {
+
+            document.getElementById(
+                "systemName"
+            ).value =
+                hostelSettings.systemName ||
+                "HostelPro";
+
+
+            document.getElementById(
+                "institutionName"
+            ).value =
+                hostelSettings.institutionName ||
+                "";
+
+
+            document.getElementById(
+                "mainLocation"
+            ).value =
+                hostelSettings.mainLocation ||
+                "";
+
+
+            document.getElementById(
+                "currency"
+            ).value =
+                hostelSettings.currency ||
+                "KES";
+
+
+            document.getElementById(
+                "operatingYear"
+            ).value =
+                hostelSettings.operatingYear ||
+                "2026";
+
+
+            document.getElementById(
+                "timezone"
+            ).value =
+                hostelSettings.timezone ||
+                "Africa/Nairobi";
+
+        }
+
+
+        const notifications =
+            JSON.parse(
+                localStorage.getItem(
+                    "hostelpro_notifications"
+                ) || "null"
+            );
+
+
+        if (notifications) {
+
+            document.getElementById(
+                "maintenanceNotifications"
+            ).checked =
+                notifications.maintenance ?? true;
+
+
+            document.getElementById(
+                "securityNotifications"
+            ).checked =
+                notifications.security ?? true;
+
+
+            document.getElementById(
+                "studentNotifications"
+            ).checked =
+                notifications.students ?? true;
+
+
+            document.getElementById(
+                "allocationNotifications"
+            ).checked =
+                notifications.allocations ?? true;
+
+
+            document.getElementById(
+                "announcementNotifications"
+            ).checked =
+                notifications.announcements ?? true;
+
+        }
+
+
+        const nexaSettings =
+            JSON.parse(
+                localStorage.getItem(
+                    "hostelpro_nexa"
+                ) || "null"
+            );
+
+
+        if (nexaSettings) {
+
+            document.getElementById(
+                "nexaEnabled"
+            ).checked =
+                nexaSettings.enabled ?? true;
+
+
+            document.getElementById(
+                "nexaReports"
+            ).checked =
+                nexaSettings.reports ?? true;
+
+
+            document.getElementById(
+                "nexaSecurity"
+            ).checked =
+                nexaSettings.security ?? true;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    async function logout() {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+
+                logout();
+
+            }
+        );
+
+
+    document
+        .getElementById("systemLogout")
+        .addEventListener(
+            "click",
+            logout
+        );
+
+
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
+
+    document
+        .getElementById("menuBtn")
+        .addEventListener(
+            "click",
+            function() {
+
+                document
+                    .getElementById("sidebar")
+                    .classList.toggle("open");
+
+            }
+        );
+
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function formatRole(role) {
+
+        if (!role) {
+            return "User";
+        }
+
+        return role
+            .charAt(0)
+            .toUpperCase() +
+            role.slice(1);
+
+    }
+
+
+    function getInitials(name) {
+
+        if (!name) {
+            return "U";
+        }
+
+        return name
+            .split(" ")
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(
+                word =>
+                    word
+                        .charAt(0)
+                        .toUpperCase()
+            )
+            .join("");
+
+    }
+
+
+    function showToast(
+        message,
+        type = ""
+    ) {
+
+        const toast =
+            document.getElementById(
+                "toast"
+            );
+
+
+        toast.textContent =
+            message;
+
+
+        toast.className =
+            "toast show " + type;
+
+
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            4000
+        );
+
+    }
+
+</script>
+
+</body>
+</html>

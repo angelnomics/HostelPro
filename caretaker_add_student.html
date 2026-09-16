@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 25px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: #2563eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo h2 {
+            font-size: 19px;
+        }
+
+        .logo span {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .nav-title {
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 12px;
+            margin-top: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin: 4px 0;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,.08);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .topbar p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .staff-info {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+            font-size: 14px;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            max-width: 850px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0,0,0,.06);
+        }
+
+        .card-header {
+            margin-bottom: 25px;
+        }
+
+        .card-header h2 {
+            font-size: 21px;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dbe2ea;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+            transition: .2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+
+        .hint {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* ================= NOTICE ================= */
+
+        .notice {
+            grid-column: 1 / -1;
+            padding: 14px;
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            border-radius: 8px;
+            color: #334155;
+            font-size: 13px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 13px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            display: none;
+            padding: 14px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        /* ================= MOBILE ================= */
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            background: #172033;
+            color: white;
+            border-radius: 8px;
+            border: none;
+            z-index: 1100;
+            font-size: 20px;
+        }
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 80px 20px 30px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .notice {
+                grid-column: auto;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- MOBILE MENU -->
+<button class="mobile-menu" id="mobileMenu">☰</button>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            🏠
+        </div>
+
+        <div>
+            <h2>HostelPro</h2>
+            <span>Management System</span>
+        </div>
+
+    </div>
+
+
+    <div class="nav-title">
+        Main
+    </div>
+
+
+    <a href="caretaker_dashboard.html" class="nav-link">
+        📊 Dashboard
+    </a>
+
+    <a href="hostels.html" class="nav-link">
+        🏢 Hostels
+    </a>
+
+    <a href="rooms.html" class="nav-link">
+        🚪 Rooms
+    </a>
+
+    <a href="beds.html" class="nav-link">
+        🛏️ Beds
+    </a>
+
+
+    <div class="nav-title">
+        Students
+    </div>
+
+
+    <a href="students.html" class="nav-link">
+        👨‍🎓 Students
+    </a>
+
+    <a href="caretaker_add_student.html" class="nav-link active">
+        ➕ Add Student
+    </a>
+
+
+    <div class="nav-title">
+        Management
+    </div>
+
+
+    <a href="maintenance.html" class="nav-link">
+        🔧 Maintenance
+    </a>
+
+    <a href="discipline.html" class="nav-link">
+        ⚠️ Discipline
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ Security
+    </a>
+
+    <a href="tasks.html" class="nav-link">
+        ✅ Tasks
+    </a>
+
+    <a href="messages.html" class="nav-link">
+        💬 Messages
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 Announcements
+    </a>
+
+    <a href="reports.html" class="nav-link">
+        📈 Reports
+    </a>
+
+
+    <div class="nav-title">
+        Assistant
+    </div>
+
+
+    <a href="nexa.html" class="nav-link">
+        ✨ Nexa
+    </a>
+
+
+    <div class="nav-title">
+        Account
+    </div>
+
+
+    <a href="#" class="nav-link" id="logoutBtn">
+        🚪 Logout
+    </a>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div>
+            <h1>Add Student</h1>
+
+            <p>
+                Register a new student into the hostel management system.
+            </p>
+        </div>
+
+
+        <div class="staff-info">
+            👤 <span id="staffName">Checking account...</span>
+        </div>
+
+    </div>
+
+
+    <div id="message" class="message"></div>
+
+
+    <!-- ================= FORM ================= -->
+
+    <section class="card">
+
+        <div class="card-header">
+
+            <h2>Student Information</h2>
+
+            <p>
+                Enter the student's details below. The student ID will
+                be generated automatically by HostelPro.
+            </p>
+
+        </div>
+
+
+        <form id="studentForm">
+
+            <div class="form-grid">
+
+
+                <!-- FULL NAME -->
+
+                <div class="form-group">
+
+                    <label for="fullName">
+                        Full Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter student's full name"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address *
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="student@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="07XXXXXXXX"
+                    >
+
+                </div>
+
+
+                <!-- GENDER -->
+
+                <div class="form-group">
+
+                    <label for="gender">
+                        Gender *
+                    </label>
+
+                    <select id="gender" required>
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="male">
+                            Male
+                        </option>
+
+                        <option value="female">
+                            Female
+                        </option>
+
+                        <option value="other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DOB -->
+
+                <div class="form-group">
+
+                    <label for="dateOfBirth">
+                        Date of Birth
+                    </label>
+
+                    <input
+                        type="date"
+                        id="dateOfBirth"
+                    >
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="status">
+                        Account Status
+                    </label>
+
+                    <select id="status">
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group full">
+
+                    <label for="password">
+                        Temporary Password *
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Create temporary password"
+                        minlength="6"
+                        required
+                    >
+
+                    <span class="hint">
+                        Minimum 6 characters.
+                    </span>
+
+                </div>
+
+
+                <!-- NOTICE -->
+
+                <div class="notice">
+
+                    🔐 <strong>Account security:</strong>
+
+                    The new account will automatically receive the
+                    <strong>student</strong> role.
+
+                    Students cannot create other student accounts,
+                    and wardens cannot create student accounts.
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="actions">
+
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    id="saveBtn"
+                >
+                    ➕ Add Student
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn-secondary"
+                    id="cancelBtn"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script>
+
+    /* =========================================================
+       SUPABASE CONFIGURATION
+       ========================================================= */
+
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+
+    const { createClient } = supabase;
+
+
+    const supabaseClient = createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+    /* =========================================================
+       ELEMENTS
+       ========================================================= */
+
+    const form =
+        document.getElementById("studentForm");
+
+    const message =
+        document.getElementById("message");
+
+    const saveBtn =
+        document.getElementById("saveBtn");
+
+    const staffName =
+        document.getElementById("staffName");
+
+    const sidebar =
+        document.getElementById("sidebar");
+
+    const mobileMenu =
+        document.getElementById("mobileMenu");
+
+
+    /* =========================================================
+       SHOW MESSAGE
+       ========================================================= */
+
+    function showMessage(text, type) {
+
+        message.textContent = text;
+
+        message.className =
+            "message " + type;
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+
+    /* =========================================================
+       CHECK CARETAKER ACCESS
+       ========================================================= */
+
+    async function checkCaretakerAccess() {
+
+        try {
+
+            const {
+                data: { user },
+                error: authError
+            } = await supabaseClient.auth.getUser();
+
+
+            /* NO LOGIN */
+
+            if (authError || !user) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
+
+
+            /* GET PROFILE */
+
+            const {
+                data: profile,
+                error: profileError
+            } = await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    full_name,
+                    email,
+                    role,
+                    status
+                `)
+                .eq("id", user.id)
+                .single();
+
+
+            if (profileError || !profile) {
+
+                alert(
+                    "Your profile could not be found."
+                );
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
+
+
+            /* ONLY CARETAKER */
+
+            if (profile.role !== "caretaker") {
+
+                alert(
+                    "Access denied. Only caretakers can add students from this page."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
+
+
+            /* CHECK ACCOUNT STATUS */
+
+            if (
+                profile.status &&
+                profile.status !== "active"
+            ) {
+
+                alert(
+                    "Your account is inactive."
+                );
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
+
+
+            /* SHOW STAFF NAME */
+
+            staffName.textContent =
+                profile.full_name ||
+                profile.email;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unable to verify your account."
+            );
+
+            window.location.href =
+                "login.html";
+        }
+
+    }
+
+
+    /* =========================================================
+       ADD STUDENT
+       ========================================================= */
+
+    form.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const fullName =
+                document.getElementById(
+                    "fullName"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "phone"
+                ).value.trim();
+
+
+            const gender =
+                document.getElementById(
+                    "gender"
+                ).value;
+
+
+            const dateOfBirth =
+                document.getElementById(
+                    "dateOfBirth"
+                ).value || null;
+
+
+            const status =
+                document.getElementById(
+                    "status"
+                ).value;
+
+
+            const password =
+                document.getElementById(
+                    "password"
+                ).value;
+
+
+            /* VALIDATION */
+
+            if (
+                !fullName ||
+                !email ||
+                !gender ||
+                !password
+            ) {
+
+                showMessage(
+                    "Please complete all required fields.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (password.length < 6) {
+
+                showMessage(
+                    "Password must contain at least 6 characters.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            saveBtn.disabled = true;
+
+            saveBtn.textContent =
+                "Creating Student...";
+
+
+            try {
+
+                /*
+                 * SECURITY NOTE:
+                 *
+                 * We deliberately do NOT use:
+                 *
+                 * supabase.auth.signUp()
+                 *
+                 * here.
+                 *
+                 * A caretaker should create another user's
+                 * account without replacing the caretaker's
+                 * current login session.
+                 *
+                 * The correct solution is a secure Supabase
+                 * Edge Function using the server-side
+                 * Supabase Admin API.
+                 */
+
+
+                showMessage(
+                    "The caretaker student form is ready. The secure student-account backend still needs to be connected.",
+                    "error"
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    error.message ||
+                    "An unexpected error occurred.",
+                    "error"
+                );
+
+            } finally {
+
+                saveBtn.disabled = false;
+
+                saveBtn.textContent =
+                    "➕ Add Student";
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       CANCEL
+       ========================================================= */
+
+    document.getElementById(
+        "cancelBtn"
+    ).addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "students.html";
+
+        }
+    );
+
+
+    /* =========================================================
+       LOGOUT
+       ========================================================= */
+
+    document.getElementById(
+        "logoutBtn"
+    ).addEventListener(
+        "click",
+        async function(event) {
+
+            event.preventDefault();
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+
+    /* =========================================================
+       MOBILE MENU
+       ========================================================= */
+
+    mobileMenu.addEventListener(
+        "click",
+        function() {
+
+            sidebar.classList.toggle(
+                "open"
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       START PAGE
+       ========================================================= */
+
+    checkCaretakerAccess();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Messages | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 20px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            padding: 10px;
+            margin-bottom: 25px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .menu-title {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin: 20px 10px 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 11px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 20px;
+            background: #dc2626;
+            color: white;
+        }
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+        }
+
+        .page-title h1 {
+            font-size: 22px;
+        }
+
+        .page-title p {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .profile-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .profile-info span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome {
+            background: linear-gradient(135deg, #172033, #2563eb);
+            color: white;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #dbeafe;
+            font-size: 14px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.03);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            font-size: 17px;
+        }
+
+        .count {
+            background: #2563eb;
+            color: white;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 7px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .message-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: 17px 20px;
+            border-bottom: 1px solid #eef2f7;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .message-item:hover {
+            background: #f8fafc;
+        }
+
+        .message-item.unread {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+        }
+
+        .message-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .message-preview {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .message-date {
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .message-view {
+            min-height: 600px;
+        }
+
+        .message-content {
+            padding: 25px;
+        }
+
+        .message-subject {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .message-meta {
+            color: #64748b;
+            font-size: 12px;
+            margin-bottom: 25px;
+        }
+
+        .message-body {
+            line-height: 1.8;
+            color: #334155;
+            white-space: pre-wrap;
+        }
+
+        .back-button {
+            border: none;
+            background: #eff6ff;
+            color: #2563eb;
+            padding: 8px 12px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .nexa {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 5px 20px rgba(37,99,235,.3);
+            font-size: 22px;
+        }
+
+        .menu-btn {
+            display: none;
+            border: none;
+            background: #172033;
+            color: white;
+            padding: 9px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .message-list {
+                max-height: 400px;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+            .back-button {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Hostel<span>Pro</span>
+    </div>
+
+    <div class="menu-title">Main</div>
+
+    <a href="admin_dashboard.html" class="nav-link">
+        🏠 Dashboard
+    </a>
+
+    <a href="hostels.html" class="nav-link">
+        🏢 Hostels
+    </a>
+
+    <a href="rooms.html" class="nav-link">
+        🚪 Rooms
+    </a>
+
+    <a href="beds.html" class="nav-link">
+        🛏️ Beds
+    </a>
+
+    <div class="menu-title">People</div>
+
+    <a href="students.html" class="nav-link">
+        🎓 Students
+    </a>
+
+    <a href="caretakers.html" class="nav-link">
+        👤 Caretakers
+    </a>
+
+    <a href="wardens.html" class="nav-link">
+        👨‍💼 Wardens
+    </a>
+
+    <div class="menu-title">Management</div>
+
+    <a href="allocations.html" class="nav-link">
+        📋 Allocations
+    </a>
+
+    <a href="maintenance.html" class="nav-link">
+        🔧 Maintenance
+    </a>
+
+    <a href="discipline.html" class="nav-link">
+        ⚠️ Discipline
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ Security
+    </a>
+
+    <a href="tasks.html" class="nav-link">
+        ✅ Tasks
+    </a>
+
+    <div class="menu-title">Communication</div>
+
+    <a href="messages.html" class="nav-link active">
+        💬 Messages
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 Announcements
+    </a>
+
+    <div class="menu-title">System</div>
+
+    <a href="reports.html" class="nav-link">
+        📊 Reports
+    </a>
+
+    <a href="settings.html" class="nav-link">
+        ⚙️ Settings
+    </a>
+
+    <a href="nexa.html" class="nav-link">
+        🤖 Nexa
+    </a>
+
+    <a href="#" class="nav-link logout" id="logoutBtn">
+        🚪 Logout
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+    <header class="topbar">
+
+        <div style="display:flex;align-items:center;gap:12px;">
+
+            <button class="menu-btn" id="menuBtn">
+                ☰
+            </button>
+
+            <div class="page-title">
+                <h1>Messages</h1>
+                <p>Communication with hostel users</p>
+            </div>
+
+        </div>
+
+        <div class="profile">
+
+            <div class="avatar" id="userAvatar">
+                A
+            </div>
+
+            <div class="profile-info">
+                <strong id="userName">Loading...</strong>
+                <span id="userRole">Loading...</span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="content">
+
+        <div class="welcome">
+
+            <h2>
+                Messages 💬
+            </h2>
+
+            <p>
+                View and manage your HostelPro messages.
+            </p>
+
+        </div>
+
+
+        <div class="layout">
+
+            <!-- MESSAGE LIST -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>Inbox</h3>
+
+                    <div class="count" id="unreadCount">
+                        0
+                    </div>
+
+                </div>
+
+                <div class="message-list" id="messageList">
+
+                    <div class="loading">
+                        Loading messages...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE VIEW -->
+
+            <div class="card message-view">
+
+                <div class="card-header">
+
+                    <button class="back-button" id="backButton">
+                        ← Back
+                    </button>
+
+                    <h3 id="viewTitle">
+                        Select a message
+                    </h3>
+
+                </div>
+
+                <div class="message-content" id="messageContent">
+
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            💬
+                        </div>
+
+                        <p>
+                            Select a message to read it.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<a href="nexa.html" class="nexa" title="Open Nexa">
+    🤖
+</a>
+
+
+<script>
+
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function getInitials(name) {
+
+    if (!name) return "U";
+
+    const words = name.trim().split(/\s+/);
+
+    if (words.length === 1) {
+        return words[0].substring(0, 2).toUpperCase();
+    }
+
+    return (
+        words[0][0] +
+        words[words.length - 1][0]
+    ).toUpperCase();
+}
+
+
+function formatDate(dateValue) {
+
+    if (!dateValue) return "";
+
+    const date = new Date(dateValue);
+
+    return date.toLocaleString([], {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+}
+
+
+let currentUser = null;
+let currentProfile = null;
+let messages = [];
+
+
+/* =========================================
+   LOAD USER
+========================================= */
+
+async function loadUser() {
+
+    const {
+        data: { user },
+        error
+    } = await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+    currentUser = user;
+
+
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select("id,full_name,email,role,status")
+        .eq("id", user.id)
+        .single();
+
+
+    if (profileError || !profile) {
+
+        alert("Your profile could not be found.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+
+    if (
+        profile.status &&
+        String(profile.status).toLowerCase() !== "active"
+    ) {
+
+        alert("Your account is inactive.");
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+
+    currentProfile = profile;
+
+
+    document.getElementById("userName").textContent =
+        profile.full_name || user.email || "User";
+
+
+    document.getElementById("userRole").textContent =
+        profile.role || "User";
+
+
+    document.getElementById("userAvatar").textContent =
+        getInitials(profile.full_name || user.email);
+
+
+    return true;
+}
+
+
+/* =========================================
+   LOAD MESSAGES
+========================================= */
+
+async function loadMessages() {
+
+    const list =
+        document.getElementById("messageList");
+
+
+    list.innerHTML = `
+        <div class="loading">
+            Loading messages...
+        </div>
+    `;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("messages")
+        .select(`
+            id,
+            sender_id,
+            recipient_id,
+            subject,
+            content,
+            is_read,
+            created_at,
+            sender:sender_id (
+                full_name,
+                email,
+                role
+            )
+        `)
+        .eq("recipient_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error("Message error:", error);
+
+        list.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">⚠️</div>
+                <p>Unable to load messages.</p>
+                <small>
+                    ${escapeHtml(error.message)}
+                </small>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    messages = data || [];
+
+
+    const unread =
+        messages.filter(message => !message.is_read).length;
+
+
+    document.getElementById("unreadCount").textContent =
+        unread;
+
+
+    if (messages.length === 0) {
+
+        list.innerHTML = `
+            <div class="empty">
+
+                <div class="empty-icon">
+                    📭
+                </div>
+
+                <p>
+                    You have no messages.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    list.innerHTML =
+        messages.map(message => {
+
+            const sender =
+                message.sender || {};
+
+
+            const preview =
+                message.content
+                    ? message.content.substring(0, 70)
+                    : "";
+
+
+            return `
+                <div
+                    class="message-item ${message.is_read ? "" : "unread"}"
+                    data-id="${escapeHtml(message.id)}"
+                >
+
+                    <strong>
+                        ${escapeHtml(
+                            message.subject || "No subject"
+                        )}
+                    </strong>
+
+                    <div class="message-preview">
+                        ${escapeHtml(preview)}
+                        ${message.content && message.content.length > 70 ? "..." : ""}
+                    </div>
+
+                    <div class="message-date">
+                        From:
+                        ${escapeHtml(
+                            sender.full_name ||
+                            sender.email ||
+                            "HostelPro"
+                        )}
+                        •
+                        ${formatDate(message.created_at)}
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+
+    document
+        .querySelectorAll(".message-item")
+        .forEach(item => {
+
+            item.addEventListener(
+                "click",
+                () => openMessage(item.dataset.id)
+            );
+
+        });
+
+}
+
+
+/* =========================================
+   OPEN MESSAGE
+========================================= */
+
+async function openMessage(messageId) {
+
+    const message =
+        messages.find(
+            item => String(item.id) === String(messageId)
+        );
+
+
+    if (!message) return;
+
+
+    const sender =
+        message.sender || {};
+
+
+    document.getElementById("viewTitle").textContent =
+        message.subject || "Message";
+
+
+    document.getElementById("messageContent").innerHTML = `
+
+        <h2 class="message-subject">
+            ${escapeHtml(
+                message.subject || "No subject"
+            )}
+        </h2>
+
+        <div class="message-meta">
+
+            From:
+            <strong>
+                ${escapeHtml(
+                    sender.full_name ||
+                    sender.email ||
+                    "HostelPro"
+                )}
+            </strong>
+
+            •
+
+            ${formatDate(message.created_at)}
+
+        </div>
+
+        <div class="message-body">
+            ${escapeHtml(
+                message.content || ""
+            )}
+        </div>
+
+    `;
+
+
+    document.getElementById("backButton").onclick =
+        function() {
+
+            document.getElementById("viewTitle").textContent =
+                "Select a message";
+
+            document.getElementById("messageContent").innerHTML = `
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        💬
+                    </div>
+
+                    <p>
+                        Select a message to read it.
+                    </p>
+
+                </div>
+            `;
+        };
+
+
+    if (!message.is_read) {
+
+        const { error } =
+            await supabaseClient
+                .from("messages")
+                .update({
+                    is_read: true
+                })
+                .eq("id", message.id)
+                .eq("recipient_id", currentUser.id);
+
+
+        if (!error) {
+
+            message.is_read = true;
+
+            const unread =
+                messages.filter(item => !item.is_read).length;
+
+            document.getElementById("unreadCount").textContent =
+                unread;
+
+            const item =
+                document.querySelector(
+                    `.message-item[data-id="${message.id}"]`
+                );
+
+            if (item) {
+                item.classList.remove("unread");
+            }
+        }
+    }
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+document
+    .getElementById("logoutBtn")
+    .addEventListener("click", async function(event) {
+
+        event.preventDefault();
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+    });
+
+
+/* =========================================
+   MOBILE MENU
+========================================= */
+
+document
+    .getElementById("menuBtn")
+    .addEventListener("click", function() {
+
+        document
+            .getElementById("sidebar")
+            .classList.toggle("open");
+
+    });
+
+
+/* =========================================
+   START
+========================================= */
+
+async function init() {
+
+    const authenticated =
+        await loadUser();
+
+    if (!authenticated) {
+        return;
+    }
+
+    await loadMessages();
+}
+
+
+init();
+
+</script>
+
+</body>
+</html>

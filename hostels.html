@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Browse hostels and accommodation available on HostelPro">
+
+    <title>Hostels | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #f8fafc;
+            color: #172033;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================= */
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(255,255,255,0.97);
+
+            border-bottom: 1px solid #e5e7eb;
+
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            height: 70px;
+
+            margin: auto;
+            padding: 0 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+
+        /* DESKTOP NAV */
+
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .desktop-nav a {
+            color: #475569;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .desktop-nav a:hover {
+            color: #2563eb;
+        }
+
+
+        .login-btn {
+            border: 1px solid #2563eb;
+
+            padding: 9px 15px;
+
+            border-radius: 7px;
+
+            color: #2563eb !important;
+        }
+
+
+        .register-btn {
+            background: #2563eb;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            color: white !important;
+        }
+
+
+        /* =========================================
+           HAMBURGER
+        ========================================= */
+
+        .hamburger {
+            display: none;
+
+            width: 44px;
+            height: 44px;
+
+            border: none;
+
+            background: #f1f5f9;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            padding: 9px;
+        }
+
+        .hamburger span {
+            display: block;
+
+            width: 100%;
+            height: 3px;
+
+            background: #172033;
+
+            margin: 5px 0;
+
+            border-radius: 5px;
+
+            transition: 0.3s;
+        }
+
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+
+        /* =========================================
+           MOBILE MENU
+        ========================================= */
+
+        .mobile-menu {
+            display: none;
+
+            position: absolute;
+
+            top: 70px;
+            left: 0;
+            right: 0;
+
+            background: white;
+
+            border-top: 1px solid #e5e7eb;
+
+            box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+
+            padding: 12px 20px 20px;
+        }
+
+        .mobile-menu.open {
+            display: block;
+        }
+
+        .mobile-link {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+
+            padding: 13px 10px;
+
+            color: #172033;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            border-radius: 7px;
+        }
+
+        .mobile-link:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .mobile-divider {
+            height: 1px;
+
+            background: #e5e7eb;
+
+            margin: 12px 0;
+        }
+
+        .login-mobile {
+            border: 1px solid #2563eb;
+
+            color: #2563eb;
+        }
+
+        .register-mobile {
+            background: #2563eb;
+
+            color: white;
+
+            justify-content: center;
+
+            margin-top: 8px;
+        }
+
+
+        /* =========================================
+           PAGE HERO
+        ========================================= */
+
+        .page-hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    #172033,
+                    #2563eb
+                );
+
+            color: white;
+
+            padding: 60px 20px;
+
+            text-align: center;
+        }
+
+        .page-hero h1 {
+            font-size: 42px;
+
+            margin-bottom: 10px;
+        }
+
+        .page-hero p {
+            color: #dbeafe;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            font-size: 15px;
+        }
+
+
+        /* =========================================
+           MAIN CONTAINER
+        ========================================= */
+
+        .container {
+            max-width: 1200px;
+
+            margin: auto;
+
+            padding: 35px 20px 80px;
+        }
+
+
+        /* =========================================
+           SEARCH AREA
+        ========================================= */
+
+        .search-panel {
+            background: white;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            margin-bottom: 30px;
+
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+        }
+
+        .search-panel h2 {
+            font-size: 18px;
+
+            margin-bottom: 15px;
+        }
+
+        .search-row {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr auto;
+
+            gap: 12px;
+        }
+
+        .search-input,
+        .filter-select {
+            width: 100%;
+
+            padding: 12px;
+
+            border: 1px solid #dbe2ea;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 14px;
+
+            background: white;
+        }
+
+        .search-input:focus,
+        .filter-select:focus {
+            border-color: #2563eb;
+        }
+
+        .search-btn {
+            border: none;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 0 25px;
+
+            border-radius: 8px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           RESULTS HEADER
+        ========================================= */
+
+        .results-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            font-size: 21px;
+        }
+
+        .results-count {
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           HOSTEL GRID
+        ========================================= */
+
+        .hostel-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 22px;
+        }
+
+
+        /* =========================================
+           HOSTEL CARD
+        ========================================= */
+
+        .hostel-card {
+            background: white;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 13px;
+
+            overflow: hidden;
+
+            transition: 0.25s;
+
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .hostel-card:hover {
+            transform: translateY(-5px);
+
+            box-shadow:
+                0 12px 30px rgba(0,0,0,0.09);
+        }
+
+
+        .hostel-image {
+            height: 190px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dbeafe,
+                    #eff6ff
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 55px;
+
+            overflow: hidden;
+        }
+
+        .hostel-image img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .hostel-body {
+            padding: 20px;
+        }
+
+
+        .hostel-status {
+            display: inline-block;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            background: #dcfce7;
+
+            color: #166534;
+
+            font-size: 11px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+        }
+
+        .hostel-status.inactive {
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        .hostel-body h3 {
+            font-size: 19px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .hostel-location {
+            color: #64748b;
+
+            font-size: 13px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .hostel-description {
+            color: #64748b;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            margin-bottom: 18px;
+
+            min-height: 42px;
+        }
+
+
+        .hostel-stats {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .hostel-stat {
+            background: #f8fafc;
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            text-align: center;
+        }
+
+
+        .hostel-stat strong {
+            display: block;
+
+            font-size: 16px;
+        }
+
+
+        .hostel-stat span {
+            color: #64748b;
+
+            font-size: 11px;
+        }
+
+
+        .view-button {
+            display: block;
+
+            width: 100%;
+
+            background: #2563eb;
+
+            color: white;
+
+            text-align: center;
+
+            padding: 11px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            transition: 0.2s;
+        }
+
+
+        .view-button:hover {
+            background: #1d4ed8;
+        }
+
+
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
+
+        .empty-state {
+            background: white;
+
+            border: 1px dashed #cbd5e1;
+
+            border-radius: 12px;
+
+            padding: 60px 20px;
+
+            text-align: center;
+
+            display: none;
+        }
+
+        .empty-state .icon {
+            font-size: 50px;
+
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 7px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           LOADING
+        ========================================= */
+
+        .loading {
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 60px 20px;
+
+            text-align: center;
+
+            color: #64748b;
+        }
+
+
+        .spinner {
+            width: 38px;
+            height: 38px;
+
+            border: 4px solid #e2e8f0;
+
+            border-top-color: #2563eb;
+
+            border-radius: 50%;
+
+            margin: 0 auto 15px;
+
+            animation:
+                spin 0.8s linear infinite;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* =========================================
+           ERROR
+        ========================================= */
+
+        .error-box {
+            display: none;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            border: 1px solid #fecaca;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================
+           NEXA
+        ========================================= */
+
+        .nexa-floating {
+            position: fixed;
+
+            left: 20px;
+            bottom: 25px;
+
+            z-index: 1500;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 15px 10px 10px;
+
+            background: white;
+
+            border: 1px solid #e2e8f0;
+
+            border-radius: 50px;
+
+            box-shadow:
+                0 8px 25px rgba(0,0,0,0.14);
+
+            transition: 0.25s;
+        }
+
+        .nexa-floating:hover {
+            transform: translateY(-4px);
+
+            box-shadow:
+                0 12px 30px rgba(0,0,0,0.20);
+        }
+
+        .nexa-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            background: #2563eb;
+
+            border-radius: 50%;
+
+            font-size: 22px;
+        }
+
+        .nexa-text {
+            display: flex;
+
+            flex-direction: column;
+
+            line-height: 1.2;
+        }
+
+        .nexa-text strong {
+            color: #172033;
+
+            font-size: 14px;
+        }
+
+        .nexa-text span {
+            color: #64748b;
+
+            font-size: 11px;
+
+            margin-top: 3px;
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        footer {
+            background: #0f172a;
+
+            color: #cbd5e1;
+
+            padding: 35px 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+
+            margin: auto;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            color: white;
+
+            font-size: 21px;
+
+            font-weight: bold;
+        }
+
+        .footer-logo span {
+            color: #60a5fa;
+        }
+
+        .footer-links {
+            display: flex;
+
+            gap: 18px;
+
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 950px) {
+
+            .desktop-nav {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .hostel-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .page-hero h1 {
+                font-size: 34px;
+            }
+
+            .search-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-btn {
+                padding: 13px;
+            }
+
+            .hostel-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-header {
+                align-items: flex-start;
+
+                flex-direction: column;
+
+                gap: 5px;
+            }
+
+            .nexa-floating {
+                left: 12px;
+                bottom: 15px;
+
+                padding: 8px;
+            }
+
+            .nexa-icon {
+                width: 42px;
+                height: 42px;
+            }
+
+            .nexa-text {
+                display: none;
+            }
+
+            .footer-container {
+                flex-direction: column;
+
+                text-align: center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER
+========================================= -->
+
+<header class="site-header">
+
+    <div class="header-container">
+
+
+        <a href="index.html"
+           class="logo">
+
+            Hostel<span>Pro</span>
+
+        </a>
+
+
+        <!-- DESKTOP -->
+
+        <nav class="desktop-nav">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="index.html#how-it-works">
+                How It Works
+            </a>
+
+            <a href="hostels.html">
+                Hostels
+            </a>
+
+            <a href="rooms.html">
+                Rooms & Beds
+            </a>
+
+            <a href="announcements.html">
+                Announcements
+            </a>
+
+            <a href="index.html#contact">
+                Contact
+            </a>
+
+            <a href="login.html"
+               class="login-btn">
+
+                Login
+
+            </a>
+
+            <a href="register.html"
+               class="register-btn">
+
+                Create Account
+
+            </a>
+
+        </nav>
+
+
+        <!-- HAMBURGER -->
+
+        <button
+            class="hamburger"
+            id="hamburger"
+            aria-label="Open menu"
+            aria-expanded="false">
+
+            <span></span>
+            <span></span>
+            <span></span>
+
+        </button>
+
+    </div>
+
+
+    <!-- MOBILE MENU -->
+
+    <div
+        class="mobile-menu"
+        id="mobileMenu">
+
+
+        <a href="index.html"
+           class="mobile-link">
+
+            🏠
+            <span>Home</span>
+
+        </a>
+
+
+        <a href="index.html#how-it-works"
+           class="mobile-link">
+
+            ⚙️
+            <span>How It Works</span>
+
+        </a>
+
+
+        <a href="hostels.html"
+           class="mobile-link">
+
+            🏢
+            <span>Hostels</span>
+
+        </a>
+
+
+        <a href="rooms.html"
+           class="mobile-link">
+
+            🛏️
+            <span>Rooms & Beds</span>
+
+        </a>
+
+
+        <a href="announcements.html"
+           class="mobile-link">
+
+            📢
+            <span>Announcements</span>
+
+        </a>
+
+
+        <a href="index.html#contact"
+           class="mobile-link">
+
+            💬
+            <span>Contact</span>
+
+        </a>
+
+
+        <a href="help.html"
+           class="mobile-link">
+
+            🛡️
+            <span>Help & Support</span>
+
+        </a>
+
+
+        <div class="mobile-divider"></div>
+
+
+        <a href="login.html"
+           class="mobile-link login-mobile">
+
+            🔐
+            <span>Login</span>
+
+        </a>
+
+
+        <a href="register.html"
+           class="mobile-link register-mobile">
+
+            📝
+            <span>Create Account</span>
+
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================
+     PAGE HERO
+========================================= -->
+
+<section class="page-hero">
+
+    <h1>
+        Find Your Hostel
+    </h1>
+
+    <p>
+        Browse available hostels, explore accommodation
+        options and find a place that suits your needs.
+    </p>
+
+</section>
+
+
+
+<!-- =========================================
+     MAIN
+========================================= -->
+
+<main class="container">
+
+
+    <!-- SEARCH -->
+
+    <div class="search-panel">
+
+        <h2>
+            🔎 Search Hostels
+        </h2>
+
+
+        <div class="search-row">
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search by hostel name or location">
+
+
+            <select
+                id="statusFilter"
+                class="filter-select">
+
+                <option value="">
+                    All Hostels
+                </option>
+
+                <option value="active">
+                    Available Hostels
+                </option>
+
+                <option value="inactive">
+                    Inactive Hostels
+                </option>
+
+            </select>
+
+
+            <button
+                class="search-btn"
+                onclick="applyFilters()">
+
+                Search
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        class="error-box"
+        id="errorBox">
+
+    </div>
+
+
+    <!-- RESULTS -->
+
+    <div class="results-header">
+
+        <h2>
+            Available Hostels
+        </h2>
+
+        <span
+            class="results-count"
+            id="resultsCount">
+
+            Loading...
+
+        </span>
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div
+        class="loading"
+        id="loading">
+
+        <div class="spinner"></div>
+
+        Loading hostels...
+
+    </div>
+
+
+    <!-- HOSTELS -->
+
+    <div
+        class="hostel-grid"
+        id="hostelGrid">
+
+    </div>
+
+
+    <!-- EMPTY -->
+
+    <div
+        class="empty-state"
+        id="emptyState">
+
+        <div class="icon">
+            🏢
+        </div>
+
+        <h3>
+            No hostels found
+        </h3>
+
+        <p>
+            There are currently no hostels matching
+            your search.
+        </p>
+
+    </div>
+
+</main>
+
+
+
+<!-- =========================================
+     NEXA AI
+========================================= -->
+
+<a
+    href="nexa.html"
+    class="nexa-floating"
+    title="Talk to Nexa AI">
+
+    <div class="nexa-icon">
+        🤖
+    </div>
+
+    <div class="nexa-text">
+
+        <strong>
+            Nexa AI
+        </strong>
+
+        <span>
+            Need help?
+        </span>
+
+    </div>
+
+</a>
+
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer>
+
+    <div class="footer-container">
+
+
+        <div>
+
+            <div class="footer-logo">
+                Hostel<span>Pro</span>
+            </div>
+
+            <p style="font-size:13px;margin-top:5px;">
+                Smart hostel management made simple.
+            </p>
+
+        </div>
+
+
+        <div class="footer-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="index.html#how-it-works">
+                How It Works
+            </a>
+
+            <a href="login.html">
+                Login
+            </a>
+
+            <a href="register.html">
+                Create Account
+            </a>
+
+            <a href="help.html">
+                Help
+            </a>
+
+        </div>
+
+
+        <p style="font-size:12px;">
+            © 2026 HostelPro. All rights reserved.
+        </p>
+
+    </div>
+
+</footer>
+
+
+
+<script>
+
+
+    /* =========================================
+       SUPABASE
+    ========================================= */
+
+    const SUPABASE_URL =
+        "YOUR_SUPABASE_URL";
+
+    const SUPABASE_ANON_KEY =
+        "YOUR_SUPABASE_ANON_KEY";
+
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
+
+
+    /* =========================================
+       VARIABLES
+    ========================================= */
+
+    let allHostels = [];
+
+
+    /* =========================================
+       HAMBURGER
+    ========================================= */
+
+    const hamburger =
+        document.getElementById("hamburger");
+
+    const mobileMenu =
+        document.getElementById("mobileMenu");
+
+
+    hamburger.addEventListener(
+        "click",
+        function() {
+
+            const open =
+                mobileMenu.classList.toggle(
+                    "open"
+                );
+
+
+            hamburger.classList.toggle(
+                "active"
+            );
+
+
+            hamburger.setAttribute(
+                "aria-expanded",
+                open
+            );
+
+        }
+    );
+
+
+    document
+        .querySelectorAll(".mobile-link")
+        .forEach(function(link) {
+
+            link.addEventListener(
+                "click",
+                function() {
+
+                    mobileMenu.classList.remove(
+                        "open"
+                    );
+
+                    hamburger.classList.remove(
+                        "active"
+                    );
+
+                    hamburger.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+            );
+
+        });
+
+
+    /* =========================================
+       ESCAPE HTML
+    ========================================= */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+            return "";
+        }
+
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================================
+       LOAD HOSTELS
+    ========================================= */
+
+    async function loadHostels() {
+
+        const loading =
+            document.getElementById("loading");
+
+        const grid =
+            document.getElementById("hostelGrid");
+
+        const empty =
+            document.getElementById("emptyState");
+
+        const errorBox =
+            document.getElementById("errorBox");
+
+
+        loading.style.display = "block";
+
+        grid.innerHTML = "";
+
+        empty.style.display = "none";
+
+        errorBox.style.display = "none";
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("hostels")
+            .select(`
+                id,
+                name,
+                location,
+                description,
+                total_rooms,
+                total_beds,
+                status,
+                hostel_code,
+                created_at
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        loading.style.display = "none";
+
+
+        if (error) {
+
+            console.error(
+                "Hostel loading error:",
+                error
+            );
+
+
+            errorBox.textContent =
+                "Unable to load hostels. Please check your Supabase connection and database permissions.";
+
+
+            errorBox.style.display = "block";
+
+
+            document.getElementById(
+                "resultsCount"
+            ).textContent = "Unable to load";
+
+
+            return;
+
+        }
+
+
+        allHostels = data || [];
+
+
+        displayHostels(allHostels);
+
+    }
+
+
+    /* =========================================
+       DISPLAY HOSTELS
+    ========================================= */
+
+    function displayHostels(hostels) {
+
+        const grid =
+            document.getElementById("hostelGrid");
+
+        const empty =
+            document.getElementById("emptyState");
+
+        const resultsCount =
+            document.getElementById("resultsCount");
+
+
+        grid.innerHTML = "";
+
+
+        resultsCount.textContent =
+            hostels.length +
+            (
+                hostels.length === 1
+                    ? " hostel"
+                    : " hostels"
+            );
+
+
+        if (hostels.length === 0) {
+
+            empty.style.display = "block";
+
+            return;
+
+        }
+
+
+        empty.style.display = "none";
+
+
+        hostels.forEach(function(hostel) {
+
+            const status =
+                String(
+                    hostel.status || "active"
+                ).toLowerCase();
+
+
+            const statusText =
+                status === "active"
+                    ? "Available"
+                    : "Inactive";
+
+
+            const statusClass =
+                status === "active"
+                    ? ""
+                    : "inactive";
+
+
+            const description =
+                hostel.description ||
+                "Accommodation information available on HostelPro.";
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "hostel-card";
+
+
+            card.innerHTML = `
+
+                <div class="hostel-image">
+                    🏢
+                </div>
+
+
+                <div class="hostel-body">
+
+                    <span class="hostel-status ${statusClass}">
+                        ${escapeHtml(statusText)}
+                    </span>
+
+
+                    <h3>
+                        ${escapeHtml(
+                            hostel.name ||
+                            "Unnamed Hostel"
+                        )}
+                    </h3>
+
+
+                    <div class="hostel-location">
+                        📍
+                        ${escapeHtml(
+                            hostel.location ||
+                            "Location not provided"
+                        )}
+                    </div>
+
+
+                    <p class="hostel-description">
+                        ${escapeHtml(description)}
+                    </p>
+
+
+                    <div class="hostel-stats">
+
+                        <div class="hostel-stat">
+
+                            <strong>
+                                ${escapeHtml(
+                                    hostel.total_rooms ??
+                                    0
+                                )}
+                            </strong>
+
+                            <span>
+                                Rooms
+                            </span>
+
+                        </div>
+
+
+                        <div class="hostel-stat">
+
+                            <strong>
+                                ${escapeHtml(
+                                    hostel.total_beds ??
+                                    0
+                                )}
+                            </strong>
+
+                            <span>
+                                Beds
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <a
+                        href="hostel_details.html?id=${encodeURIComponent(hostel.id)}"
+                        class="view-button">
+
+                        View Hostel
+
+                    </a>
+
+                </div>
+
+            `;
+
+
+            grid.appendChild(card);
+
+        });
+
+    }
+
+
+    /* =========================================
+       FILTER HOSTELS
+    ========================================= */
+
+    function applyFilters() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        const status =
+            document
+                .getElementById("statusFilter")
+                .value
+                .toLowerCase();
+
+
+        const filtered =
+            allHostels.filter(function(hostel) {
+
+                const name =
+                    String(
+                        hostel.name || ""
+                    ).toLowerCase();
+
+
+                const location =
+                    String(
+                        hostel.location || ""
+                    ).toLowerCase();
+
+
+                const hostelStatus =
+                    String(
+                        hostel.status || ""
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    name.includes(search) ||
+                    location.includes(search);
+
+
+                const matchesStatus =
+                    !status ||
+                    hostelStatus === status;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            });
+
+
+        displayHostels(filtered);
+
+    }
+
+
+    /* =========================================
+       LIVE SEARCH
+    ========================================= */
+
+    document
+        .getElementById("searchInput")
+        .addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+    document
+        .getElementById("statusFilter")
+        .addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+    /* =========================================
+       START
+    ========================================= */
+
+    loadHostels();
+
+</script>
+
+
+</body>
+
+</html>
