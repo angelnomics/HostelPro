@@ -37,6 +37,7 @@
             color: white;
             padding: 25px 16px;
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .logo {
@@ -99,20 +100,6 @@
             color: white;
         }
 
-        .sidebar-bottom {
-            position: absolute;
-            left: 16px;
-            right: 16px;
-            bottom: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-        }
-
-        .register {
-            background: #00843d !important;
-            color: white !important;
-        }
-
         /* ==============================
            MAIN AREA
         ============================== */
@@ -120,9 +107,6 @@
         .main {
             margin-left: 250px;
             min-height: 100vh;
-
-            /* IMPORTANT:
-               Main area itself reveals when page loads */
             opacity: 0;
             transform: translateX(100px);
             animation: mainReveal 1.2s ease forwards;
@@ -336,10 +320,11 @@
             box-shadow:
                 0 10px 30px rgba(15,23,42,0.07);
 
-            /* reveal */
             opacity: 0;
             transform: translateY(50px);
-            animation: sectionReveal 1s ease 1.2s forwards;
+
+            animation:
+                sectionReveal 1s ease 1.2s forwards;
         }
 
         @keyframes sectionReveal {
@@ -836,12 +821,6 @@
             font-weight: bold;
         }
 
-        @media (max-width: 750px) {
-            .access-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         /* ==============================
            MOBILE
         ============================== */
@@ -924,7 +903,8 @@
             .cards,
             .features,
             .steps,
-            .contact {
+            .contact,
+            .access-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -967,6 +947,11 @@
             Main Menu
         </div>
 
+        <!-- LOGIN IS NOW ABOVE HOME -->
+        <a href="login.html">
+            🔐 Login
+        </a>
+
         <a href="index.html" class="active">
             🏠 Home
         </a>
@@ -999,19 +984,10 @@
             📞 Contact
         </a>
 
-        <a href="help.html">
+        <!-- CORRECTED HELP PAGE -->
+        <a href="help_support.html">
             ❓ Help & Support
         </a>
-
-        <div class="sidebar-bottom">
-
-            <a href="login.html">
-                🔐 Login
-            </a>
-
-            
-
-        </div>
 
     </aside>
 
@@ -1058,7 +1034,7 @@
                 <div class="hero-content">
 
                     <div class="badge">
-                         SMART HOSTEL MANAGEMENT
+                        SMART HOSTEL MANAGEMENT
                     </div>
 
                     <h1>
@@ -1374,8 +1350,8 @@
                         </h3>
 
                         <p>
-                            Authorized staff add students and
-                            manage their hostel
+                            Authorized staff add students
+                            and manage their hostel
                             accommodation information.
                         </p>
 
@@ -1417,7 +1393,8 @@
                     </h2>
 
                     <p>
-                        Access important communication and system analysis from one place.
+                        Access important communication
+                        and system analysis from one place.
                     </p>
 
                 </div>
@@ -1435,8 +1412,10 @@
                         </h3>
 
                         <p>
-                            View messages sent to your HostelPro account and stay connected
-                            with hostel staff and other authorized users.
+                            View messages sent to your
+                            HostelPro account and stay
+                            connected with hostel staff
+                            and other authorized users.
                         </p>
 
                         <a
@@ -1447,6 +1426,7 @@
                         </a>
 
                     </div>
+
 
                     <div class="access-card">
 
@@ -1459,8 +1439,10 @@
                         </h3>
 
                         <p>
-                            Authorized administrators can review students, hostels, rooms,
-                            beds, allocations, occupancy and maintenance information.
+                            Authorized administrators can
+                            review students, hostels, rooms,
+                            beds, allocations, occupancy
+                            and maintenance information.
                         </p>
 
                         <a
@@ -1494,7 +1476,7 @@
 
                     <p>
                         Follow a simple process from
-                        registration to accommodation.
+                        account creation to accommodation.
                     </p>
 
                 </div>
@@ -1547,8 +1529,8 @@
                         </h3>
 
                         <p>
-                            Staff allocate an
-                            available bed.
+                            Authorized staff allocate
+                            an available bed.
                         </p>
 
                     </div>
@@ -1656,7 +1638,7 @@
                         </h3>
 
                         <p>
-                            Ask Nexa about registration,
+                            Ask Nexa about accounts,
                             hostels, rooms, beds,
                             maintenance and other
                             HostelPro features.
@@ -1831,22 +1813,8 @@
 
         function searchHostels() {
 
-            const value =
-                document.getElementById(
-                    "searchInput"
-                ).value.trim();
-
-            if (value !== "") {
-
-                window.location.href =
-                    "hostels.html";
-
-            } else {
-
-                window.location.href =
-                    "hostels.html";
-
-            }
+            window.location.href =
+                "hostels.html";
 
         }
 
