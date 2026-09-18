@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,123 +14,60 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
             min-height: 100vh;
-            background: #f5f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
             color: #172033;
         }
 
-        .page {
-            min-height: 100vh;
-            display: flex;
-        }
-
-        /* LEFT SIDE */
-
-        .left {
-            width: 50%;
-            background: #172033;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 50px;
-        }
-
-        .left-content {
-            max-width: 500px;
-        }
-
-        .logo {
-            font-size: 34px;
-            font-weight: 800;
-            margin-bottom: 25px;
-        }
-
-        .logo span {
-            color: #60a5fa;
-        }
-
-        .left h1 {
-            font-size: 45px;
-            line-height: 1.15;
-            margin-bottom: 20px;
-        }
-
-        .left p {
-            color: #cbd5e1;
-            font-size: 17px;
-            line-height: 1.7;
-            margin-bottom: 30px;
-        }
-
-        .features {
-            display: grid;
-            gap: 15px;
-        }
-
-        .feature {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #e2e8f0;
-        }
-
-        .feature-icon {
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(37, 99, 235, .25);
-            border-radius: 9px;
-        }
-
-        /* RIGHT SIDE */
-
-        .right {
-            width: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
+        .login-container {
+            width: 100%;
+            max-width: 430px;
+            padding: 20px;
         }
 
         .login-card {
-            width: 100%;
-            max-width: 450px;
             background: white;
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 35px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
         }
 
-        .login-card h2 {
-            font-size: 28px;
-            margin-bottom: 8px;
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
-        .subtitle {
+        .logo h1 {
+            font-size: 30px;
+            color: #172033;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .logo p {
+            margin-top: 7px;
             color: #64748b;
-            margin-bottom: 28px;
+            font-size: 14px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
+            margin-bottom: 7px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .input-wrapper {
-            position: relative;
         }
 
         input {
@@ -139,21 +77,24 @@
             border-radius: 9px;
             font-size: 15px;
             outline: none;
-            transition: .2s;
         }
 
         input:focus {
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .password-input {
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
             padding-right: 75px;
         }
 
         .show-password {
             position: absolute;
-            right: 10px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             border: none;
@@ -164,33 +105,17 @@
             font-weight: 600;
         }
 
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-            font-size: 13px;
-        }
-
         .remember {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
             color: #475569;
         }
 
         .remember input {
             width: auto;
-        }
-
-        .forgot {
-            color: #2563eb;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .forgot:hover {
-            text-decoration: underline;
         }
 
         .login-btn {
@@ -200,10 +125,9 @@
             border-radius: 9px;
             background: #2563eb;
             color: white;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            transition: .2s;
         }
 
         .login-btn:hover {
@@ -211,13 +135,27 @@
         }
 
         .login-btn:disabled {
-            opacity: .7;
+            opacity: 0.7;
             cursor: not-allowed;
+        }
+
+        .forgot {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #2563eb;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .forgot:hover {
+            text-decoration: underline;
         }
 
         .message {
             display: none;
-            padding: 12px 14px;
+            padding: 12px;
             border-radius: 8px;
             margin-bottom: 18px;
             font-size: 14px;
@@ -236,100 +174,22 @@
             color: #166534;
         }
 
-        .message.info {
+        .back-home {
             display: block;
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .footer-text {
             text-align: center;
             margin-top: 25px;
-            color: #94a3b8;
-            font-size: 12px;
-        }
-
-        /* FORGOT PASSWORD */
-
-        .reset-box {
-            display: none;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .reset-box h3 {
-            font-size: 17px;
-            margin-bottom: 7px;
-        }
-
-        .reset-box p {
             color: #64748b;
-            font-size: 13px;
-            margin-bottom: 15px;
-            line-height: 1.5;
+            text-decoration: none;
+            font-size: 14px;
         }
 
-        .reset-btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 11px;
-            border: none;
-            border-radius: 8px;
-            background: #172033;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
+        .back-home:hover {
+            color: #2563eb;
         }
 
-        .cancel-reset {
-            width: 100%;
-            margin-top: 8px;
-            padding: 9px;
-            border: none;
-            background: transparent;
-            color: #64748b;
-            cursor: pointer;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 800px) {
-
-            .page {
-                display: block;
-            }
-
-            .left {
-                width: 100%;
-                min-height: 280px;
-                padding: 35px 25px;
-            }
-
-            .left h1 {
-                font-size: 32px;
-            }
-
-            .left p {
-                font-size: 15px;
-            }
-
-            .features {
-                display: none;
-            }
-
-            .right {
-                width: 100%;
-                padding: 25px 18px;
-                align-items: flex-start;
-            }
-
+        @media (max-width: 480px) {
             .login-card {
-                padding: 28px 22px;
-            }
-
-            .logo {
-                font-size: 28px;
+                padding: 25px 20px;
             }
         }
     </style>
@@ -337,731 +197,249 @@
 
 <body>
 
-<div class="page">
+<div class="login-container">
 
-    <!-- LEFT -->
-    <section class="left">
+    <div class="login-card">
 
-        <div class="left-content">
-
-            <div class="logo">
-                Hostel<span>Pro</span>
-            </div>
-
-            <h1>
-                Welcome back.
-            </h1>
-
-            <p>
-                Sign in to access your HostelPro account
-                and manage your hostel activities from
-                one secure platform.
-            </p>
-
-            <div class="features">
-
-                <div class="feature">
-                    <div class="feature-icon">🏢</div>
-                    <span>Hostel and room management</span>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-icon">🛏️</div>
-                    <span>Student and bed allocations</span>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-icon">🔧</div>
-                    <span>Maintenance and task management</span>
-                </div>
-
-                <div class="feature">
-                    <div class="feature-icon">🤖</div>
-                    <span>Assistance from Nexa</span>
-                </div>
-
-            </div>
-
+        <div class="logo">
+            <h1>Hostel<span>Pro</span></h1>
+            <p>Hostel Management System</p>
         </div>
 
-    </section>
+        <div id="message" class="message"></div>
 
+        <form id="loginForm">
 
-    <!-- RIGHT -->
-    <section class="right">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+            </div>
 
-        <div class="login-card">
+            <div class="form-group">
+                <label for="password">Password</label>
 
-            <h2>Sign in</h2>
-
-            <p class="subtitle">
-                Enter your account details to continue.
-            </p>
-
-
-            <div
-                id="message"
-                class="message"
-            ></div>
-
-
-            <!-- LOGIN FORM -->
-
-            <form id="loginForm">
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email Address
-                    </label>
-
+                <div class="password-wrapper">
                     <input
-                        type="email"
-                        id="email"
-                        placeholder="Enter your email"
-                        autocomplete="email"
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        autocomplete="current-password"
                         required
                     >
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="password">
-                        Password
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <input
-                            type="password"
-                            id="password"
-                            class="password-input"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required
-                        >
-
-                        <button
-                            type="button"
-                            class="show-password"
-                            id="showPassword"
-                        >
-                            Show
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="options">
-
-                    <label class="remember">
-
-                        <input
-                            type="checkbox"
-                            id="rememberEmail"
-                        >
-
-                        Remember email
-
-                    </label>
-
-
-                    <a
-                        class="forgot"
-                        id="forgotPassword"
+                    <button
+                        type="button"
+                        class="show-password"
+                        id="showPassword"
                     >
-                        Forgot password?
-                    </a>
-
+                        Show
+                    </button>
                 </div>
+            </div>
 
+            <label class="remember">
+                <input type="checkbox" id="rememberEmail">
+                Remember my email
+            </label>
 
-                <button
-                    type="submit"
-                    class="login-btn"
-                    id="loginBtn"
-                >
-                    Sign In
-                </button>
-
-            </form>
-
-
-            <!-- PASSWORD RESET -->
-
-            <div
-                class="reset-box"
-                id="resetBox"
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
             >
+                Login
+            </button>
 
-                <h3>
-                    Reset your password
-                </h3>
+        </form>
 
-                <p>
-                    Enter your email address and
-                    we'll send you a password reset
-                    link.
-                </p>
+        <a href="#" class="forgot" id="forgotPassword">
+            Forgot your password?
+        </a>
 
-                <input
-                    type="email"
-                    id="resetEmail"
-                    placeholder="Enter your email"
-                >
+        <a href="index.html" class="back-home">
+            ← Back to Home
+        </a>
 
-                <button
-                    class="reset-btn"
-                    id="resetBtn"
-                >
-                    Send Reset Link
-                </button>
-
-                <button
-                    class="cancel-reset"
-                    id="cancelReset"
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-
-            <div class="footer-text">
-                HostelPro • Secure Hostel Management
-            </div>
-
-        </div>
-
-    </section>
+    </div>
 
 </div>
 
-
 <script>
+    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
-    /* =========================================================
-       SUPABASE CONFIGURATION
-       ========================================================= */
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
-    const SUPABASE_URL =
-        "https://keeyaworqbjsjfekorhd.supabase.co";
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const message = document.getElementById("message");
+    const rememberEmail = document.getElementById("rememberEmail");
+    const showPassword = document.getElementById("showPassword");
+    const forgotPassword = document.getElementById("forgotPassword");
 
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
-
-
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
-
-
-    /* =========================================================
-       ELEMENTS
-       ========================================================= */
-
-    const loginForm =
-        document.getElementById(
-            "loginForm"
-        );
-
-    const emailInput =
-        document.getElementById(
-            "email"
-        );
-
-    const passwordInput =
-        document.getElementById(
-            "password"
-        );
-
-    const loginBtn =
-        document.getElementById(
-            "loginBtn"
-        );
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    const rememberEmail =
-        document.getElementById(
-            "rememberEmail"
-        );
-
-
-    /* =========================================================
-       LOAD REMEMBERED EMAIL
-       ========================================================= */
-
-    const savedEmail =
-        localStorage.getItem(
-            "hostelpro_login_email"
-        );
-
+    const savedEmail = localStorage.getItem("hostelpro_login_email");
 
     if (savedEmail) {
-
-        emailInput.value =
-            savedEmail;
-
-        rememberEmail.checked =
-            true;
-
+        emailInput.value = savedEmail;
+        rememberEmail.checked = true;
     }
 
+    function showMessage(text, type) {
+        message.textContent = text;
+        message.className = "message " + type;
+    }
 
-    /* =========================================================
-       SHOW PASSWORD
-       ========================================================= */
+    function clearMessage() {
+        message.textContent = "";
+        message.className = "message";
+    }
 
-    document
-        .getElementById(
-            "showPassword"
-        )
-        .addEventListener(
-            "click",
-            () => {
+    showPassword.addEventListener("click", function () {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            showPassword.textContent = "Hide";
+        } else {
+            passwordInput.type = "password";
+            showPassword.textContent = "Show";
+        }
+    });
 
-                if (
-                    passwordInput.type ===
-                    "password"
-                ) {
+    loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-                    passwordInput.type =
-                        "text";
+        clearMessage();
 
-                    document.getElementById(
-                        "showPassword"
-                    ).textContent =
-                        "Hide";
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-                } else {
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Logging in...";
 
-                    passwordInput.type =
-                        "password";
-
-                    document.getElementById(
-                        "showPassword"
-                    ).textContent =
-                        "Show";
-
-                }
-
-            }
-        );
-
-
-    /* =========================================================
-       LOGIN
-       ========================================================= */
-
-    loginForm.addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-
-            const email =
-                emailInput.value
-                    .trim()
-                    .toLowerCase();
-
-            const password =
-                passwordInput.value;
-
-
-            if (!email || !password) {
-
-                showMessage(
-                    "Please enter your email and password.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            loginBtn.disabled =
-                true;
-
-            loginBtn.textContent =
-                "Signing in...";
-
-
-            hideMessage();
-
-
-            /*
-             * Remember email if requested.
-             */
-
-            if (
-                rememberEmail.checked
-            ) {
-
-                localStorage.setItem(
-                    "hostelpro_login_email",
-                    email
-                );
-
-            } else {
-
-                localStorage.removeItem(
-                    "hostelpro_login_email"
-                );
-
-            }
-
-
-            /*
-             * Sign in with Supabase Auth.
-             */
-
-            const {
-                data,
-                error
-            } =
-            await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-
+        try {
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
 
             if (error) {
-
-                console.error(
-                    "Login error:",
-                    error
-                );
-
-
-                loginBtn.disabled =
-                    false;
-
-                loginBtn.textContent =
-                    "Sign In";
-
-
-                showMessage(
-                    getLoginError(
-                        error
-                    ),
-                    "error"
-                );
-
-                return;
-
+                throw error;
             }
 
-
-            const user =
-                data.user;
-
-
-            if (!user) {
-
-                loginBtn.disabled =
-                    false;
-
-                loginBtn.textContent =
-                    "Sign In";
-
-
-                showMessage(
-                    "Login succeeded, but your account could not be loaded.",
-                    "error"
-                );
-
-                return;
-
+            if (!data.user) {
+                throw new Error("Unable to identify the logged-in user.");
             }
 
+            if (rememberEmail.checked) {
+                localStorage.setItem("hostelpro_login_email", email);
+            } else {
+                localStorage.removeItem("hostelpro_login_email");
+            }
 
-            /*
-             * Get the user's HostelPro profile.
-             */
+            const { data: profile, error: profileError } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id, full_name, email, role, student_id, status"
+                    )
+                    .eq("id", data.user.id)
+                    .single();
 
-            const {
-                data: profile,
-                error: profileError
-            } =
-            await supabaseClient
-                .from("profiles")
-                .select(`
-                    id,
-                    full_name,
-                    email,
-                    role,
-                    student_id,
-                    status
-                `)
-                .eq(
-                    "id",
-                    user.id
-                )
-                .single();
-
-
-            if (
-                profileError ||
-                !profile
-            ) {
-
-                console.error(
-                    "Profile error:",
-                    profileError
-                );
-
-
+            if (profileError) {
                 await supabaseClient.auth.signOut();
-
-
-                loginBtn.disabled =
-                    false;
-
-                loginBtn.textContent =
-                    "Sign In";
-
-
-                showMessage(
-                    "Your account is authenticated, but no HostelPro profile was found. Please contact the administrator.",
-                    "error"
+                throw new Error(
+                    "Your account profile could not be found."
                 );
-
-                return;
-
             }
 
-
-            /*
-             * Check account status.
-             */
-
-            const accountStatus =
-                String(
-                    profile.status ||
-                    "active"
-                ).toLowerCase();
-
-
-            if (
-                accountStatus !==
-                    "active"
-            ) {
-
+            if (profile.status && profile.status.toLowerCase() !== "active") {
                 await supabaseClient.auth.signOut();
-
-
-                loginBtn.disabled =
-                    false;
-
-                loginBtn.textContent =
-                    "Sign In";
-
-
-                showMessage(
-                    "Your HostelPro account is inactive. Please contact the administrator.",
-                    "error"
+                throw new Error(
+                    "Your account is not active. Please contact the administrator."
                 );
-
-                return;
-
             }
 
+            showMessage("Login successful. Redirecting...", "success");
 
-            /*
-             * Check role.
-             */
+            const role = profile.role
+                ? profile.role.toLowerCase()
+                : "";
 
-            const role =
-                String(
-                    profile.role ||
-                    ""
-                ).toLowerCase();
+            setTimeout(() => {
 
+                if (role === "admin") {
+                    window.location.href = "admin_dashboard.html";
+
+                } else if (role === "caretaker") {
+                    window.location.href = "caretaker_dashboard.html";
+
+                } else if (role === "warden") {
+                    window.location.href = "warden.html";
+
+                } else if (role === "student") {
+                    window.location.href = "student_dashboard.html";
+
+                } else {
+                    supabaseClient.auth.signOut();
+
+                    showMessage(
+                        "Your account role is not configured correctly. Please contact the administrator.",
+                        "error"
+                    );
+
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = "Login";
+                }
+
+            }, 800);
+
+        } catch (error) {
+
+            console.error("Login error:", error);
 
             showMessage(
-                "Login successful. Redirecting...",
-                "success"
+                error.message || "Login failed. Please try again.",
+                "error"
             );
 
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Login";
+        }
+    });
 
-            /*
-             * Redirect according to role.
-             */
+    forgotPassword.addEventListener("click", async function (event) {
+        event.preventDefault();
 
-            setTimeout(
-                () => {
+        clearMessage();
 
-                    switch (role) {
+        const email = emailInput.value.trim();
 
-                        case "admin":
-
-                            window.location.href =
-                                "admin_dashboard.html";
-
-                            break;
-
-
-                        case "caretaker":
-
-                            window.location.href =
-                                "caretaker_dashboard.html";
-
-                            break;
-
-
-                        case "warden":
-
-                            window.location.href =
-                                "warden.html";
-
-                            break;
-
-
-                        case "student":
-
-                            window.location.href =
-                                "student_dashboard.html";
-
-                            break;
-
-
-                        default:
-
-                            supabaseClient.auth.signOut();
-
-                            showMessage(
-                                "Your account has an unsupported role. Please contact the administrator.",
-                                "error"
-                            );
-
-
-                            loginBtn.disabled =
-                                false;
-
-                            loginBtn.textContent =
-                                "Sign In";
-
-                    }
-
-                },
-                500
+        if (!email) {
+            showMessage(
+                "Enter your email address first.",
+                "error"
             );
-
+            emailInput.focus();
+            return;
         }
-    );
 
+        forgotPassword.textContent = "Sending...";
 
-    /* =========================================================
-       FORGOT PASSWORD
-       ========================================================= */
+        try {
 
-    const forgotPassword =
-        document.getElementById(
-            "forgotPassword"
-        );
-
-    const resetBox =
-        document.getElementById(
-            "resetBox"
-        );
-
-    const resetEmail =
-        document.getElementById(
-            "resetEmail"
-        );
-
-    const resetBtn =
-        document.getElementById(
-            "resetBtn"
-        );
-
-    const cancelReset =
-        document.getElementById(
-            "cancelReset"
-        );
-
-
-    forgotPassword.addEventListener(
-        "click",
-        () => {
-
-            resetBox.style.display =
-                "block";
-
-
-            if (
-                emailInput.value.trim()
-            ) {
-
-                resetEmail.value =
-                    emailInput.value.trim();
-
-            }
-
-        }
-    );
-
-
-    cancelReset.addEventListener(
-        "click",
-        () => {
-
-            resetBox.style.display =
-                "none";
-
-            resetEmail.value =
-                "";
-
-        }
-    );
-
-
-    resetBtn.addEventListener(
-        "click",
-        async () => {
-
-            const email =
-                resetEmail.value
-                    .trim()
-                    .toLowerCase();
-
-
-            if (!email) {
-
-                showMessage(
-                    "Please enter your email address.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            resetBtn.disabled =
-                true;
-
-            resetBtn.textContent =
-                "Sending...";
-
-
-            const {
-                error
-            } =
-            await supabaseClient.auth
-                .resetPasswordForEmail(
+            const { error } =
+                await supabaseClient.auth.resetPasswordForEmail(
                     email,
                     {
                         redirectTo:
@@ -1070,131 +448,32 @@
                     }
                 );
 
-
-            resetBtn.disabled =
-                false;
-
-            resetBtn.textContent =
-                "Send Reset Link";
-
-
             if (error) {
-
-                showMessage(
-                    error.message,
-                    "error"
-                );
-
-                return;
-
+                throw error;
             }
 
-
             showMessage(
-                "If an account exists for that email, a password reset link has been sent.",
+                "Password reset instructions have been sent to your email.",
                 "success"
             );
 
+        } catch (error) {
 
-            resetBox.style.display =
-                "none";
+            console.error("Password reset error:", error);
 
+            showMessage(
+                error.message ||
+                "Unable to send password reset instructions.",
+                "error"
+            );
+
+        } finally {
+            forgotPassword.textContent =
+                "Forgot your password?";
         }
-    );
-
-
-    /* =========================================================
-       LOGIN ERROR MESSAGES
-       ========================================================= */
-
-    function getLoginError(
-        error
-    ) {
-
-        const text =
-            String(
-                error?.message ||
-                ""
-            ).toLowerCase();
-
-
-        if (
-            text.includes(
-                "invalid login credentials"
-            )
-        ) {
-
-            return "Incorrect email or password.";
-
-        }
-
-
-        if (
-            text.includes(
-                "email not confirmed"
-            )
-        ) {
-
-            return "Your email has not been confirmed. Please contact the administrator if this account was created for you.";
-
-        }
-
-
-        if (
-            text.includes(
-                "too many requests"
-            )
-        ) {
-
-            return "Too many login attempts. Please wait a moment and try again.";
-
-        }
-
-
-        return (
-            error?.message ||
-            "Unable to sign in. Please try again."
-        );
-
-    }
-
-
-    /* =========================================================
-       MESSAGE HELPERS
-       ========================================================= */
-
-    function showMessage(
-        text,
-        type
-    ) {
-
-        message.textContent =
-            text;
-
-        message.className =
-            "message " +
-            type;
-
-        message.style.display =
-            "block";
-
-    }
-
-
-    function hideMessage() {
-
-        message.textContent =
-            "";
-
-        message.className =
-            "message";
-
-        message.style.display =
-            "none";
-
-    }
-
+    });
 </script>
 
 </body>
 </html>
+
