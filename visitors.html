@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Visitors | HostelPro</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 25px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h2 {
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .warden-info {
+            background: rgba(255,255,255,.08);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .warden-info small {
+            display: block;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #64748b;
+            margin: 20px 10px 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            margin-bottom: 5px;
+            border-radius: 9px;
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 25px;
+            background: #dc2626;
+            color: white;
+        }
+
+        .main {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: #172033;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 5px 20px rgba(0,0,0,.05);
+        }
+
+        .stat small {
+            color: #64748b;
+        }
+
+        .stat h2 {
+            margin-top: 8px;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,.05);
+        }
+
+        .panel h2 {
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        .field textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            background: #e2e8f0;
+            color: #172033;
+        }
+
+        .status-message {
+            display: none;
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .search {
+            margin-bottom: 15px;
+        }
+
+        .search input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-expected {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-completed {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .badge-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .nexa {
+            position: fixed;
+            bottom: 25px;
+            left: 285px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nexa {
+                left: 20px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <h2>Hostel<span>Pro</span></h2>
+    </div>
+
+    <div class="warden-info">
+        <small>Logged in as</small>
+        <strong id="userName">Warden</strong>
+    </div>
+
+    <div class="nav-title">Warden Access</div>
+
+    <a href="wardens.html" class="nav-link">
+        🏠 Dashboard
+    </a>
+
+    <a href="discipline.html" class="nav-link">
+        ⚠️ Discipline
+    </a>
+
+    <a href="security.html" class="nav-link">
+        🛡️ Security
+    </a>
+
+    <a href="visitors.html" class="nav-link active">
+        👥 Visitors
+    </a>
+
+    <a href="#" class="nav-link logout" id="logoutBtn">
+        🚪 Logout
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div>
+            <h1>Visitor Management</h1>
+            <p>Register and monitor hostel visitors.</p>
+        </div>
+
+        <button class="mobile-menu" id="mobileMenu">
+            ☰
+        </button>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats">
+
+        <div class="stat">
+            <small>Today's Visits</small>
+            <h2 id="todayCount">0</h2>
+        </div>
+
+        <div class="stat">
+            <small>Currently Visiting</small>
+            <h2 id="activeCount">0</h2>
+        </div>
+
+        <div class="stat">
+            <small>Expected Today</small>
+            <h2 id="expectedCount">0</h2>
+        </div>
+
+        <div class="stat">
+            <small>Total Records</small>
+            <h2 id="totalCount">0</h2>
+        </div>
+
+    </section>
+
+
+    <!-- REGISTER VISITOR -->
+
+    <section class="panel">
+
+        <h2>Register Visitor</h2>
+
+        <form id="visitorForm">
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Visitor Name *</label>
+                    <input id="visitorName" required>
+                </div>
+
+                <div class="field">
+                    <label>Phone</label>
+                    <input id="phone" type="tel">
+                </div>
+
+                <div class="field">
+                    <label>Student Name *</label>
+                    <input
+                        id="studentName"
+                        required
+                        placeholder="Enter student name">
+                </div>
+
+                <div class="field">
+                    <label>Relationship</label>
+                    <input
+                        id="relationship"
+                        placeholder="Parent, guardian, friend...">
+                </div>
+
+                <div class="field">
+                    <label>Visit Date *</label>
+                    <input id="visitDate" type="date" required>
+                </div>
+
+                <div class="field">
+                    <label>Entry Time</label>
+                    <input id="entryTime" type="time">
+                </div>
+
+                <div class="field">
+                    <label>Exit Time</label>
+                    <input id="exitTime" type="time">
+                </div>
+
+                <div class="field">
+                    <label>Status</label>
+
+                    <select id="status">
+                        <option value="expected">Expected</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+
+                </div>
+
+                <div class="field full">
+
+                    <label>Purpose / Notes</label>
+
+                    <textarea id="notes"></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button class="btn primary" type="submit">
+                    Register Visitor
+                </button>
+
+                <button class="btn secondary" type="reset">
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div id="formStatus" class="status-message"></div>
+
+        </form>
+
+    </section>
+
+
+    <!-- VISITOR RECORDS -->
+
+    <section class="panel">
+
+        <h2>Visitor Records</h2>
+
+        <div class="search">
+            <input
+                id="searchInput"
+                placeholder="Search visitor, phone or student...">
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Visitor</th>
+                        <th>Phone</th>
+                        <th>Student</th>
+                        <th>Date</th>
+                        <th>Entry</th>
+                        <th>Exit</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="visitorTable">
+
+                    <tr>
+                        <td colspan="7">
+                            Loading...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<button
+    class="nexa"
+    onclick="window.location.href='nexa.html?context=warden'">
+    Nexa
+</button>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+let currentUser = null;
+let allVisitors = [];
+
+
+async function checkAccess() {
+
+    const {
+        data: { user },
+        error: authError
+    } = await supabaseClient.auth.getUser();
+
+
+    if (authError || !user) {
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("full_name,email,role,status")
+        .eq("id", user.id)
+        .single();
+
+
+    if (error || !profile) {
+
+        console.error("PROFILE ERROR:", error);
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+
+    if (
+        profile.role !== "warden" ||
+        profile.status !== "active"
+    ) {
+
+        alert(
+            "Access denied. This page is only available to active wardens."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+
+    currentUser = user;
+
+    document.getElementById("userName").textContent =
+        profile.full_name || "Warden";
+
+    return true;
+}
+
+
+async function loadVisitors() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("visitors")
+        .select(`
+            id,
+            visitor_name,
+            phone,
+            student_name,
+            relationship,
+            visit_date,
+            entry_time,
+            exit_time,
+            status,
+            notes,
+            created_at
+        `)
+        .order("visit_date", {
+            ascending: false
+        })
+        .order("created_at", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error("VISITOR ERROR:", error);
+
+        document.getElementById("visitorTable").innerHTML = `
+            <tr>
+                <td colspan="7">
+                    Could not load visitor records.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    allVisitors = data || [];
+
+    renderVisitors(allVisitors);
+
+    updateStats(allVisitors);
+}
+
+
+function updateStats(rows) {
+
+    const today =
+        new Date().toISOString().slice(0, 10);
+
+
+    document.getElementById("todayCount").textContent =
+        rows.filter(
+            visitor => visitor.visit_date === today
+        ).length;
+
+
+    document.getElementById("activeCount").textContent =
+        rows.filter(
+            visitor => visitor.status === "active"
+        ).length;
+
+
+    document.getElementById("expectedCount").textContent =
+        rows.filter(
+            visitor =>
+                visitor.status === "expected" &&
+                visitor.visit_date === today
+        ).length;
+
+
+    document.getElementById("totalCount").textContent =
+        rows.length;
+}
+
+
+function renderVisitors(rows) {
+
+    const body =
+        document.getElementById("visitorTable");
+
+
+    if (!rows.length) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    No visitor records found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    body.innerHTML = rows.map(visitor => {
+
+        let badgeClass =
+            "badge-completed";
+
+
+        if (visitor.status === "active") {
+            badgeClass = "badge-active";
+        }
+
+        if (visitor.status === "expected") {
+            badgeClass = "badge-expected";
+        }
+
+        if (visitor.status === "cancelled") {
+            badgeClass = "badge-cancelled";
+        }
+
+
+        return `
+            <tr>
+
+                <td>
+                    <strong>
+                        ${escapeHtml(visitor.visitor_name || "—")}
+                    </strong>
+
+                    <br>
+
+                    <small>
+                        ${escapeHtml(visitor.relationship || "")}
+                    </small>
+                </td>
+
+                <td>
+                    ${escapeHtml(visitor.phone || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(visitor.student_name || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(visitor.visit_date || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(visitor.entry_time || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(visitor.exit_time || "—")}
+                </td>
+
+                <td>
+
+                    <span class="badge ${badgeClass}">
+                        ${escapeHtml(visitor.status || "—")}
+                    </span>
+
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+function escapeHtml(value) {
+
+    return String(value).replace(
+        /[&<>"']/g,
+        character => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        }[character])
+    );
+}
+
+
+document
+    .getElementById("visitorForm")
+    .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const statusBox =
+            document.getElementById("formStatus");
+
+
+        statusBox.className =
+            "status-message";
+
+
+        statusBox.textContent =
+            "Saving...";
+
+
+        const visitor = {
+
+            visitor_name:
+                document.getElementById("visitorName").value.trim(),
+
+            phone:
+                document.getElementById("phone").value.trim() || null,
+
+            student_name:
+                document.getElementById("studentName").value.trim(),
+
+            relationship:
+                document.getElementById("relationship").value.trim() || null,
+
+            visit_date:
+                document.getElementById("visitDate").value,
+
+            entry_time:
+                document.getElementById("entryTime").value || null,
+
+            exit_time:
+                document.getElementById("exitTime").value || null,
+
+            status:
+                document.getElementById("status").value,
+
+            notes:
+                document.getElementById("notes").value.trim() || null,
+
+            recorded_by:
+                currentUser.id
+        };
+
+
+        const {
+            error
+        } = await supabaseClient
+            .from("visitors")
+            .insert(visitor);
+
+
+        if (error) {
+
+            console.error(error);
+
+            statusBox.className =
+                "status-message error";
+
+            statusBox.textContent =
+                error.message;
+
+            return;
+        }
+
+
+        statusBox.className =
+            "status-message success";
+
+        statusBox.textContent =
+            "Visitor registered successfully.";
+
+
+        event.target.reset();
+
+        await loadVisitors();
+
+    });
+
+
+document
+    .getElementById("searchInput")
+    .addEventListener("input", function(event) {
+
+        const search =
+            event.target.value.toLowerCase().trim();
+
+
+        const filtered =
+            allVisitors.filter(visitor => {
+
+                return [
+                    visitor.visitor_name,
+                    visitor.phone,
+                    visitor.student_name,
+                    visitor.relationship,
+                    visitor.status
+                ].some(value =>
+                    String(value || "")
+                        .toLowerCase()
+                        .includes(search)
+                );
+
+            });
+
+
+        renderVisitors(filtered);
+
+    });
+
+
+document
+    .getElementById("logoutBtn")
+    .addEventListener("click", async function(event) {
+
+        event.preventDefault();
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+    });
+
+
+document
+    .getElementById("mobileMenu")
+    .addEventListener("click", function() {
+
+        document
+            .getElementById("sidebar")
+            .classList.toggle("open");
+
+    });
+
+
+(async function() {
+
+    const allowed = await checkAccess();
+
+    if (allowed) {
+        await loadVisitors();
+    }
+
+})();
+
+</script>
+
+</body>
+</html>

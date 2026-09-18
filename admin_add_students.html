@@ -524,12 +524,12 @@
                         type="password"
                         id="password"
                         placeholder="Create temporary password"
-                        minlength="6"
+                        minlength="8"
                         required
                     >
 
                     <span class="hint">
-                        The password must contain at least 6 characters.
+                        The password must contain at least 8 characters.
                     </span>
                 </div>
 
@@ -577,8 +577,8 @@
        SUPABASE CONFIGURATION
        ========================================================= */
 
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
     const { createClient } = supabase;
 
@@ -668,15 +668,21 @@
             }
 
 
-            /* ONLY ADMIN CAN ACCESS THIS PAGE */
+            /* ONLY ADMIN CAN ACCESS THIS ADMIN PAGE */
 
             if (profile.role !== "admin") {
 
-                alert(
-                    "Access denied. Only administrators can add students."
-                );
+                alert("Access denied. This page is for administrators only.");
 
-                window.location.href = "index.html";
+                if (profile.role === "caretaker") {
+                    window.location.href = "caretaker.html";
+                } else if (profile.role === "warden") {
+                    window.location.href = "warden.html";
+                } else if (profile.role === "student") {
+                    window.location.href = "student_dashboard.html";
+                } else {
+                    window.location.href = "index.html";
+                }
 
                 return;
             }
@@ -756,50 +762,76 @@
         }
 
 
-        if (password.length < 6) {
+        if (password.length < 8) {
 
             showMessage(
-                "Password must contain at least 6 characters.",
+                "Password must contain at least 8 characters.",
                 "error"
             );
 
             return;
         }
 
-
         saveBtn.disabled = true;
-
         saveBtn.textContent = "Creating Student...";
-
-
-        /*
-         * IMPORTANT:
-         *
-         * We do NOT use supabase.auth.signUp() here.
-         *
-         * signUp() from the browser can change the current
-         * authentication session and is not the correct secure
-         * method for an administrator creating another user.
-         *
-         * We will connect this form to a Supabase Edge Function
-         * that securely creates the Auth account.
-         */
-
 
         try {
 
-            /*
-             * TEMPORARY PLACEHOLDER
-             *
-             * This section will be replaced with the secure
-             * Supabase Edge Function call.
-             */
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+            if (sessionError || !session) {
+                throw new Error("Your session has expired. Please log in again.");
+            }
+
+            const { data, error } =
+                await supabaseClient.functions.invoke(
+                    "create-student",
+                    {
+                        body: {
+                            full_name: fullName,
+                            email: email,
+                            phone: phone || null,
+                            gender: gender,
+                            date_of_birth: dateOfBirth,
+                            password: password,
+                            status: status
+                        }
+                    }
+                );
+
+            if (error) {
+                console.error("create-student function error:", error);
+                let details = error.message || "Unable to create the student account.";
+
+                try {
+                    if (error.context && typeof error.context.json === "function") {
+                        const errorBody = await error.context.json();
+                        if (errorBody?.error) details = errorBody.error;
+                        else if (errorBody?.message) details = errorBody.message;
+                    }
+                } catch (_) {}
+
+                throw new Error(details);
+            }
+
+            if (!data) {
+                throw new Error("The server returned no response.");
+            }
+
+            const student = data.student || data.data || data;
+            const generatedStudentId =
+                student.student_id || data.student_id || "Generated automatically";
 
             showMessage(
-                "The student form is ready. The secure account-creation backend still needs to be connected before a real student account can be created.",
-                "error"
+                `Student created successfully. Student ID: ${generatedStudentId}. The student can now log in using ${email}.`,
+                "success"
             );
 
+            form.reset();
+            document.getElementById("status").value = "active";
 
         } catch (error) {
 
@@ -807,18 +839,15 @@
 
             showMessage(
                 error.message ||
-                "An unexpected error occurred.",
+                "An unexpected error occurred while creating the student.",
                 "error"
             );
 
         } finally {
 
             saveBtn.disabled = false;
-
             saveBtn.textContent = "➕ Add Student";
         }
-
-    });
 
 
     /* =========================================================
