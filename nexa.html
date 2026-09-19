@@ -1,919 +1,5142 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Nexa | HostelPro</title>
+<title>Nexa | HostelPro AI</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f5f7fb;
+        color: #172033;
+        min-height: 100vh;
+    }
+
+    .layout {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* =========================
+       SIDEBAR
+    ========================= */
+
+    .sidebar {
+        width: 250px;
+        background: #172033;
+        color: white;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        padding: 22px 16px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .brand {
+        font-size: 23px;
+        font-weight: 800;
+        margin-bottom: 6px;
+    }
+
+    .brand span {
+        color: #2563eb;
+    }
+
+    .subtitle {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-bottom: 28px;
+    }
+
+    .user-box {
+        background: rgba(255,255,255,.06);
+        padding: 13px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .user-name {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .user-role {
+        color: #93c5fd;
+        font-size: 12px;
+        text-transform: capitalize;
+    }
+
+    .nav-title {
+        color: #64748b;
+        font-size: 11px;
+        text-transform: uppercase;
+        margin: 18px 10px 8px;
+        letter-spacing: .8px;
+    }
+
+    .nav-link {
+        display: block;
+        color: #cbd5e1;
+        text-decoration: none;
+        padding: 11px 12px;
+        border-radius: 8px;
+        margin-bottom: 4px;
+        font-size: 14px;
+        transition: .2s;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .logout {
+        margin-top: 25px;
+        width: 100%;
+        border: 1px solid #475569;
+        background: transparent;
+        color: #cbd5e1;
+        padding: 11px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .logout:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+        color: white;
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+
+    .main {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+        padding: 28px;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+        font-size: 29px;
+        margin-bottom: 5px;
+    }
+
+    .page-title p {
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .status {
+        background: #dcfce7;
+        color: #166534;
+        border-radius: 20px;
+        padding: 8px 13px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* =========================
+       FEATURE CARDS
+    ========================= */
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .feature {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 13px;
+        padding: 18px;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .feature:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(15,23,42,.08);
+        border-color: #2563eb;
+    }
+
+    .feature-icon {
+        font-size: 25px;
+        margin-bottom: 9px;
+    }
+
+    .feature h3 {
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .feature p {
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    /* =========================
+       PANELS
+    ========================= */
+
+    .panel {
+        display: none;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+
+    .panel.active {
+        display: block;
+    }
+
+    .panel-header {
+        margin-bottom: 18px;
+    }
+
+    .panel-header h2 {
+        font-size: 21px;
+        margin-bottom: 5px;
+    }
+
+    .panel-header p {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    /* =========================
+       CHAT
+    ========================= */
+
+    .chat-box {
+        height: 430px;
+        overflow-y: auto;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 13px;
+    }
+
+    .message {
+        max-width: 85%;
+        padding: 11px 13px;
+        border-radius: 11px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.55;
+    }
+
+    .message.nexa {
+        background: #e8f0ff;
+        color: #172033;
+        border-bottom-left-radius: 3px;
+    }
+
+    .message.user {
+        background: #2563eb;
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 3px;
+    }
+
+    .message strong {
+        font-weight: 700;
+    }
+
+    .chat-input {
+        display: flex;
+        gap: 9px;
+    }
+
+    .chat-input input {
+        flex: 1;
+        padding: 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .chat-input input:focus {
+        border-color: #2563eb;
+    }
+
+    button {
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .primary {
+        background: #2563eb;
+        color: white;
+        padding: 12px 17px;
+        border-radius: 9px;
+        font-weight: 700;
+    }
+
+    .primary:hover {
+        background: #1d4ed8;
+    }
+
+    .secondary {
+        background: #e2e8f0;
+        color: #172033;
+        padding: 10px 13px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    /* =========================
+       QUICK QUESTIONS
+    ========================= */
+
+    .quick {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+    }
+
+    .quick button {
+        background: #eff6ff;
+        color: #1d4ed8;
+        border: 1px solid #bfdbfe;
+        padding: 8px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .quick button:hover {
+        background: #2563eb;
+        color: white;
+    }
+
+    /* =========================
+       RESULT ITEMS
+    ========================= */
+
+    .result-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 12px;
+        margin: 8px 0;
+    }
+
+    .result-item small {
+        display: block;
+        color: #64748b;
+        line-height: 1.7;
+        margin-top: 4px;
+    }
+
+    .result-link {
+        display: inline-block;
+        margin-top: 10px;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .result-link:hover {
+        text-decoration: underline;
+    }
+
+    /* =========================
+       ACTION GRID
+    ========================= */
+
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+    }
+
+    .action {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 15px;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .action:hover {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .action strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .action span {
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    /* =========================
+       INSIGHTS
+    ========================= */
+
+    .insight {
+        padding: 14px;
+        border-radius: 9px;
+        margin-bottom: 10px;
+        border-left: 4px solid #2563eb;
+        background: #f8fafc;
+    }
+
+    .insight.warning {
+        border-left-color: #f59e0b;
+    }
+
+    .insight.danger {
+        border-left-color: #dc2626;
+    }
+
+    .insight.success {
+        border-left-color: #16a34a;
+    }
+
+    .insight strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .insight span {
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .loading {
+        color: #64748b;
+        padding: 10px 0;
+    }
+
+    .error {
+        color: #b91c1c;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .empty {
+        color: #64748b;
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media(max-width: 800px) {
+
+        .sidebar {
+            width: 220px;
         }
 
-        body {
-            background: #f5f7fb;
-            color: #172033;
-            min-height: 100vh;
+        .main {
+            margin-left: 220px;
+            width: calc(100% - 220px);
+            padding: 18px;
         }
 
-        /* HEADER */
-        header {
-            height: 70px;
-            background: #172033;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
+        .topbar {
+            align-items: flex-start;
+        }
+    }
+
+    @media(max-width: 650px) {
+
+        .sidebar {
+            position: relative;
+            width: 100%;
+            min-height: auto;
         }
 
-        .logo {
-            font-size: 23px;
-            font-weight: bold;
-        }
-
-        .logo span {
-            color: #2563eb;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            color: #60a5fa;
-        }
-
-        .hamburger {
-            display: none;
-            font-size: 28px;
-            cursor: pointer;
-        }
-
-        /* MOBILE MENU */
-        .mobile-menu {
-            display: none;
-            background: #172033;
-            padding: 10px 25px 20px;
-        }
-
-        .mobile-menu.open {
+        .layout {
             display: block;
         }
 
-        .mobile-menu a {
-            display: block;
-            padding: 12px 0;
-            color: white;
-            text-decoration: none;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .main {
+            margin-left: 0;
+            width: 100%;
         }
 
-        /* MAIN */
-        main {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .welcome {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .welcome h1 {
-            font-size: 38px;
-            margin-bottom: 10px;
-        }
-
-        .welcome p {
-            color: #64748b;
-            font-size: 16px;
-        }
-
-        /* CHAT BOX */
-        .chat-box {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-
-        .chat-header {
-            background: #2563eb;
-            color: white;
-            padding: 22px;
-            text-align: center;
-        }
-
-        .chat-header h2 {
-            font-size: 25px;
-        }
-
-        .chat-area {
-            height: 430px;
-            overflow-y: auto;
-            padding: 25px;
-            background: #f8fafc;
+        .chat-input {
+            flex-direction: column;
         }
 
         .message {
-            margin-bottom: 18px;
-            display: flex;
+            max-width: 95%;
         }
-
-        .message.nexa-message {
-            justify-content: flex-start;
-        }
-
-        .message.user-message {
-            justify-content: flex-end;
-        }
-
-        .bubble {
-            max-width: 75%;
-            padding: 13px 16px;
-            border-radius: 12px;
-            line-height: 1.5;
-            font-size: 14px;
-        }
-
-        .nexa-message .bubble {
-            background: #e8f0ff;
-            color: #172033;
-            border-bottom-left-radius: 3px;
-        }
-
-        .user-message .bubble {
-            background: #2563eb;
-            color: white;
-            border-bottom-right-radius: 3px;
-        }
-
-        /* QUICK QUESTIONS */
-        .quick-section {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .quick-section h3 {
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        .quick-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .quick-btn {
-            border: 1px solid #dbe2ea;
-            background: #f8fafc;
-            color: #172033;
-            padding: 9px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .quick-btn:hover {
-            background: #eff6ff;
-            border-color: #2563eb;
-            color: #2563eb;
-        }
-
-        /* INPUT */
-        .input-area {
-            display: flex;
-            gap: 10px;
-            padding: 18px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .input-area input {
-            flex: 1;
-            padding: 13px 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .input-area input:focus {
-            border-color: #2563eb;
-        }
-
-        .send-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 0 22px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .send-btn:hover {
-            background: #1d4ed8;
-        }
-
-        /* TYPING */
-        .typing {
-            color: #64748b;
-            font-size: 13px;
-            font-style: italic;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        /* FOOTER */
-        footer {
-            margin-top: 45px;
-            background: #172033;
-            color: white;
-            text-align: center;
-            padding: 25px;
-        }
-
-        footer p {
-            color: #cbd5e1;
-            font-size: 14px;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 800px) {
-
-            header {
-                padding: 0 20px;
-            }
-
-            nav {
-                display: none;
-            }
-
-            .hamburger {
-                display: block;
-            }
-
-            .welcome h1 {
-                font-size: 30px;
-            }
-
-            .chat-area {
-                height: 420px;
-            }
-        }
-
-        @media (max-width: 500px) {
-
-            main {
-                margin: 25px auto;
-                padding: 0 12px;
-            }
-
-            .chat-area {
-                height: 400px;
-                padding: 15px;
-            }
-
-            .bubble {
-                max-width: 88%;
-            }
-
-            .input-area {
-                padding: 12px;
-            }
-
-            .send-btn {
-                padding: 0 15px;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 
 <body>
 
-<header>
+<div class="layout">
 
-    <div class="logo">
-        Hostel<span>Pro</span>
-    </div>
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
 
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="hostels.html">Hostels</a>
-        <a href="rooms.html">Rooms</a>
-        <a href="beds.html">Beds</a>
-        <a href="announcements.html">Announcements</a>
-        <a href="login.html">Login</a>
-    </nav>
+    <aside class="sidebar">
 
-    <div class="hamburger" id="hamburger">
-        ☰
-    </div>
+        <div class="brand">
+            Hostel<span>Pro</span>
+        </div>
 
-</header>
+        <div class="subtitle">
+            Smart Hostel Management
+        </div>
+
+        <div class="user-box">
+            <div
+                class="user-name"
+                id="sidebarUser">
+                Loading...
+            </div>
+
+            <div
+                class="user-role"
+                id="sidebarRole">
+                Loading...
+            </div>
+        </div>
+
+        <div class="nav-title">
+            Main
+        </div>
+
+        <a
+            href="#"
+            id="dashboardLink"
+            class="nav-link">
+            🏠 Dashboard
+        </a>
+
+        <a
+            href="hostels.html"
+            class="nav-link">
+            🏢 Hostels
+        </a>
+
+        <a
+            href="rooms.html"
+            class="nav-link">
+            🚪 Rooms
+        </a>
+
+        <a
+            href="beds.html"
+            class="nav-link">
+            🛏️ Beds
+        </a>
+
+        <a
+            href="allocations.html"
+            class="nav-link">
+            📋 Allocations
+        </a>
+
+        <a
+            href="maintenance.html"
+            class="nav-link">
+            🔧 Maintenance
+        </a>
+
+        <div class="nav-title">
+            Communication
+        </div>
+
+        <a
+            href="messages.html"
+            class="nav-link">
+            💬 Messages
+        </a>
+
+        <a
+            href="announcements.html"
+            class="nav-link">
+            📢 Announcements
+        </a>
+
+        <div class="nav-title">
+            Nexa
+        </div>
+
+        <a
+            href="nexa.html"
+            class="nav-link active">
+            🤖 Nexa AI
+        </a>
+
+        <a
+            href="reports.html"
+            id="reportsNav"
+            class="nav-link">
+            📊 Reports
+        </a>
+
+        <button
+            class="logout"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </aside>
 
 
-<div class="mobile-menu" id="mobileMenu">
+    <!-- =========================
+         MAIN
+    ========================= -->
 
-    <a href="index.html">Home</a>
-    <a href="hostels.html">Hostels</a>
-    <a href="rooms.html">Rooms</a>
-    <a href="beds.html">Rooms & Beds</a>
-    <a href="announcements.html">Announcements</a>
-    <a href="contact.html">Contact</a>
-    <a href="help.html">Help & Support</a>
-    <a href="login.html">Login</a>
-    <a href="register.html">Create Account</a>
+    <main class="main">
 
-</div>
+        <div class="topbar">
 
+            <div class="page-title">
+                <h1>Nexa</h1>
 
-<main>
+                <p>
+                    Your HostelPro smart assistant
+                </p>
+            </div>
 
-    <div class="welcome">
+            <div class="status">
+                ● Connected
+            </div>
 
-        <h1>Nexa</h1>
-
-        <p>
-            Ask questions and get help using HostelPro.
-        </p>
-
-    </div>
-
-
-    <div class="chat-box">
-
-        <div class="chat-header">
-            <h2>Nexa</h2>
         </div>
 
 
-        <div class="chat-area" id="chatArea">
+        <!-- =========================
+             FEATURES
+        ========================= -->
 
-            <div class="message nexa-message">
+        <div class="features">
 
-                <div class="bubble">
-                    Hello! I'm Nexa. How can I help you with HostelPro?
+            <div
+                class="feature"
+                onclick="showPanel('assistant')">
+
+                <div class="feature-icon">
+                    🤖
+                </div>
+
+                <h3>
+                    AI Assistant
+                </h3>
+
+                <p>
+                    Ask Nexa questions about
+                    your hostel system.
+                </p>
+
+            </div>
+
+
+            <div
+                class="feature"
+                id="contextFeature"
+                onclick="showPanel('context')">
+
+                <div class="feature-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    Context Search
+                </h3>
+
+                <p>
+                    Follow students from
+                    allocation to hostel,
+                    room and bed.
+                </p>
+
+            </div>
+
+
+            <div
+                class="feature"
+                id="reportsFeature"
+                onclick="showPanel('reports')">
+
+                <div class="feature-icon">
+                    📊
+                </div>
+
+                <h3>
+                    Reports & Analysis
+                </h3>
+
+                <p>
+                    View system statistics
+                    and operational reports.
+                </p>
+
+            </div>
+
+
+            <div
+                class="feature"
+                id="insightsFeature"
+                onclick="showPanel('insights')">
+
+                <div class="feature-icon">
+                    💡
+                </div>
+
+                <h3>
+                    Smart Insights
+                </h3>
+
+                <p>
+                    Detect capacity,
+                    allocation and maintenance
+                    issues.
+                </p>
+
+            </div>
+
+
+            <div
+                class="feature"
+                id="actionsFeature"
+                onclick="showPanel('actions')">
+
+                <div class="feature-icon">
+                    ⚡
+                </div>
+
+                <h3>
+                    Smart Actions
+                </h3>
+
+                <p>
+                    Quickly find students,
+                    beds, maintenance and
+                    allocations.
+                </p>
+
+            </div>
+
+
+            <div
+                class="feature"
+                onclick="showPanel('navigation')">
+
+                <div class="feature-icon">
+                    🧭
+                </div>
+
+                <h3>
+                    Navigation
+                </h3>
+
+                <p>
+                    Tell Nexa where you want
+                    to go.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ASSISTANT
+        ========================= -->
+
+        <section
+            id="assistantPanel"
+            class="panel active">
+
+            <div class="panel-header">
+
+                <h2>
+                    🤖 Ask Nexa
+                </h2>
+
+                <p>
+                    Ask questions using normal
+                    language.
+                </p>
+
+            </div>
+
+            <div
+                id="chatBox"
+                class="chat-box">
+
+                <div class="message nexa">
+
+                    Hello! I'm <strong>Nexa</strong>,
+                    your HostelPro assistant.
+
+                    <br><br>
+
+                    I can help you understand
+                    information stored in the
+                    HostelPro database.
+
                 </div>
 
             </div>
 
-        </div>
+            <div class="chat-input">
 
+                <input
+                    id="questionInput"
+                    type="text"
+                    placeholder="Ask Nexa something..."
+                    autocomplete="off">
 
-        <div class="typing" id="typing">
-            Nexa is typing...
-        </div>
+                <button
+                    class="primary"
+                    onclick="askNexa()">
 
+                    Ask Nexa
 
-        <div class="quick-section">
-
-            <h3>Quick questions</h3>
-
-            <div class="quick-buttons">
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How do I register?')">
-                    How do I register?
-                </button>
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How do I find a hostel?')">
-                    Find a hostel
-                </button>
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How do I find a room?')">
-                    Find a room
-                </button>
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How does bed allocation work?')">
-                    Bed allocation
-                </button>
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How do I report maintenance?')">
-                    Maintenance
-                </button>
-
-                <button class="quick-btn"
-                    onclick="askQuestion('How do I contact the hostel?')">
-                    Contact hostel
                 </button>
 
             </div>
 
-        </div>
+            <div class="quick">
+
+                <button onclick="quickAsk('How many students are registered?')">
+                    Student Count
+                </button>
+
+                <button onclick="quickAsk('How many hostels are there?')">
+                    Hostels
+                </button>
+
+                <button onclick="quickAsk('How many rooms are there?')">
+                    Rooms
+                </button>
+
+                <button onclick="quickAsk('How many beds are available?')">
+                    Available Beds
+                </button>
+
+                <button onclick="quickAsk('Show active allocations')">
+                    Allocations
+                </button>
+
+                <button onclick="quickAsk('Show pending maintenance')">
+                    Maintenance
+                </button>
+
+                <button onclick="quickAsk('Give me smart insights')">
+                    Smart Insights
+                </button>
+
+            </div>
+
+        </section>
 
 
-        <div class="input-area">
+        <!-- =========================
+             CONTEXT SEARCH
+        ========================= -->
 
-            <input
-                type="text"
-                id="userInput"
-                placeholder="Ask Nexa..."
-                autocomplete="off"
-            >
+        <section
+            id="contextPanel"
+            class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    🔎 Context Search
+                </h2>
+
+                <p>
+                    Follow the relationship between
+                    students, allocations, beds,
+                    rooms and hostels.
+                </p>
+
+            </div>
+
+            <div class="quick">
+
+                <button
+                    onclick="quickAsk('Where is STU-2026-0001 allocated?')">
+
+                    Find Student Allocation
+
+                </button>
+
+                <button
+                    onclick="quickAsk('Which hostel is Room 101 in?')">
+
+                    Room Details
+
+                </button>
+
+                <button
+                    onclick="quickAsk('Who is occupying bed A-1?')">
+
+                    Bed Occupant
+
+                </button>
+
+                <button
+                    onclick="quickAsk('Who is in Room 101?')">
+
+                    Room Occupants
+
+                </button>
+
+                <button
+                    onclick="quickAsk('What bed is STU-2026-0001 using?')">
+
+                    Student Bed
+
+                </button>
+
+            </div>
+
+            <div
+                id="contextResults"
+                style="margin-top:20px;">
+
+                <div class="empty">
+                    Select a Context Search action
+                    or ask Nexa a question.
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             REPORTS
+        ========================= -->
+
+        <section
+            id="reportsPanel"
+            class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    📊 Reports & Analysis
+                </h2>
+
+                <p>
+                    Current HostelPro database
+                    overview.
+                </p>
+
+            </div>
+
+            <div id="reportsContent">
+
+                <div class="loading">
+                    Loading reports...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             INSIGHTS
+        ========================= -->
+
+        <section
+            id="insightsPanel"
+            class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    💡 Smart Insights
+                </h2>
+
+                <p>
+                    Nexa checks the database for
+                    important operational conditions.
+                </p>
+
+            </div>
 
             <button
-                class="send-btn"
-                onclick="sendMessage()">
-                Send
+                class="primary"
+                onclick="runInsights()">
+
+                Analyze System
+
             </button>
 
-        </div>
+            <div
+                id="insightsContent"
+                style="margin-top:18px;">
 
-    </div>
+                <div class="empty">
+                    Click Analyze System to begin.
+                </div>
 
-</main>
+            </div>
+
+        </section>
 
 
-<footer>
+        <!-- =========================
+             SMART ACTIONS
+        ========================= -->
 
-    <p>
-        © 2026 HostelPro. Hostel Management System.
-    </p>
+        <section
+            id="actionsPanel"
+            class="panel">
 
-</footer>
+            <div class="panel-header">
+
+                <h2>
+                    ⚡ Smart Actions
+                </h2>
+
+                <p>
+                    Quickly investigate common
+                    hostel-management tasks.
+                </p>
+
+            </div>
+
+            <div class="action-grid">
+
+                <button
+                    class="action"
+                    onclick="findAvailableBed()">
+
+                    <strong>
+                        🛏️ Find Available Bed
+                    </strong>
+
+                    <span>
+                        Find beds currently marked
+                        as available.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="findUnallocatedStudents()">
+
+                    <strong>
+                        👨‍🎓 Unallocated Students
+                    </strong>
+
+                    <span>
+                        Find students without an
+                        active allocation.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="findPendingMaintenance()">
+
+                    <strong>
+                        🔧 Pending Maintenance
+                    </strong>
+
+                    <span>
+                        View maintenance requests
+                        still requiring attention.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="showHostelCapacity()">
+
+                    <strong>
+                        🏢 Hostel Capacity
+                    </strong>
+
+                    <span>
+                        Check beds and occupancy
+                        by hostel.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="findAllocationConflicts()">
+
+                    <strong>
+                        ⚠️ Allocation Conflicts
+                    </strong>
+
+                    <span>
+                        Find possible duplicate
+                        active allocations.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="searchStudent()">
+
+                    <strong>
+                        🔎 Search Student
+                    </strong>
+
+                    <span>
+                        Search using a name or
+                        Student ID.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="navigateTo('allocations.html')">
+
+                    <strong>
+                        📋 Open Allocations
+                    </strong>
+
+                    <span>
+                        Manage student allocations.
+                    </span>
+
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="navigateTo('maintenance.html')">
+
+                    <strong>
+                        🔧 Open Maintenance
+                    </strong>
+
+                    <span>
+                        Manage maintenance requests.
+                    </span>
+
+                </button>
+
+            </div>
+
+            <div
+                id="actionsResults"
+                style="margin-top:18px;">
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NAVIGATION
+        ========================= -->
+
+        <section
+            id="navigationPanel"
+            class="panel">
+
+            <div class="panel-header">
+
+                <h2>
+                    🧭 Smart Navigation
+                </h2>
+
+                <p>
+                    Ask Nexa to open a HostelPro
+                    page for you.
+                </p>
+
+            </div>
+
+            <div class="action-grid">
+
+                <button
+                    class="action"
+                    onclick="navigateTo('hostels.html')">
+
+                    <strong>🏢 Hostels</strong>
+
+                    <span>
+                        Open hostel management.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('rooms.html')">
+
+                    <strong>🚪 Rooms</strong>
+
+                    <span>
+                        Open rooms management.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('beds.html')">
+
+                    <strong>🛏️ Beds</strong>
+
+                    <span>
+                        Open beds management.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('allocations.html')">
+
+                    <strong>📋 Allocations</strong>
+
+                    <span>
+                        Open allocations.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('maintenance.html')">
+
+                    <strong>🔧 Maintenance</strong>
+
+                    <span>
+                        Open maintenance.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('messages.html')">
+
+                    <strong>💬 Messages</strong>
+
+                    <span>
+                        Open messages.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('announcements.html')">
+
+                    <strong>📢 Announcements</strong>
+
+                    <span>
+                        Open announcements.
+                    </span>
+
+                </button>
+
+                <button
+                    id="reportsAction"
+                    class="action"
+                    onclick="navigateTo('reports.html')">
+
+                    <strong>📊 Reports</strong>
+
+                    <span>
+                        Open reports and analysis.
+                    </span>
+
+                </button>
+
+                <button
+                    class="action"
+                    onclick="navigateTo('nexa.html')">
+
+                    <strong>🤖 Nexa</strong>
+
+                    <span>
+                        Return to Nexa.
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
 
 
 <script>
 
-    /* =====================================
-       SUPABASE
-    ====================================== */
+/* =========================================================
+   SUPABASE
+========================================================= */
 
-    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
 
-    const { createClient } = supabase;
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
-    const db = createClient(
+const supabaseClient =
+    window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY
     );
 
 
-    /* =====================================
-       MOBILE MENU
-    ====================================== */
-
-    const hamburger =
-        document.getElementById("hamburger");
-
-    const mobileMenu =
-        document.getElementById("mobileMenu");
-
-    hamburger.addEventListener("click", function () {
-
-        mobileMenu.classList.toggle("open");
-
-    });
+let currentUser = null;
+let currentProfile = null;
 
 
-    /* =====================================
-       CHAT ELEMENTS
-    ====================================== */
+/* =========================================================
+   INITIALIZATION
+========================================================= */
 
-    const chatArea =
-        document.getElementById("chatArea");
+async function init() {
 
-    const userInput =
-        document.getElementById("userInput");
+    try {
 
-    const typing =
-        document.getElementById("typing");
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabaseClient.auth.getUser();
 
 
-    /* =====================================
-       SEND MESSAGE
-    ====================================== */
+        if (!user) {
 
-    function sendMessage() {
+            window.location.href =
+                "login.html";
 
-        const message =
-            userInput.value.trim();
-
-        if (!message) {
             return;
         }
 
-        addUserMessage(message);
 
-        userInput.value = "";
+        currentUser =
+            user;
 
-        showTyping();
 
-        setTimeout(function () {
+        const {
+            data: profile,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq(
+                    "id",
+                    user.id
+                )
+                .maybeSingle();
 
-            hideTyping();
 
-            const response =
-                generateResponse(message);
+        if (error) {
 
-            addNexaMessage(response);
+            console.error(
+                error
+            );
 
-        }, 700);
+            currentProfile = {
+
+                id: user.id,
+
+                full_name:
+                    user.email,
+
+                email:
+                    user.email,
+
+                role:
+                    "student"
+
+            };
+
+        } else {
+
+            currentProfile =
+                profile;
+
+        }
+
+
+        document.getElementById(
+            "sidebarUser"
+        ).textContent =
+            currentProfile?.full_name ||
+            user.email;
+
+
+        document.getElementById(
+            "sidebarRole"
+        ).textContent =
+            currentProfile?.role ||
+            "student";
+
+
+        setupRoleAccess(
+            currentProfile?.role ||
+            "student"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+        window.location.href =
+            "login.html";
+    }
+}
+
+
+/* =========================================================
+   ROLE ACCESS
+========================================================= */
+
+function setupRoleAccess(role) {
+
+    const reportsFeature =
+        document.getElementById(
+            "reportsFeature"
+        );
+
+    const insightsFeature =
+        document.getElementById(
+            "insightsFeature"
+        );
+
+    const actionsFeature =
+        document.getElementById(
+            "actionsFeature"
+        );
+
+    const reportsNav =
+        document.getElementById(
+            "reportsNav"
+        );
+
+    const reportsAction =
+        document.getElementById(
+            "reportsAction"
+        );
+
+
+    const dashboardLink =
+        document.getElementById(
+            "dashboardLink"
+        );
+
+
+    if (
+        role === "admin" ||
+        role === "caretaker"
+    ) {
+
+        if (dashboardLink) {
+
+            dashboardLink.href =
+                role === "admin"
+                    ? "admin_dashboard.html"
+                    : "caretaker.html";
+
+        }
+
+        if (reportsFeature)
+            reportsFeature.style.display =
+                "block";
+
+        if (insightsFeature)
+            insightsFeature.style.display =
+                "block";
+
+        if (actionsFeature)
+            actionsFeature.style.display =
+                "block";
+
+        if (reportsNav)
+            reportsNav.style.display =
+                "block";
+
+        if (reportsAction)
+            reportsAction.style.display =
+                "block";
+
+    } else {
+
+        if (role === "warden") {
+
+            dashboardLink.href =
+                "warden.html";
+
+        } else {
+
+            dashboardLink.href =
+                "students_dashboard.html";
+
+        }
+
+
+        if (reportsFeature)
+            reportsFeature.style.display =
+                "none";
+
+        if (insightsFeature)
+            insightsFeature.style.display =
+                "none";
+
+        if (actionsFeature)
+            actionsFeature.style.display =
+                "none";
+
+        if (reportsNav)
+            reportsNav.style.display =
+                "none";
+
+        if (reportsAction)
+            reportsAction.style.display =
+                "none";
+    }
+}
+
+
+/* =========================================================
+   PANEL CONTROL
+========================================================= */
+
+function showPanel(panel) {
+
+    document.querySelectorAll(
+        ".panel"
+    ).forEach(
+        p => p.classList.remove(
+            "active"
+        )
+    );
+
+
+    const target =
+        document.getElementById(
+            panel + "Panel"
+        );
+
+
+    if (target) {
+
+        target.classList.add(
+            "active"
+        );
 
     }
 
 
-    /* =====================================
-       ENTER KEY
-    ====================================== */
+    if (panel === "reports") {
 
-    userInput.addEventListener(
+        loadReports();
+
+    }
+
+
+    if (panel === "insights") {
+
+        runInsights();
+
+    }
+}
+
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+function addMessage(
+    message,
+    type = "nexa"
+) {
+
+    const chatBox =
+        document.getElementById(
+            "chatBox"
+        );
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.className =
+        "message " + type;
+
+
+    div.innerHTML =
+        message;
+
+
+    chatBox.appendChild(
+        div
+    );
+
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+}
+
+
+function quickAsk(question) {
+
+    const input =
+        document.getElementById(
+            "questionInput"
+        );
+
+
+    input.value =
+        question;
+
+
+    askNexa();
+}
+
+
+/* =========================================================
+   ASK NEXA
+========================================================= */
+
+async function askNexa() {
+
+    const input =
+        document.getElementById(
+            "questionInput"
+        );
+
+
+    const question =
+        input.value.trim();
+
+
+    if (!question)
+        return;
+
+
+    addMessage(
+        escapeHTML(question),
+        "user"
+    );
+
+
+    input.value =
+        "";
+
+
+    addMessage(
+        "Thinking...",
+        "nexa"
+    );
+
+
+    const thinkingMessage =
+        document.querySelector(
+            "#chatBox .message.nexa:last-child"
+        );
+
+
+    try {
+
+        /*
+           FIRST:
+           Check navigation commands.
+        */
+
+        const target =
+            getNavigationTarget(
+                question
+            );
+
+
+        if (target) {
+
+            if (
+                canNavigate(
+                    target
+                )
+            ) {
+
+                thinkingMessage.innerHTML =
+                    `🧭 Opening the requested HostelPro page...`;
+
+
+                setTimeout(
+                    () =>
+                        navigateTo(
+                            target
+                        ),
+                    700
+                );
+
+
+                return;
+            }
+
+
+            thinkingMessage.innerHTML =
+                `🔒 Your current role does not have access to that page.`;
+
+            return;
+        }
+
+
+        /*
+           SECOND:
+           Context Search.
+        */
+
+        const contextResponse =
+            await processContextQuestion(
+                question
+            );
+
+
+        if (contextResponse) {
+
+            thinkingMessage.innerHTML =
+                contextResponse;
+
+            showPanel(
+                "context"
+            );
+
+            document.getElementById(
+                "contextResults"
+            ).innerHTML =
+                contextResponse;
+
+            return;
+        }
+
+
+        /*
+           THIRD:
+           Standard database assistant.
+        */
+
+        const response =
+            await processQuestion(
+                question
+            );
+
+
+        thinkingMessage.innerHTML =
+            response;
+
+
+    } catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        thinkingMessage.innerHTML =
+            databaseError(
+                error
+            );
+    }
+}
+
+
+/* =========================================================
+   STANDARD DATABASE QUESTIONS
+========================================================= */
+
+async function processQuestion(
+    question
+) {
+
+    const q =
+        question.toLowerCase();
+
+
+    /* STUDENTS */
+
+    if (
+        q.includes("student") &&
+        (
+            q.includes("how many") ||
+            q.includes("count") ||
+            q.includes("total")
+        )
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "role",
+                    "student"
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            👨‍🎓 There are
+            <strong>${count || 0}</strong>
+            registered students.
+        `;
+    }
+
+
+    /* HOSTELS */
+
+    if (
+        q.includes("hostel") &&
+        (
+            q.includes("how many") ||
+            q.includes("count") ||
+            q.includes("total")
+        )
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("hostels")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            🏢 There are
+            <strong>${count || 0}</strong>
+            hostels in the system.
+        `;
+    }
+
+
+    /* SHOW HOSTELS */
+
+    if (
+        q.includes("show hostels") ||
+        q.includes("list hostels") ||
+        q.includes("hostel list")
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("hostels")
+                .select(
+                    "name,location,status"
+                )
+                .order(
+                    "name"
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        if (!data?.length)
+            return "🏢 No hostels were found.";
+
+
+        return `
+
+            🏢 <strong>Hostels</strong>
+
+            ${data.map(h => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            h.name
+                        )}
+                    </strong>
+
+                    <small>
+
+                        Location:
+                        ${escapeHTML(
+                            h.location ||
+                            "Not specified"
+                        )}
+
+                        <br>
+
+                        Status:
+                        ${escapeHTML(
+                            h.status ||
+                            "Unknown"
+                        )}
+
+                    </small>
+
+                </div>
+
+            `).join("")}
+
+        `;
+    }
+
+
+    /* ROOMS */
+
+    if (
+        q.includes("room") &&
+        (
+            q.includes("how many") ||
+            q.includes("count") ||
+            q.includes("total")
+        )
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("rooms")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            🚪 There are
+            <strong>${count || 0}</strong>
+            rooms in the system.
+        `;
+    }
+
+
+    /* AVAILABLE BEDS */
+
+    if (
+        q.includes("available bed") ||
+        q.includes("free bed")
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("beds")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "status",
+                    "available"
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            🛏️ There are
+            <strong>${count || 0}</strong>
+            beds currently marked as available.
+        `;
+    }
+
+
+    /* TOTAL BEDS */
+
+    if (
+        q.includes("total bed") ||
+        q.includes("how many beds")
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("beds")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            🛏️ The system contains
+            <strong>${count || 0}</strong>
+            beds.
+        `;
+    }
+
+
+    /* ACTIVE ALLOCATIONS */
+
+    if (
+        q.includes("allocation") &&
+        (
+            q.includes("how many") ||
+            q.includes("count") ||
+            q.includes("active") ||
+            q.includes("show")
+        )
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("allocations")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "status",
+                    "active"
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            📋 There are
+            <strong>${count || 0}</strong>
+            active allocations.
+        `;
+    }
+
+
+    /* PENDING MAINTENANCE */
+
+    if (
+        q.includes("maintenance") &&
+        (
+            q.includes("pending") ||
+            q.includes("how many") ||
+            q.includes("count")
+        )
+    ) {
+
+        const {
+            count,
+            error
+        } =
+            await supabaseClient
+                .from("maintenance_requests")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .in(
+                    "status",
+                    [
+                        "pending",
+                        "open",
+                        "in_progress"
+                    ]
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        return `
+            🔧 There are
+            <strong>${count || 0}</strong>
+            maintenance requests requiring
+            attention.
+        `;
+    }
+
+
+    /* SHOW AVAILABLE BEDS */
+
+    if (
+        q.includes("show available beds") ||
+        q.includes("list available beds")
+    ) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("beds")
+                .select(
+                    "id,bed_number,label,status,room_id"
+                )
+                .eq(
+                    "status",
+                    "available"
+                )
+                .order(
+                    "bed_number"
+                );
+
+
+        if (error)
+            return databaseError(error);
+
+
+        if (!data?.length) {
+
+            return `
+                🛏️ There are currently no
+                beds marked as available.
+            `;
+        }
+
+
+        return `
+
+            🛏️ <strong>
+                Available Beds
+            </strong>
+
+            ${data.map(b => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            b.label ||
+                            b.bed_number ||
+                            "Bed"
+                        )}
+                    </strong>
+
+                    <small>
+                        Status:
+                        ${escapeHTML(
+                            b.status
+                        )}
+                    </small>
+
+                </div>
+
+            `).join("")}
+
+        `;
+    }
+
+
+    /* SMART INSIGHTS */
+
+    if (
+        q.includes("smart insight") ||
+        q.includes("smart insights") ||
+        q.includes("analyze system") ||
+        q.includes("analyse system")
+    ) {
+
+        if (!canUseManagementFeatures()) {
+
+            return `
+                🔒 Smart Insights are available
+                to Admin and Caretaker accounts.
+            `;
+        }
+
+
+        showPanel(
+            "insights"
+        );
+
+
+        setTimeout(
+            runInsights,
+            100
+        );
+
+
+        return `
+            💡 I've opened Smart Insights
+            and started analyzing the system.
+        `;
+    }
+
+
+    /* GREETINGS */
+
+    if (
+        q === "hello" ||
+        q === "hi" ||
+        q.includes("hello nexa") ||
+        q.includes("hi nexa")
+    ) {
+
+        return `
+            👋 Hello!
+            I'm Nexa.
+
+            <br><br>
+
+            You can ask me about students,
+            hostels, rooms, beds, allocations,
+            maintenance, or system insights.
+        `;
+    }
+
+
+    /* HELP */
+
+    if (
+        q.includes("what can you do") ||
+        q === "help" ||
+        q.includes("help me")
+    ) {
+
+        return `
+
+            🤖 <strong>I can help with:</strong>
+
+            <br><br>
+
+            • Student counts<br>
+            • Hostel information<br>
+            • Room information<br>
+            • Bed availability<br>
+            • Allocations<br>
+            • Maintenance<br>
+            • Student locations<br>
+            • Room and bed relationships<br>
+            • Smart Insights<br>
+            • HostelPro navigation
+
+            <br><br>
+
+            Try:
+            <strong>
+                "Where is STU-2026-0001?"
+            </strong>
+
+        `;
+    }
+
+
+    return `
+
+        🤔 I couldn't understand that question yet.
+
+        <br><br>
+
+        Try asking:
+
+        <br><br>
+
+        • How many students are registered?<br>
+        • How many beds are available?<br>
+        • Show hostels<br>
+        • Show active allocations<br>
+        • Where is STU-2026-0001?<br>
+        • Which hostel is Room 101 in?<br>
+        • Who is occupying bed A-1?<br>
+        • Give me smart insights
+
+    `;
+}
+
+
+/* =========================================================
+   CONTEXT SEARCH
+========================================================= */
+
+async function processContextQuestion(
+    question
+) {
+
+    const q =
+        question.toLowerCase();
+
+
+    const studentIdMatch =
+        question.match(
+            /\bSTU-\d{4}-\d+\b/i
+        );
+
+
+    const roomMatch =
+        question.match(
+            /\broom\s+([A-Za-z0-9-]+)\b/i
+        );
+
+
+    const bedMatch =
+        question.match(
+            /\bbed\s+([A-Za-z0-9-]+)\b/i
+        );
+
+
+    /*
+       Student ID search
+    */
+
+    if (studentIdMatch) {
+
+        const studentId =
+            studentIdMatch[0].toUpperCase();
+
+
+        const {
+            data: student,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "id,full_name,email,student_id,status"
+                )
+                .eq(
+                    "student_id",
+                    studentId
+                )
+                .eq(
+                    "role",
+                    "student"
+                )
+                .maybeSingle();
+
+
+        if (error)
+            return databaseError(error);
+
+
+        if (!student) {
+
+            return `
+                🔎 I couldn't find a student
+                with Student ID
+                <strong>${escapeHTML(
+                    studentId
+                )}</strong>.
+            `;
+        }
+
+
+        /*
+           Students may only see their own
+           allocation through Nexa.
+        */
+
+        if (
+            !canUseManagementFeatures() &&
+            currentUser &&
+            student.id !== currentUser.id
+        ) {
+
+            return `
+                🔒 Your current role can only
+                access its own student allocation
+                information through Nexa.
+            `;
+        }
+
+
+        return await getStudentAllocationContext(
+            student
+        );
+    }
+
+
+    /*
+       Explicit room questions
+    */
+
+    if (
+        roomMatch &&
+        (
+            q.includes("which hostel") ||
+            q.includes("hostel") ||
+            q.includes("who") ||
+            q.includes("occup") ||
+            q.includes("bed")
+        )
+    ) {
+
+        if (!canUseManagementFeatures()) {
+
+            return `
+                🔒 Detailed room allocation
+                context is available to Admin
+                and Caretaker accounts.
+            `;
+        }
+
+
+        return await getRoomContext(
+            roomMatch[1]
+        );
+    }
+
+
+    /*
+       Explicit bed questions
+    */
+
+    if (
+        bedMatch &&
+        (
+            q.includes("who") ||
+            q.includes("occup") ||
+            q.includes("using") ||
+            q.includes("room") ||
+            q.includes("hostel")
+        )
+    ) {
+
+        if (!canUseManagementFeatures()) {
+
+            return `
+                🔒 Detailed bed occupant
+                information is available to
+                Admin and Caretaker accounts.
+            `;
+        }
+
+
+        return await getBedContext(
+            bedMatch[1]
+        );
+    }
+
+
+    /*
+       Student name search.
+    */
+
+    if (
+        q.includes("where is") ||
+        q.includes("where does") ||
+        q.includes("where") &&
+        (
+            q.includes("student") ||
+            q.includes("stay")
+        )
+    ) {
+
+        const student =
+            await findStudentFromQuestion(
+                question
+            );
+
+
+        if (student) {
+
+            if (
+                !canUseManagementFeatures() &&
+                currentUser &&
+                student.id !== currentUser.id
+            ) {
+
+                return `
+                    🔒 Your current role can only
+                    access its own student allocation
+                    information through Nexa.
+                `;
+            }
+
+
+            return await getStudentAllocationContext(
+                student
+            );
+        }
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   FIND STUDENT
+========================================================= */
+
+async function findStudentFromQuestion(
+    question
+) {
+
+    let cleaned =
+        question
+            .replace(
+                /STU-\d{4}-\d+/ig,
+                ""
+            )
+            .replace(
+                /\b(student|where|is|does|the|allocated|allocation|for|staying|stay|room|bed|hostel|who|using|occupying|occupies|which|in|on|at|my)\b/ig,
+                " "
+            )
+            .replace(
+                /[?!.,]/g,
+                " "
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+    if (
+        !cleaned ||
+        cleaned.length < 2
+    ) {
+
+        return null;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id,full_name,email,phone,student_id,status"
+            )
+            .eq(
+                "role",
+                "student"
+            )
+            .ilike(
+                "full_name",
+                `%${cleaned}%`
+            )
+            .limit(5);
+
+
+    if (error) {
+
+        console.error(
+            "Student search:",
+            error
+        );
+
+        return null;
+    }
+
+
+    if (
+        !data ||
+        !data.length
+    ) {
+
+        return null;
+    }
+
+
+    if (
+        data.length === 1
+    ) {
+
+        return data[0];
+    }
+
+
+    const exact =
+        data.find(
+            student =>
+                String(
+                    student.full_name
+                ).toLowerCase() ===
+                cleaned.toLowerCase()
+        );
+
+
+    return exact || data[0];
+}
+
+
+/* =========================================================
+   STUDENT ALLOCATION CONTEXT
+========================================================= */
+
+async function getStudentAllocationContext(
+    student
+) {
+
+    const {
+        data: allocations,
+        error
+    } =
+        await supabaseClient
+            .from("allocations")
+            .select(`
+                id,
+                student_id,
+                bed_id,
+                allocation_date,
+                check_in_date,
+                check_out_date,
+                status,
+                notes,
+                created_at
+            `)
+            .eq(
+                "student_id",
+                student.id
+            )
+            .eq(
+                "status",
+                "active"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error)
+        return databaseError(error);
+
+
+    if (
+        !allocations ||
+        !allocations.length
+    ) {
+
+        return `
+
+            👨‍🎓 <strong>
+                ${escapeHTML(
+                    student.full_name
+                )}
+            </strong>
+
+            <br><br>
+
+            Student ID:
+            <strong>
+                ${escapeHTML(
+                    student.student_id ||
+                    "Not assigned"
+                )}
+            </strong>
+
+            <br><br>
+
+            ⚠️ This student currently has
+            <strong>
+                no active allocation
+            </strong>.
+
+            <br><br>
+
+            ${
+                canUseManagementFeatures()
+                ? `
+                    <a
+                        class="result-link"
+                        href="allocations.html">
+
+                        Allocate Student →
+
+                    </a>
+                `
+                : ""
+            }
+
+        `;
+    }
+
+
+    const details = [];
+
+
+    for (
+        const allocation
+        of allocations
+    ) {
+
+        const location =
+            await getBedLocation(
+                allocation.bed_id
+            );
+
+
+        details.push({
+
+            allocation,
+
+            location
+
+        });
+    }
+
+
+    return `
+
+        👨‍🎓 <strong>
+            ${escapeHTML(
+                student.full_name
+            )}
+        </strong>
+
+        <br><br>
+
+        Student ID:
+        <strong>
+            ${escapeHTML(
+                student.student_id ||
+                "Not assigned"
+            )}
+        </strong>
+
+        <br><br>
+
+        ${
+            details.map(item => {
+
+                const a =
+                    item.allocation;
+
+                const l =
+                    item.location;
+
+
+                return `
+
+                    <div class="result-item">
+
+                        <strong>
+                            📍 Active Allocation
+                        </strong>
+
+                        <small>
+
+                            🏢 Hostel:
+                            <strong>
+                                ${escapeHTML(
+                                    l.hostel
+                                )}
+                            </strong>
+
+                            <br>
+
+                            🚪 Room:
+                            <strong>
+                                ${escapeHTML(
+                                    l.room
+                                )}
+                            </strong>
+
+                            <br>
+
+                            🛏️ Bed:
+                            <strong>
+                                ${escapeHTML(
+                                    l.bed
+                                )}
+                            </strong>
+
+                            <br>
+
+                            📅 Check-in:
+                            ${escapeHTML(
+                                a.check_in_date ||
+                                "Not recorded"
+                            )}
+
+                            ${
+                                a.check_out_date
+                                ? `
+                                    <br>
+                                    📅 Check-out:
+                                    ${escapeHTML(
+                                        a.check_out_date
+                                    )}
+                                `
+                                : ""
+                            }
+
+                            <br>
+
+                            Status:
+                            ${escapeHTML(
+                                a.status ||
+                                "Unknown"
+                            )}
+
+                        </small>
+
+                    </div>
+
+                `;
+
+            }).join("")
+        }
+
+        ${
+            canUseManagementFeatures()
+            ? `
+                <a
+                    class="result-link"
+                    href="allocations.html">
+
+                    Open Allocations →
+
+                </a>
+            `
+            : ""
+        }
+
+    `;
+}
+
+
+/* =========================================================
+   BED LOCATION
+========================================================= */
+
+async function getBedLocation(
+    bedId
+) {
+
+    const unknown = {
+
+        hostel:
+            "Unknown hostel",
+
+        room:
+            "Unknown room",
+
+        bed:
+            "Unknown bed"
+
+    };
+
+
+    if (!bedId)
+        return unknown;
+
+
+    const {
+        data: bed,
+        error: bedError
+    } =
+        await supabaseClient
+            .from("beds")
+            .select(
+                "id,bed_number,label,room_id"
+            )
+            .eq(
+                "id",
+                bedId
+            )
+            .maybeSingle();
+
+
+    if (
+        bedError ||
+        !bed
+    ) {
+
+        return unknown;
+    }
+
+
+    const {
+        data: room
+    } =
+        await supabaseClient
+            .from("rooms")
+            .select(
+                "id,room_number,hostel_id"
+            )
+            .eq(
+                "id",
+                bed.room_id
+            )
+            .maybeSingle();
+
+
+    if (!room) {
+
+        return {
+
+            hostel:
+                "Unknown hostel",
+
+            room:
+                "Unknown room",
+
+            bed:
+                bed.label ||
+                bed.bed_number ||
+                "Unknown bed"
+
+        };
+    }
+
+
+    const {
+        data: hostel
+    } =
+        await supabaseClient
+            .from("hostels")
+            .select(
+                "id,name,location"
+            )
+            .eq(
+                "id",
+                room.hostel_id
+            )
+            .maybeSingle();
+
+
+    return {
+
+        hostel:
+            hostel?.name ||
+            "Unknown hostel",
+
+        room:
+            room.room_number ||
+            "Unknown room",
+
+        bed:
+            bed.label ||
+            bed.bed_number ||
+            "Unknown bed"
+
+    };
+}
+
+
+/* =========================================================
+   ROOM CONTEXT
+========================================================= */
+
+async function getRoomContext(
+    roomNumber
+) {
+
+    const {
+        data: rooms,
+        error
+    } =
+        await supabaseClient
+            .from("rooms")
+            .select(
+                "id,room_number,hostel_id"
+            )
+            .ilike(
+                "room_number",
+                roomNumber
+            );
+
+
+    if (error)
+        return databaseError(error);
+
+
+    if (
+        !rooms ||
+        !rooms.length
+    ) {
+
+        return `
+
+            🚪 I couldn't find
+            <strong>
+                Room ${escapeHTML(
+                    roomNumber
+                )}
+            </strong>
+            in the database.
+
+        `;
+    }
+
+
+    const room =
+        rooms[0];
+
+
+    const {
+        data: hostel
+    } =
+        await supabaseClient
+            .from("hostels")
+            .select(
+                "name,location"
+            )
+            .eq(
+                "id",
+                room.hostel_id
+            )
+            .maybeSingle();
+
+
+    const {
+        data: beds
+    } =
+        await supabaseClient
+            .from("beds")
+            .select(
+                "id,bed_number,label,status"
+            )
+            .eq(
+                "room_id",
+                room.id
+            )
+            .order(
+                "bed_number"
+            );
+
+
+    return `
+
+        🚪 <strong>
+            Room ${escapeHTML(
+                room.room_number
+            )}
+        </strong>
+
+        <br><br>
+
+        🏢 Hostel:
+        <strong>
+            ${escapeHTML(
+                hostel?.name ||
+                "Unknown hostel"
+            )}
+        </strong>
+
+        <br>
+
+        Location:
+        ${escapeHTML(
+            hostel?.location ||
+            "Not specified"
+        )}
+
+        <br><br>
+
+        🛏️ Beds:
+        <strong>
+            ${beds?.length || 0}
+        </strong>
+
+        ${
+            beds?.length
+            ? beds.map(b => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            b.label ||
+                            b.bed_number ||
+                            "Bed"
+                        )}
+                    </strong>
+
+                    <small>
+
+                        Status:
+                        ${escapeHTML(
+                            b.status ||
+                            "Unknown"
+                        )}
+
+                    </small>
+
+                </div>
+
+            `).join("")
+            : `
+                <div class="empty">
+                    No beds are registered
+                    for this room.
+                </div>
+            `
+        }
+
+    `;
+}
+
+
+/* =========================================================
+   BED CONTEXT
+========================================================= */
+
+async function getBedContext(
+    bedIdentifier
+) {
+
+    const {
+        data: beds,
+        error
+    } =
+        await supabaseClient
+            .from("beds")
+            .select(
+                "id,bed_number,label,status,room_id"
+            )
+            .or(
+                `bed_number.ilike.${bedIdentifier},label.ilike.${bedIdentifier}`
+            )
+            .limit(5);
+
+
+    if (error)
+        return databaseError(error);
+
+
+    if (
+        !beds ||
+        !beds.length
+    ) {
+
+        return `
+
+            🛏️ I couldn't find a bed
+            matching
+            <strong>
+                ${escapeHTML(
+                    bedIdentifier
+                )}
+            </strong>.
+
+        `;
+    }
+
+
+    const results = [];
+
+
+    for (
+        const bed
+        of beds
+    ) {
+
+        const location =
+            await getBedLocation(
+                bed.id
+            );
+
+
+        const {
+            data: allocation
+        } =
+            await supabaseClient
+                .from("allocations")
+                .select(
+                    "student_id,status"
+                )
+                .eq(
+                    "bed_id",
+                    bed.id
+                )
+                .eq(
+                    "status",
+                    "active"
+                )
+                .maybeSingle();
+
+
+        let occupant =
+            null;
+
+
+        if (allocation) {
+
+            const {
+                data: student
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "full_name,student_id"
+                    )
+                    .eq(
+                        "id",
+                        allocation.student_id
+                    )
+                    .maybeSingle();
+
+
+            occupant =
+                student;
+        }
+
+
+        results.push({
+
+            bed,
+
+            location,
+
+            occupant
+
+        });
+    }
+
+
+    return `
+
+        🛏️ <strong>
+            Bed Information
+        </strong>
+
+        ${results.map(item => `
+
+            <div class="result-item">
+
+                <strong>
+                    ${escapeHTML(
+                        item.bed.label ||
+                        item.bed.bed_number ||
+                        "Bed"
+                    )}
+                </strong>
+
+                <small>
+
+                    🏢 Hostel:
+                    ${escapeHTML(
+                        item.location.hostel
+                    )}
+
+                    <br>
+
+                    🚪 Room:
+                    ${escapeHTML(
+                        item.location.room
+                    )}
+
+                    <br>
+
+                    Status:
+                    ${escapeHTML(
+                        item.bed.status ||
+                        "Unknown"
+                    )}
+
+                    <br>
+
+                    ${
+                        item.occupant
+                        ? `
+
+                            👨‍🎓 Occupant:
+                            <strong>
+                                ${escapeHTML(
+                                    item.occupant.full_name
+                                )}
+                            </strong>
+
+                            <br>
+
+                            Student ID:
+                            ${escapeHTML(
+                                item.occupant.student_id ||
+                                "Not assigned"
+                            )}
+
+                        `
+                        : `
+
+                            👨‍🎓 Occupant:
+                            <strong>
+                                None
+                            </strong>
+
+                        `
+                    }
+
+                </small>
+
+            </div>
+
+        `).join("")}
+
+    `;
+}
+
+
+/* =========================================================
+   REPORTS
+========================================================= */
+
+async function loadReports() {
+
+    const container =
+        document.getElementById(
+            "reportsContent"
+        );
+
+
+    if (
+        !canUseManagementFeatures()
+    ) {
+
+        container.innerHTML =
+            `
+                <div class="error">
+                    Reports are available to
+                    Admin and Caretaker accounts.
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Loading reports...
+        </div>`;
+
+
+    try {
+
+        const [
+            students,
+            hostels,
+            rooms,
+            beds,
+            allocations,
+            maintenance
+        ] =
+            await Promise.all([
+
+                supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    )
+                    .eq(
+                        "role",
+                        "student"
+                    ),
+
+                supabaseClient
+                    .from("hostels")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    ),
+
+                supabaseClient
+                    .from("rooms")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    ),
+
+                supabaseClient
+                    .from("beds")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    ),
+
+                supabaseClient
+                    .from("allocations")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    )
+                    .eq(
+                        "status",
+                        "active"
+                    ),
+
+                supabaseClient
+                    .from("maintenance_requests")
+                    .select(
+                        "id",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    )
+                    .in(
+                        "status",
+                        [
+                            "pending",
+                            "open",
+                            "in_progress"
+                        ]
+                    )
+
+            ]);
+
+
+        const utilization =
+            beds.count
+                ? (
+                    allocations.count /
+                    beds.count *
+                    100
+                ).toFixed(1)
+                : 0;
+
+
+        container.innerHTML = `
+
+            <div class="action-grid">
+
+                <div class="result-item">
+                    <strong>👨‍🎓 Students</strong>
+                    <small>
+                        ${students.count || 0}
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>🏢 Hostels</strong>
+                    <small>
+                        ${hostels.count || 0}
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>🚪 Rooms</strong>
+                    <small>
+                        ${rooms.count || 0}
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>🛏️ Beds</strong>
+                    <small>
+                        ${beds.count || 0}
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>📋 Active Allocations</strong>
+                    <small>
+                        ${allocations.count || 0}
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>📈 Bed Utilization</strong>
+                    <small>
+                        ${utilization}%
+                    </small>
+                </div>
+
+                <div class="result-item">
+                    <strong>🔧 Pending Maintenance</strong>
+                    <small>
+                        ${maintenance.count || 0}
+                    </small>
+                </div>
+
+            </div>
+
+        `;
+
+    } catch (error) {
+
+        container.innerHTML =
+            databaseError(
+                error
+            );
+    }
+}
+
+
+/* =========================================================
+   SMART INSIGHTS
+========================================================= */
+
+async function runInsights() {
+
+    const container =
+        document.getElementById(
+            "insightsContent"
+        );
+
+
+    if (
+        !canUseManagementFeatures()
+    ) {
+
+        container.innerHTML =
+            `
+                <div class="error">
+                    Smart Insights are available
+                    to Admin and Caretaker accounts.
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        `
+            <div class="loading">
+                Nexa is analyzing the system...
+            </div>
+        `;
+
+
+    try {
+
+        const [
+            studentsResult,
+            hostelsResult,
+            roomsResult,
+            bedsResult,
+            allocationsResult,
+            maintenanceResult
+        ] =
+            await Promise.all([
+
+                supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id,full_name,student_id"
+                    )
+                    .eq(
+                        "role",
+                        "student"
+                    ),
+
+                supabaseClient
+                    .from("hostels")
+                    .select(
+                        "id,name"
+                    ),
+
+                supabaseClient
+                    .from("rooms")
+                    .select(
+                        "id,room_number,hostel_id"
+                    ),
+
+                supabaseClient
+                    .from("beds")
+                    .select(
+                        "id,room_id,status"
+                    ),
+
+                supabaseClient
+                    .from("allocations")
+                    .select(
+                        "id,student_id,bed_id,status"
+                    )
+                    .eq(
+                        "status",
+                        "active"
+                    ),
+
+                supabaseClient
+                    .from("maintenance_requests")
+                    .select(
+                        "id,title,priority,status"
+                    )
+
+            ]);
+
+
+        if (
+            studentsResult.error
+        )
+            throw studentsResult.error;
+
+        if (
+            hostelsResult.error
+        )
+            throw hostelsResult.error;
+
+        if (
+            roomsResult.error
+        )
+            throw roomsResult.error;
+
+        if (
+            bedsResult.error
+        )
+            throw bedsResult.error;
+
+        if (
+            allocationsResult.error
+        )
+            throw allocationsResult.error;
+
+        if (
+            maintenanceResult.error
+        )
+            throw maintenanceResult.error;
+
+
+        const students =
+            studentsResult.data || [];
+
+        const hostels =
+            hostelsResult.data || [];
+
+        const rooms =
+            roomsResult.data || [];
+
+        const beds =
+            bedsResult.data || [];
+
+        const allocations =
+            allocationsResult.data || [];
+
+        const maintenance =
+            maintenanceResult.data || [];
+
+
+        const allocatedStudentIds =
+            new Set(
+                allocations.map(
+                    a => a.student_id
+                )
+            );
+
+
+        const unallocatedStudents =
+            students.filter(
+                s =>
+                    !allocatedStudentIds.has(
+                        s.id
+                    )
+            );
+
+
+        const studentAllocationCounts =
+            {};
+
+
+        allocations.forEach(
+            a => {
+
+                studentAllocationCounts[
+                    a.student_id
+                ] =
+                    (
+                        studentAllocationCounts[
+                            a.student_id
+                        ] || 0
+                    ) + 1;
+
+            }
+        );
+
+
+        const duplicateStudents =
+            Object.entries(
+                studentAllocationCounts
+            ).filter(
+                ([, count]) =>
+                    count > 1
+            );
+
+
+        const bedAllocationCounts =
+            {};
+
+
+        allocations.forEach(
+            a => {
+
+                bedAllocationCounts[
+                    a.bed_id
+                ] =
+                    (
+                        bedAllocationCounts[
+                            a.bed_id
+                        ] || 0
+                    ) + 1;
+
+            }
+        );
+
+
+        const duplicateBeds =
+            Object.entries(
+                bedAllocationCounts
+            ).filter(
+                ([, count]) =>
+                    count > 1
+            );
+
+
+        const availableBeds =
+            beds.filter(
+                b =>
+                    b.status ===
+                    "available"
+            );
+
+
+        const urgentMaintenance =
+            maintenance.filter(
+                m =>
+                    [
+                        "urgent",
+                        "critical",
+                        "high"
+                    ].includes(
+                        String(
+                            m.priority
+                        ).toLowerCase()
+                    ) &&
+                    ![
+                        "completed",
+                        "closed",
+                        "resolved"
+                    ].includes(
+                        String(
+                            m.status
+                        ).toLowerCase()
+                    )
+            );
+
+
+        const pendingMaintenance =
+            maintenance.filter(
+                m =>
+                    ![
+                        "completed",
+                        "closed",
+                        "resolved"
+                    ].includes(
+                        String(
+                            m.status
+                        ).toLowerCase()
+                    )
+            );
+
+
+        const insights = [];
+
+
+        if (
+            unallocatedStudents.length
+        ) {
+
+            insights.push({
+
+                type:
+                    "warning",
+
+                title:
+                    "Students without active allocations",
+
+                text:
+                    `${unallocatedStudents.length} student(s) currently have no active allocation.`
+
+            });
+
+        } else {
+
+            insights.push({
+
+                type:
+                    "success",
+
+                title:
+                    "All students have allocations",
+
+                text:
+                    "No unallocated students were detected."
+
+            });
+
+        }
+
+
+        if (
+            duplicateStudents.length
+        ) {
+
+            insights.push({
+
+                type:
+                    "danger",
+
+                title:
+                    "Multiple active allocations detected",
+
+                text:
+                    `${duplicateStudents.length} student(s) appear to have more than one active allocation.`
+
+            });
+
+        }
+
+
+        if (
+            duplicateBeds.length
+        ) {
+
+            insights.push({
+
+                type:
+                    "danger",
+
+                title:
+                    "Bed allocation conflicts",
+
+                text:
+                    `${duplicateBeds.length} bed(s) appear in multiple active allocations.`
+
+            });
+
+        }
+
+
+        if (
+            availableBeds.length === 0 &&
+            beds.length > 0
+        ) {
+
+            insights.push({
+
+                type:
+                    "danger",
+
+                title:
+                    "No available beds",
+
+                text:
+                    "No beds are currently marked as available."
+
+            });
+
+        } else {
+
+            insights.push({
+
+                type:
+                    "success",
+
+                title:
+                    "Available capacity",
+
+                text:
+                    `${availableBeds.length} bed(s) are currently marked as available.`
+
+            });
+
+        }
+
+
+        if (
+            urgentMaintenance.length
+        ) {
+
+            insights.push({
+
+                type:
+                    "danger",
+
+                title:
+                    "High-priority maintenance",
+
+                text:
+                    `${urgentMaintenance.length} high, urgent or critical maintenance request(s) require attention.`
+
+            });
+
+        }
+
+
+        if (
+            pendingMaintenance.length
+        ) {
+
+            insights.push({
+
+                type:
+                    "warning",
+
+                title:
+                    "Pending maintenance",
+
+                text:
+                    `${pendingMaintenance.length} maintenance request(s) are not yet completed.`
+
+            });
+
+        } else {
+
+            insights.push({
+
+                type:
+                    "success",
+
+                title:
+                    "Maintenance status",
+
+                text:
+                    "No pending maintenance requests were detected."
+
+            });
+
+        }
+
+
+        insights.push({
+
+            type:
+                "success",
+
+            title:
+                "System snapshot",
+
+            text:
+                `${students.length} students, ${hostels.length} hostels, ${rooms.length} rooms, ${beds.length} beds and ${allocations.length} active allocations are currently recorded.`
+
+        });
+
+
+        container.innerHTML =
+            insights.map(
+                insight => `
+
+                    <div class="insight ${insight.type}">
+
+                        <strong>
+                            ${escapeHTML(
+                                insight.title
+                            )}
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                insight.text
+                            )}
+                        </span>
+
+                    </div>
+
+                `
+            ).join("");
+
+    } catch (error) {
+
+        container.innerHTML =
+            databaseError(
+                error
+            );
+    }
+}
+
+
+/* =========================================================
+   SMART ACTIONS
+========================================================= */
+
+function canUseManagementFeatures() {
+
+    return (
+        currentProfile?.role ===
+            "admin" ||
+        currentProfile?.role ===
+            "caretaker"
+    );
+}
+
+
+async function findAvailableBed() {
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Searching for available beds...
+        </div>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("beds")
+            .select(
+                "id,bed_number,label,status,room_id"
+            )
+            .eq(
+                "status",
+                "available"
+            )
+            .limit(20);
+
+
+    if (error) {
+
+        container.innerHTML =
+            databaseError(error);
+
+        return;
+    }
+
+
+    if (!data?.length) {
+
+        container.innerHTML =
+            `
+                <div class="empty">
+                    No available beds found.
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <h3>
+            🛏️ Available Beds
+        </h3>
+
+        ${data.map(
+            b => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            b.label ||
+                            b.bed_number ||
+                            "Bed"
+                        )}
+                    </strong>
+
+                    <small>
+                        Status:
+                        ${escapeHTML(
+                            b.status
+                        )}
+                    </small>
+
+                </div>
+
+            `
+        ).join("")}
+
+    `;
+}
+
+
+async function findUnallocatedStudents() {
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Searching...
+        </div>`;
+
+
+    const {
+        data: students,
+        error: studentError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id,full_name,student_id"
+            )
+            .eq(
+                "role",
+                "student"
+            );
+
+
+    if (studentError) {
+
+        container.innerHTML =
+            databaseError(
+                studentError
+            );
+
+        return;
+    }
+
+
+    const {
+        data: allocations,
+        error: allocationError
+    } =
+        await supabaseClient
+            .from("allocations")
+            .select(
+                "student_id"
+            )
+            .eq(
+                "status",
+                "active"
+            );
+
+
+    if (allocationError) {
+
+        container.innerHTML =
+            databaseError(
+                allocationError
+            );
+
+        return;
+    }
+
+
+    const allocated =
+        new Set(
+            (allocations || []).map(
+                a => a.student_id
+            )
+        );
+
+
+    const unallocated =
+        (students || []).filter(
+            s =>
+                !allocated.has(
+                    s.id
+                )
+        );
+
+
+    if (!unallocated.length) {
+
+        container.innerHTML =
+            `
+                <div class="insight success">
+                    <strong>
+                        No unallocated students
+                    </strong>
+
+                    <span>
+                        All registered students
+                        currently have active
+                        allocations.
+                    </span>
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <h3>
+            👨‍🎓 Unallocated Students
+        </h3>
+
+        ${unallocated.map(
+            s => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            s.full_name
+                        )}
+                    </strong>
+
+                    <small>
+                        Student ID:
+                        ${escapeHTML(
+                            s.student_id ||
+                            "Not assigned"
+                        )}
+                    </small>
+
+                </div>
+
+            `
+        ).join("")}
+
+    `;
+}
+
+
+async function findPendingMaintenance() {
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Loading maintenance...
+        </div>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("maintenance_requests")
+            .select(
+                "id,title,category,priority,status,created_at"
+            )
+            .not(
+                "status",
+                "in",
+                "(completed,closed,resolved)"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        container.innerHTML =
+            databaseError(error);
+
+        return;
+    }
+
+
+    if (!data?.length) {
+
+        container.innerHTML =
+            `
+                <div class="insight success">
+
+                    <strong>
+                        No pending maintenance
+                    </strong>
+
+                    <span>
+                        There are no outstanding
+                        maintenance requests.
+                    </span>
+
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <h3>
+            🔧 Pending Maintenance
+        </h3>
+
+        ${data.map(
+            m => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            m.title ||
+                            "Maintenance Request"
+                        )}
+                    </strong>
+
+                    <small>
+
+                        Category:
+                        ${escapeHTML(
+                            m.category ||
+                            "Not specified"
+                        )}
+
+                        <br>
+
+                        Priority:
+                        ${escapeHTML(
+                            m.priority ||
+                            "Not specified"
+                        )}
+
+                        <br>
+
+                        Status:
+                        ${escapeHTML(
+                            m.status ||
+                            "Unknown"
+                        )}
+
+                    </small>
+
+                </div>
+
+            `
+        ).join("")}
+
+    `;
+}
+
+
+async function showHostelCapacity() {
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Calculating hostel capacity...
+        </div>`;
+
+
+    const {
+        data: hostels,
+        error: hostelError
+    } =
+        await supabaseClient
+            .from("hostels")
+            .select(
+                "id,name,location"
+            );
+
+
+    if (hostelError) {
+
+        container.innerHTML =
+            databaseError(
+                hostelError
+            );
+
+        return;
+    }
+
+
+    const {
+        data: rooms,
+        error: roomError
+    } =
+        await supabaseClient
+            .from("rooms")
+            .select(
+                "id,hostel_id"
+            );
+
+
+    if (roomError) {
+
+        container.innerHTML =
+            databaseError(
+                roomError
+            );
+
+        return;
+    }
+
+
+    const {
+        data: beds,
+        error: bedError
+    } =
+        await supabaseClient
+            .from("beds")
+            .select(
+                "id,room_id,status"
+            );
+
+
+    if (bedError) {
+
+        container.innerHTML =
+            databaseError(
+                bedError
+            );
+
+        return;
+    }
+
+
+    const roomMap =
+        new Map(
+            (rooms || []).map(
+                r => [
+                    r.id,
+                    r.hostel_id
+                ]
+            )
+        );
+
+
+    container.innerHTML = `
+
+        <h3>
+            🏢 Hostel Capacity
+        </h3>
+
+        ${(hostels || []).map(
+            hostel => {
+
+                const hostelBeds =
+                    (beds || []).filter(
+                        bed =>
+                            roomMap.get(
+                                bed.room_id
+                            ) === hostel.id
+                    );
+
+
+                const available =
+                    hostelBeds.filter(
+                        b =>
+                            b.status ===
+                            "available"
+                    ).length;
+
+
+                const occupied =
+                    hostelBeds.length -
+                    available;
+
+
+                const percentage =
+                    hostelBeds.length
+                        ? (
+                            occupied /
+                            hostelBeds.length *
+                            100
+                        ).toFixed(1)
+                        : 0;
+
+
+                return `
+
+                    <div class="result-item">
+
+                        <strong>
+                            ${escapeHTML(
+                                hostel.name
+                            )}
+                        </strong>
+
+                        <small>
+
+                            Total beds:
+                            ${hostelBeds.length}
+
+                            <br>
+
+                            Available:
+                            ${available}
+
+                            <br>
+
+                            Occupied/non-available:
+                            ${occupied}
+
+                            <br>
+
+                            Utilization:
+                            ${percentage}%
+
+                        </small>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("")}
+
+    `;
+}
+
+
+async function findAllocationConflicts() {
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Checking allocations...
+        </div>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("allocations")
+            .select(
+                "student_id,bed_id"
+            )
+            .eq(
+                "status",
+                "active"
+            );
+
+
+    if (error) {
+
+        container.innerHTML =
+            databaseError(error);
+
+        return;
+    }
+
+
+    const studentCounts = {};
+    const bedCounts = {};
+
+
+    (data || []).forEach(
+        allocation => {
+
+            studentCounts[
+                allocation.student_id
+            ] =
+                (
+                    studentCounts[
+                        allocation.student_id
+                    ] || 0
+                ) + 1;
+
+
+            bedCounts[
+                allocation.bed_id
+            ] =
+                (
+                    bedCounts[
+                        allocation.bed_id
+                    ] || 0
+                ) + 1;
+
+        }
+    );
+
+
+    const duplicateStudents =
+        Object.entries(
+            studentCounts
+        ).filter(
+            ([, count]) =>
+                count > 1
+        );
+
+
+    const duplicateBeds =
+        Object.entries(
+            bedCounts
+        ).filter(
+            ([, count]) =>
+                count > 1
+        );
+
+
+    if (
+        !duplicateStudents.length &&
+        !duplicateBeds.length
+    ) {
+
+        container.innerHTML =
+            `
+                <div class="insight success">
+
+                    <strong>
+                        No allocation conflicts detected
+                    </strong>
+
+                    <span>
+                        No student or bed has more
+                        than one active allocation
+                        in the current data.
+                    </span>
+
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="insight danger">
+
+            <strong>
+                Allocation conflicts detected
+            </strong>
+
+            <span>
+
+                Duplicate students:
+                ${duplicateStudents.length}
+
+                <br>
+
+                Duplicate beds:
+                ${duplicateBeds.length}
+
+            </span>
+
+        </div>
+
+    `;
+}
+
+
+async function searchStudent() {
+
+    const search =
+        prompt(
+            "Enter student's name or Student ID:"
+        );
+
+
+    if (!search)
+        return;
+
+
+    const container =
+        document.getElementById(
+            "actionsResults"
+        );
+
+
+    container.innerHTML =
+        `<div class="loading">
+            Searching for ${escapeHTML(search)}...
+        </div>`;
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id,full_name,email,phone,student_id,status"
+            )
+            .eq(
+                "role",
+                "student"
+            )
+            .or(
+                `full_name.ilike.%${search}%,student_id.ilike.%${search}%`
+            )
+            .limit(10);
+
+
+    if (error) {
+
+        container.innerHTML =
+            databaseError(error);
+
+        return;
+    }
+
+
+    if (!data?.length) {
+
+        container.innerHTML =
+            `
+                <div class="empty">
+                    No students found.
+                </div>
+            `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <h3>
+            👨‍🎓 Student Search
+        </h3>
+
+        ${data.map(
+            s => `
+
+                <div class="result-item">
+
+                    <strong>
+                        ${escapeHTML(
+                            s.full_name
+                        )}
+                    </strong>
+
+                    <small>
+
+                        Student ID:
+                        ${escapeHTML(
+                            s.student_id ||
+                            "Not assigned"
+                        )}
+
+                        <br>
+
+                        Status:
+                        ${escapeHTML(
+                            s.status ||
+                            "Unknown"
+                        )}
+
+                        <br>
+
+                        Email:
+                        ${escapeHTML(
+                            s.email ||
+                            "Not available"
+                        )}
+
+                    </small>
+
+                </div>
+
+            `
+        ).join("")}
+
+    `;
+}
+
+
+/* =========================================================
+   SMART NAVIGATION
+========================================================= */
+
+function getNavigationTarget(
+    question
+) {
+
+    const q =
+        question.toLowerCase().trim();
+
+
+    if (
+        q.includes("open dashboard") ||
+        q.includes("go to dashboard") ||
+        q.includes("my dashboard")
+    ) {
+
+        return currentProfile?.role ===
+            "admin"
+
+            ? "admin_dashboard.html"
+
+            : currentProfile?.role ===
+                "caretaker"
+
+                ? "caretaker.html"
+
+                : currentProfile?.role ===
+                    "warden"
+
+                    ? "warden.html"
+
+                    : "students_dashboard.html";
+    }
+
+
+    if (
+        q.includes("open hostel") ||
+        q.includes("go to hostel")
+    ) {
+
+        return "hostels.html";
+    }
+
+
+    if (
+        q.includes("open room") ||
+        q.includes("go to room")
+    ) {
+
+        return "rooms.html";
+    }
+
+
+    if (
+        q.includes("open bed") ||
+        q.includes("go to bed")
+    ) {
+
+        return "beds.html";
+    }
+
+
+    if (
+        q.includes("open allocation") ||
+        q.includes("go to allocation")
+    ) {
+
+        return "allocations.html";
+    }
+
+
+    if (
+        q.includes("open maintenance") ||
+        q.includes("go to maintenance")
+    ) {
+
+        return "maintenance.html";
+    }
+
+
+    if (
+        q.includes("open message") ||
+        q.includes("go to message")
+    ) {
+
+        return "messages.html";
+    }
+
+
+    if (
+        q.includes("open announcement") ||
+        q.includes("go to announcement")
+    ) {
+
+        return "announcements.html";
+    }
+
+
+    if (
+        q.includes("open reports") ||
+        q.includes("go to reports") ||
+        q.includes("reports and analysis")
+    ) {
+
+        return "reports.html";
+    }
+
+
+    if (
+        q.includes("open nexa") ||
+        q.includes("go to nexa")
+    ) {
+
+        return "nexa.html";
+    }
+
+
+    return null;
+}
+
+
+function canNavigate(
+    target
+) {
+
+    if (
+        target ===
+            "reports.html" &&
+        !canUseManagementFeatures()
+    ) {
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+function navigateTo(
+    url
+) {
+
+    if (
+        url ===
+            "reports.html" &&
+        !canUseManagementFeatures()
+    ) {
+
+        addMessage(
+            `
+                🔒 Reports are available
+                to Admin and Caretaker accounts.
+            `
+        );
+
+        return;
+    }
+
+
+    window.location.href =
+        url;
+}
+
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function databaseError(
+    error
+) {
+
+    console.error(
+        error
+    );
+
+
+    return `
+
+        <div class="error">
+
+            ⚠️ Nexa could not retrieve
+            that information from the database.
+
+            <br><br>
+
+            Please check that the relevant
+            HostelPro table and permissions
+            are configured correctly.
+
+        </div>
+
+    `;
+}
+
+
+function escapeHTML(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   ENTER KEY
+========================================================= */
+
+document
+    .getElementById(
+        "questionInput"
+    )
+    .addEventListener(
         "keydown",
         function(event) {
 
-            if (event.key === "Enter") {
-                sendMessage();
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                askNexa();
             }
 
         }
     );
 
 
-    /* =====================================
-       QUICK QUESTIONS
-    ====================================== */
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-    function askQuestion(question) {
+async function logout() {
 
-        userInput.value = question;
+    await supabaseClient.auth.signOut();
 
-        sendMessage();
+    window.location.href =
+        "login.html";
+}
 
-    }
 
+/* =========================================================
+   START
+========================================================= */
 
-    /* =====================================
-       ADD USER MESSAGE
-    ====================================== */
-
-    function addUserMessage(message) {
-
-        const wrapper =
-            document.createElement("div");
-
-        wrapper.className =
-            "message user-message";
-
-        wrapper.innerHTML = `
-            <div class="bubble">
-                ${escapeHtml(message)}
-            </div>
-        `;
-
-        chatArea.appendChild(wrapper);
-
-        scrollChat();
-
-    }
-
-
-    /* =====================================
-       ADD NEXA MESSAGE
-    ====================================== */
-
-    function addNexaMessage(message) {
-
-        const wrapper =
-            document.createElement("div");
-
-        wrapper.className =
-            "message nexa-message";
-
-        wrapper.innerHTML = `
-            <div class="bubble">
-                ${message}
-            </div>
-        `;
-
-        chatArea.appendChild(wrapper);
-
-        scrollChat();
-
-    }
-
-
-    /* =====================================
-       TYPING
-    ====================================== */
-
-    function showTyping() {
-
-        typing.style.display = "block";
-
-        scrollChat();
-
-    }
-
-
-    function hideTyping() {
-
-        typing.style.display = "none";
-
-    }
-
-
-    /* =====================================
-       SCROLL
-    ====================================== */
-
-    function scrollChat() {
-
-        chatArea.scrollTop =
-            chatArea.scrollHeight;
-
-    }
-
-
-    /* =====================================
-       NEXA RESPONSE ENGINE
-    ====================================== */
-
-    function generateResponse(message) {
-
-        const text =
-            message.toLowerCase();
-
-
-        /* GREETING */
-
-        if (
-            text.includes("hello") ||
-            text.includes("hi") ||
-            text.includes("hey")
-        ) {
-
-            return `
-                Hello! I'm Nexa.
-                How can I help you with HostelPro?
-            `;
-
-        }
-
-
-        /* REGISTRATION */
-
-        if (
-            text.includes("register") ||
-            text.includes("create account") ||
-            text.includes("sign up")
-        ) {
-
-            return `
-                To create an account, open the
-                <strong>Create Account</strong> page
-                and complete the registration form.
-                Student accounts can then be used to
-                access the student dashboard.
-            `;
-
-        }
-
-
-        /* LOGIN */
-
-        if (
-            text.includes("login") ||
-            text.includes("log in") ||
-            text.includes("sign in")
-        ) {
-
-            return `
-                Open the <strong>Login</strong> page
-                and enter your registered email and
-                password. HostelPro will take you to
-                the dashboard associated with your role.
-            `;
-
-        }
-
-
-        /* HOSTEL */
-
-        if (
-            text.includes("hostel") &&
-            (
-                text.includes("find") ||
-                text.includes("search") ||
-                text.includes("available")
-            )
-        ) {
-
-            return `
-                You can browse available hostels from
-                the <strong>Hostels</strong> page.
-                You can search by hostel name or location
-                and view the rooms and beds associated
-                with each hostel.
-            `;
-
-        }
-
-
-        /* ROOM */
-
-        if (
-            text.includes("room") ||
-            text.includes("rooms")
-        ) {
-
-            return `
-                Open the <strong>Rooms</strong> page
-                to view rooms and their hostel,
-                bed availability and occupancy information.
-                You can also open an individual room to
-                see more details.
-            `;
-
-        }
-
-
-        /* BED */
-
-        if (
-            text.includes("bed") ||
-            text.includes("allocation") ||
-            text.includes("allocate")
-        ) {
-
-            return `
-                HostelPro uses individual beds for
-                student allocation. For double-decker
-                beds, labels such as <strong>A-1</strong>
-                represent the lower bed while
-                <strong>A-2</strong> represents the upper bed.
-            `;
-
-        }
-
-
-        /* MAINTENANCE */
-
-        if (
-            text.includes("maintenance") ||
-            text.includes("repair") ||
-            text.includes("broken")
-        ) {
-
-            return `
-                Students can report maintenance problems
-                through the maintenance section.
-                Include the problem, room and relevant
-                details so the responsible staff can
-                follow up.
-            `;
-
-        }
-
-
-        /* ANNOUNCEMENTS */
-
-        if (
-            text.includes("announcement") ||
-            text.includes("notice")
-        ) {
-
-            return `
-                Hostel announcements can be viewed from
-                the <strong>Announcements</strong> page.
-                This is where important hostel notices
-                can be displayed.
-            `;
-
-        }
-
-
-        /* ADMIN */
-
-        if (
-            text.includes("admin") ||
-            text.includes("administrator")
-        ) {
-
-            return `
-                The administrator manages HostelPro,
-                including hostels, rooms, beds, students,
-                staff, allocations, maintenance,
-                reports, announcements and settings.
-            `;
-
-        }
-
-
-        /* WARDEN */
-
-        if (
-            text.includes("warden")
-        ) {
-
-            return `
-                Wardens handle responsibilities related
-                to students and hostel operations assigned
-                to them.
-            `;
-
-        }
-
-
-        /* CARETAKER */
-
-        if (
-            text.includes("caretaker")
-        ) {
-
-            return `
-                Caretakers help manage hostel facilities,
-                rooms, students and operational tasks
-                assigned to them.
-            `;
-
-        }
-
-
-        /* CONTACT */
-
-        if (
-            text.includes("contact") ||
-            text.includes("help")
-        ) {
-
-            return `
-                You can use the Contact or Help & Support
-                section to find assistance and information
-                about using HostelPro.
-            `;
-
-        }
-
-
-        /* THANK YOU */
-
-        if (
-            text.includes("thank") ||
-            text.includes("thanks")
-        ) {
-
-            return `
-                You're welcome. I'm here whenever you
-                need help with HostelPro.
-            `;
-
-        }
-
-
-        /* DEFAULT */
-
-        return `
-            I can help you with HostelPro topics such as
-            <strong>hostels, rooms, beds, registration,
-            login, allocations, maintenance,
-            announcements and user roles</strong>.
-            Try asking me about one of these.
-        `;
-
-    }
-
-
-    /* =====================================
-       SECURITY
-    ====================================== */
-
-    function escapeHtml(value) {
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
-    }
+init();
 
 </script>
 
 </body>
 </html>
+

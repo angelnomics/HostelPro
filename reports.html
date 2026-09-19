@@ -1,10 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Reports & Analysis | HostelPro</title>
+    <title>HostelPro | Reports & Analysis</title>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -13,172 +13,144 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f7fb;
+            background: #f4f7fb;
             color: #172033;
-        }
-
-        .layout {
-            display: flex;
             min-height: 100vh;
         }
 
         /* SIDEBAR */
         .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
             width: 250px;
+            height: 100vh;
             background: #172033;
             color: white;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
+            padding: 22px 15px;
             overflow-y: auto;
             z-index: 1000;
         }
 
-        .brand {
-            padding: 24px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .logo {
+            text-align: center;
+            margin-bottom: 28px;
         }
 
-        .brand h2 {
-            font-size: 21px;
-            margin-bottom: 4px;
+        .logo h2 {
+            font-size: 24px;
+            color: white;
         }
 
-        .brand span {
-            color: #93c5fd;
-            font-size: 12px;
+        .logo span {
+            color: #2563eb;
         }
 
-        .nav {
-            padding: 15px 10px;
+        .logo small {
+            display: block;
+            color: #94a3b8;
+            margin-top: 5px;
         }
 
-        .nav a {
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 15px 10px 8px;
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
-            gap: 11px;
-            color: #dbe4f0;
-            text-decoration: none;
-            padding: 12px 14px;
-            border-radius: 8px;
+            gap: 12px;
+            padding: 11px 13px;
             margin-bottom: 4px;
+            border-radius: 8px;
+            color: #cbd5e1;
+            text-decoration: none;
             font-size: 14px;
             transition: 0.2s;
         }
 
-        .nav a:hover {
-            background: rgba(255,255,255,0.08);
-            color: white;
-        }
-
-        .nav a.active {
+        .nav-link:hover,
+        .nav-link.active {
             background: #2563eb;
             color: white;
         }
 
         .logout {
-            color: #fca5a5 !important;
+            width: 100%;
+            border: none;
+            background: #dc2626;
+            color: white;
+            padding: 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
         }
 
         /* MAIN */
         .main {
             margin-left: 250px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
+            padding: 25px;
         }
 
         .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
         }
 
         .topbar h1 {
-            font-size: 21px;
+            font-size: 28px;
         }
 
-        .admin-badge {
-            background: #eff6ff;
-            color: #2563eb;
-            padding: 8px 13px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .page-intro {
-            margin-bottom: 25px;
-        }
-
-        .page-intro h2 {
-            font-size: 27px;
-            margin-bottom: 7px;
-        }
-
-        .page-intro p {
+        .topbar p {
             color: #64748b;
-            font-size: 14px;
+            margin-top: 5px;
         }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
-        }
-
-        button,
-        .btn {
-            border: none;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secondary {
+        .user-box {
             background: white;
-            color: #172033;
-            border: 1px solid #dbe1ea;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+            text-align: right;
         }
 
-        .btn-nexa {
-            background: #00843d;
-            color: white;
+        .user-box strong {
+            display: block;
         }
 
-        /* KPI CARDS */
+        .user-box span {
+            color: #64748b;
+            font-size: 13px;
+            text-transform: capitalize;
+        }
+
+        /* ALERT */
+        .alert {
+            display: none;
+            padding: 13px 16px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* CARDS */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -188,79 +160,60 @@
 
         .stat-card {
             background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 20px;
-            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
         }
 
-        .stat-label {
-            color: #64748b;
-            font-size: 13px;
+        .stat-card .icon {
+            font-size: 25px;
             margin-bottom: 10px;
         }
 
-        .stat-value {
-            font-size: 29px;
-            font-weight: 700;
-            margin-bottom: 6px;
+        .stat-card h3 {
+            font-size: 28px;
+            margin-bottom: 5px;
         }
 
-        .stat-note {
-            color: #94a3b8;
-            font-size: 12px;
+        .stat-card p {
+            color: #64748b;
+            font-size: 14px;
         }
 
         /* SECTIONS */
-        .section {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 22px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
+        .section-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .section-header h3 {
+        .panel {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            gap: 10px;
+        }
+
+        .panel-header h2 {
             font-size: 18px;
         }
 
-        .section-header p {
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        /* OVERVIEW GRID */
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .mini-card {
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 17px;
-        }
-
-        .mini-card h4 {
-            font-size: 13px;
-            color: #64748b;
-            margin-bottom: 8px;
-        }
-
-        .mini-card .number {
-            font-size: 23px;
-            font-weight: bold;
+        .refresh-btn {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 8px 13px;
+            border-radius: 7px;
+            cursor: pointer;
         }
 
         /* PROGRESS */
@@ -272,218 +225,169 @@
             display: flex;
             justify-content: space-between;
             margin-bottom: 7px;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .progress-bar {
-            width: 100%;
             height: 10px;
             background: #e2e8f0;
-            border-radius: 10px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
+            width: 0%;
             background: #2563eb;
-            border-radius: 10px;
-            transition: width 0.4s ease;
-        }
-
-        .progress-fill.green {
-            background: #00843d;
-        }
-
-        .progress-fill.red {
-            background: #dc2626;
-        }
-
-        .progress-fill.orange {
-            background: #f59e0b;
+            border-radius: 20px;
+            transition: width .5s;
         }
 
         /* TABLE */
-        .table-wrapper {
+        .table-wrap {
             overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 650px;
         }
 
         th,
         td {
-            padding: 13px 12px;
-            border-bottom: 1px solid #edf0f4;
+            padding: 12px 10px;
             text-align: left;
-            font-size: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
         }
 
         th {
             color: #64748b;
-            font-weight: 600;
-            background: #f8fafc;
-        }
-
-        td {
-            color: #334155;
+            font-size: 12px;
+            text-transform: uppercase;
         }
 
         .badge {
             display: inline-block;
             padding: 5px 9px;
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .badge-green {
+        .badge.green {
             background: #dcfce7;
             color: #166534;
         }
 
-        .badge-blue {
-            background: #dbeafe;
-            color: #1d4ed8;
+        .badge.yellow {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .badge-red {
+        .badge.red {
             background: #fee2e2;
             color: #991b1b;
         }
 
-        .badge-orange {
-            background: #ffedd5;
-            color: #9a3412;
+        .badge.blue {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
-        .badge-gray {
-            background: #f1f5f9;
-            color: #475569;
+        /* INSIGHTS */
+        .insight {
+            display: flex;
+            gap: 12px;
+            padding: 13px;
+            background: #f8fafc;
+            border-radius: 9px;
+            margin-bottom: 10px;
         }
 
-        /* TWO COLUMN */
-        .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+        .insight-icon {
+            font-size: 20px;
         }
 
-        /* NEXA CARD */
-        .nexa-card {
-            background: linear-gradient(135deg, #172033, #243552);
-            color: white;
-            border-radius: 12px;
-            padding: 24px;
+        .insight strong {
+            display: block;
+            margin-bottom: 3px;
         }
 
-        .nexa-card h3 {
-            margin-bottom: 8px;
-        }
-
-        .nexa-card p {
-            color: #cbd5e1;
+        .insight p {
+            color: #64748b;
             font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 18px;
+            line-height: 1.4;
         }
 
-        .nexa-card .btn {
-            background: white;
-            color: #172033;
+        .empty {
+            color: #64748b;
+            text-align: center;
+            padding: 20px;
         }
 
         /* LOADING */
         .loading {
-            padding: 25px;
             text-align: center;
+            padding: 30px;
             color: #64748b;
-        }
-
-        .error {
-            padding: 15px;
-            background: #fee2e2;
-            color: #991b1b;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            font-size: 13px;
-        }
-
-        .updated {
-            font-size: 12px;
-            color: #94a3b8;
         }
 
         /* MOBILE */
         .mobile-menu {
             display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            border: none;
             background: #172033;
             color: white;
-            border: none;
-            font-size: 22px;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
         }
 
         @media (max-width: 1100px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .overview-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .two-column {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 800px) {
             .sidebar {
                 transform: translateX(-100%);
-                transition: 0.25s;
+                transition: .3s;
             }
 
             .sidebar.open {
                 transform: translateX(0);
             }
 
-            .main {
-                margin-left: 0;
-                width: 100%;
-            }
-
             .mobile-menu {
                 display: block;
             }
 
-            .topbar {
-                padding: 0 18px;
+            .main {
+                margin-left: 0;
+                padding: 75px 15px 20px;
             }
 
-            .content {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .stats-grid,
-            .overview-grid {
+            .section-grid {
                 grid-template-columns: 1fr;
             }
 
-            .page-intro h2 {
-                font-size: 23px;
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
             }
+        }
 
-            .section {
-                padding: 17px;
-            }
-
-            .admin-badge {
-                display: none;
+        @media (max-width: 550px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -491,419 +395,297 @@
 
 <body>
 
-<div class="layout">
+<button class="mobile-menu" id="mobileMenu">☰</button>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
 
-        <div class="brand">
-            <h2>HostelPro</h2>
-            <span>Hostel Management System</span>
+    <div class="logo">
+        <h2>Hostel<span>Pro</span></h2>
+        <small>Management System</small>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-title">Main</div>
+
+        <a href="admin_dashboard.html" class="nav-link" id="dashboardLink">
+            🏠 Dashboard
+        </a>
+
+        <a href="hostels.html" class="nav-link">
+            🏢 Hostels
+        </a>
+
+        <a href="rooms.html" class="nav-link">
+            🚪 Rooms
+        </a>
+
+        <a href="beds.html" class="nav-link">
+            🛏️ Beds
+        </a>
+
+        <a href="students_dashboard.html" class="nav-link">
+            👨‍🎓 Students
+        </a>
+
+        <a href="allocations.html" class="nav-link">
+            📋 Allocations
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-title">Management</div>
+
+        <a href="maintenance.html" class="nav-link">
+            🔧 Maintenance
+        </a>
+
+        <a href="discipline.html" class="nav-link">
+            ⚖️ Discipline
+        </a>
+
+        <a href="security.html" class="nav-link">
+            🛡️ Security
+        </a>
+
+        <a href="visitors.html" class="nav-link">
+            👥 Visitors
+        </a>
+
+        <a href="messages.html" class="nav-link">
+            💬 Messages
+        </a>
+
+        <a href="announcements.html" class="nav-link">
+            📢 Announcements
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-title">Analysis</div>
+
+        <a href="reports.html" class="nav-link active">
+            📊 Reports & Analysis
+        </a>
+
+        <a href="nexa.html" class="nav-link">
+            ✨ Nexa
+        </a>
+    </div>
+
+    <div class="nav-section">
+        <div class="nav-title">System</div>
+
+        <a href="settings.html" class="nav-link">
+            ⚙️ Settings
+        </a>
+
+        <a href="help.html" class="nav-link">
+            ❓ Help & Support
+        </a>
+    </div>
+
+    <button class="logout" id="logoutBtn">Logout</button>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <h1>Reports & Analysis</h1>
+            <p>Understand what is happening across HostelPro.</p>
         </div>
 
-        <nav class="nav">
+        <div class="user-box">
+            <strong id="userName">Loading...</strong>
+            <span id="userRole">...</span>
+        </div>
+    </div>
 
-            <a href="admin_dashboard.html">🏠 Dashboard</a>
-            <a href="hostels.html">🏢 Hostels</a>
-            <a href="rooms.html">🚪 Rooms</a>
-            <a href="beds.html">🛏️ Beds</a>
-            <a href="students.html">👨‍🎓 Students</a>
-            <a href="allocations.html">📋 Allocations</a>
-            <a href="maintenance.html">🔧 Maintenance</a>
-            <a href="discipline.html">⚠️ Discipline</a>
-            <a href="security.html">🛡️ Security</a>
-            <a href="tasks.html">✅ Tasks</a>
-            <a href="messages.html">💬 Messages</a>
-            <a href="announcements.html">📢 Announcements</a>
+    <div class="alert" id="alertBox"></div>
 
-            <a href="reports.html" class="active">📊 Reports & Analysis</a>
+    <!-- STATISTICS -->
+    <section class="stats-grid">
 
-            <a href="settings.html">⚙️ Settings</a>
-            <a href="nexa.html">✨ Nexa</a>
+        <div class="stat-card">
+            <div class="icon">👨‍🎓</div>
+            <h3 id="studentCount">—</h3>
+            <p>Total Students</p>
+        </div>
 
-            <a href="#" class="logout" id="logoutBtn">🚪 Logout</a>
+        <div class="stat-card">
+            <div class="icon">🏢</div>
+            <h3 id="hostelCount">—</h3>
+            <p>Total Hostels</p>
+        </div>
 
-        </nav>
-    </aside>
+        <div class="stat-card">
+            <div class="icon">🛏️</div>
+            <h3 id="bedCount">—</h3>
+            <p>Total Beds</p>
+        </div>
 
+        <div class="stat-card">
+            <div class="icon">📋</div>
+            <h3 id="allocationCount">—</h3>
+            <p>Active Allocations</p>
+        </div>
 
-    <!-- MAIN -->
-    <main class="main">
+    </section>
 
-        <header class="topbar">
+    <!-- OCCUPANCY + MAINTENANCE -->
+    <section class="section-grid">
 
-            <div style="display:flex;align-items:center;gap:15px;">
-                <button class="mobile-menu" id="mobileMenu">☰</button>
-                <h1>Reports & Analysis</h1>
+        <div class="panel">
+            <div class="panel-header">
+                <h2>🛏️ Bed Utilization</h2>
             </div>
 
-            <div class="admin-badge">
-                🔐 Administrator
-            </div>
-
-        </header>
-
-
-        <div class="content">
-
-            <div class="page-intro">
-                <h2>Reports & Analysis</h2>
-                <p>
-                    Monitor students, beds, allocations, hostels and maintenance
-                    using live data from HostelPro.
-                </p>
-            </div>
-
-
-            <div id="errorBox" class="error"></div>
-
-
-            <div class="actions">
-
-                <button class="btn btn-primary" id="refreshBtn">
-                    🔄 Refresh Reports
-                </button>
-
-                <a href="nexa.html?context=reports" class="btn btn-nexa">
-                    ✨ Ask Nexa
-                </a>
-
-                <span class="updated" id="lastUpdated">
-                    Loading...
-                </span>
-
-            </div>
-
-
-            <!-- MAIN KPI -->
-            <div class="stats-grid">
-
-                <div class="stat-card">
-                    <div class="stat-label">Total Students</div>
-                    <div class="stat-value" id="totalStudents">0</div>
-                    <div class="stat-note">Registered student profiles</div>
+            <div class="progress-row">
+                <div class="progress-info">
+                    <span>Occupied Beds</span>
+                    <strong id="occupiedText">0 / 0</strong>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-label">Active Students</div>
-                    <div class="stat-value" id="activeStudents">0</div>
-                    <div class="stat-note">Currently active accounts</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="occupiedBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-info">
+                    <span>Available Beds</span>
+                    <strong id="availableText">0 / 0</strong>
                 </div>
 
+                <div class="progress-bar">
+                    <div class="progress-fill" id="availableBar"></div>
+                </div>
+            </div>
+
+            <div class="progress-row">
+                <div class="progress-info">
+                    <span>Occupancy Rate</span>
+                    <strong id="occupancyRate">0%</strong>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="occupancyRateBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h2>🔧 Maintenance</h2>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns:repeat(2,1fr); margin:0;">
+
                 <div class="stat-card">
-                    <div class="stat-label">Total Beds</div>
-                    <div class="stat-value" id="totalBeds">0</div>
-                    <div class="stat-note">All registered beds</div>
+                    <div class="icon">⏳</div>
+                    <h3 id="pendingMaintenance">—</h3>
+                    <p>Pending Requests</p>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-label">Occupied Beds</div>
-                    <div class="stat-value" id="occupiedBeds">0</div>
-                    <div class="stat-note">Beds with active allocations</div>
+                    <div class="icon">🔧</div>
+                    <h3 id="totalMaintenance">—</h3>
+                    <p>Total Requests</p>
                 </div>
 
             </div>
+        </div>
 
+    </section>
 
-            <!-- OVERVIEW -->
-            <section class="section">
+    <!-- HOSTEL OCCUPANCY -->
+    <section class="panel" style="margin-bottom:20px;">
 
-                <div class="section-header">
+        <div class="panel-header">
+            <h2>🏢 Hostel Occupancy</h2>
 
-                    <div>
-                        <h3>System Overview</h3>
-                        <p>Current state of the hostel management system.</p>
-                    </div>
+            <button class="refresh-btn" onclick="loadReports()">
+                ↻ Refresh
+            </button>
+        </div>
 
-                </div>
+        <div class="table-wrap">
 
+            <table>
 
-                <div class="overview-grid">
+                <thead>
+                    <tr>
+                        <th>Hostel</th>
+                        <th>Location</th>
+                        <th>Total Beds</th>
+                        <th>Occupied</th>
+                        <th>Available</th>
+                        <th>Occupancy</th>
+                    </tr>
+                </thead>
 
-                    <div class="mini-card">
-                        <h4>Total Hostels</h4>
-                        <div class="number" id="totalHostels">0</div>
-                    </div>
+                <tbody id="hostelTable">
 
-                    <div class="mini-card">
-                        <h4>Total Rooms</h4>
-                        <div class="number" id="totalRooms">0</div>
-                    </div>
+                    <tr>
+                        <td colspan="6" class="loading">
+                            Loading hostel analysis...
+                        </td>
+                    </tr>
 
-                    <div class="mini-card">
-                        <h4>Available Beds</h4>
-                        <div class="number" id="availableBeds">0</div>
-                    </div>
+                </tbody>
 
-                    <div class="mini-card">
-                        <h4>Allocated Students</h4>
-                        <div class="number" id="allocatedStudents">0</div>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Unallocated Students</h4>
-                        <div class="number" id="unallocatedStudents">0</div>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Occupancy Rate</h4>
-                        <div class="number" id="occupancyRate">0%</div>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- OCCUPANCY -->
-            <section class="section">
-
-                <div class="section-header">
-
-                    <div>
-                        <h3>Bed Occupancy Analysis</h3>
-                        <p>Distribution of beds according to their current allocation.</p>
-                    </div>
-
-                </div>
-
-
-                <div class="progress-row">
-
-                    <div class="progress-info">
-                        <span>Occupied</span>
-                        <strong id="occupiedPercent">0%</strong>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="occupiedProgress" style="width:0%"></div>
-                    </div>
-
-                </div>
-
-
-                <div class="progress-row">
-
-                    <div class="progress-info">
-                        <span>Available</span>
-                        <strong id="availablePercent">0%</strong>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill green" id="availableProgress" style="width:0%"></div>
-                    </div>
-
-                </div>
-
-
-                <div class="progress-row">
-
-                    <div class="progress-info">
-                        <span>Maintenance / Reserved</span>
-                        <strong id="otherPercent">0%</strong>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill orange" id="otherProgress" style="width:0%"></div>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- TWO COLUMN -->
-            <div class="two-column">
-
-                <!-- ALLOCATION -->
-                <section class="section">
-
-                    <div class="section-header">
-                        <div>
-                            <h3>Allocation Analysis</h3>
-                            <p>Current allocation statuses.</p>
-                        </div>
-                    </div>
-
-                    <div class="overview-grid">
-
-                        <div class="mini-card">
-                            <h4>Active</h4>
-                            <div class="number" id="activeAllocations">0</div>
-                        </div>
-
-                        <div class="mini-card">
-                            <h4>Pending</h4>
-                            <div class="number" id="pendingAllocations">0</div>
-                        </div>
-
-                        <div class="mini-card">
-                            <h4>Ended</h4>
-                            <div class="number" id="endedAllocations">0</div>
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- MAINTENANCE -->
-                <section class="section">
-
-                    <div class="section-header">
-                        <div>
-                            <h3>Maintenance Analysis</h3>
-                            <p>Current maintenance workload.</p>
-                        </div>
-                    </div>
-
-                    <div class="overview-grid">
-
-                        <div class="mini-card">
-                            <h4>Open</h4>
-                            <div class="number" id="openMaintenance">0</div>
-                        </div>
-
-                        <div class="mini-card">
-                            <h4>In Progress</h4>
-                            <div class="number" id="progressMaintenance">0</div>
-                        </div>
-
-                        <div class="mini-card">
-                            <h4>Completed</h4>
-                            <div class="number" id="completedMaintenance">0</div>
-                        </div>
-
-                    </div>
-
-                </section>
-
-            </div>
-
-
-            <!-- HOSTEL ANALYSIS -->
-            <section class="section">
-
-                <div class="section-header">
-
-                    <div>
-                        <h3>Hostel Analysis</h3>
-                        <p>
-                            Student and bed distribution across registered hostels.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-                                <th>Hostel</th>
-                                <th>Rooms</th>
-                                <th>Total Beds</th>
-                                <th>Occupied</th>
-                                <th>Available</th>
-                                <th>Occupancy</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="hostelTable">
-
-                            <tr>
-                                <td colspan="6" class="loading">
-                                    Loading hostel analysis...
-                                </td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
-
-
-            <!-- STUDENT ANALYSIS -->
-            <section class="section">
-
-                <div class="section-header">
-
-                    <div>
-                        <h3>Student Analysis</h3>
-                        <p>
-                            Student account and allocation information.
-                        </p>
-                    </div>
-
-                </div>
-
-
-                <div class="overview-grid">
-
-                    <div class="mini-card">
-                        <h4>Active Students</h4>
-                        <div class="number" id="studentActiveAnalysis">0</div>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Inactive Students</h4>
-                        <div class="number" id="studentInactiveAnalysis">0</div>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Allocated</h4>
-                        <div class="number" id="studentAllocatedAnalysis">0</div>
-                    </div>
-
-                    <div class="mini-card">
-                        <h4>Unallocated</h4>
-                        <div class="number" id="studentUnallocatedAnalysis">0</div>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- NEXA -->
-            <section class="nexa-card">
-
-                <h3>✨ Analyze with Nexa</h3>
-
-                <p>
-                    Nexa can use the same live HostelPro data to help the
-                    administrator understand students, beds, allocations,
-                    hostels and maintenance information.
-                </p>
-
-                <a href="nexa.html?context=reports" class="btn">
-                    Ask Nexa About These Reports →
-                </a>
-
-            </section>
+            </table>
 
         </div>
 
-    </main>
+    </section>
 
-</div>
+    <!-- INSIGHTS + ALLOCATIONS -->
+    <section class="section-grid">
 
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>💡 System Insights</h2>
+            </div>
+
+            <div id="insights">
+                <div class="loading">Analyzing system data...</div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panel-header">
+                <h2>📋 Allocation Overview</h2>
+            </div>
+
+            <div id="allocationSummary">
+
+                <div class="loading">
+                    Loading allocation data...
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
 
 <script>
-
     /* =========================================================
-       SUPABASE CONFIG
-       ========================================================= */
+       SUPABASE CONFIGURATION
+    ========================================================= */
 
     const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
     const supabaseClient =
         window.supabase.createClient(
@@ -914,7 +696,10 @@
 
     /* =========================================================
        GLOBAL DATA
-       ========================================================= */
+    ========================================================= */
+
+    let currentUser = null;
+    let currentProfile = null;
 
     let reportData = {
         students: [],
@@ -927,76 +712,33 @@
 
 
     /* =========================================================
-       HELPERS
-       ========================================================= */
+       PAGE START
+    ========================================================= */
 
-    function $(id) {
-        return document.getElementById(id);
-    }
+    document.addEventListener("DOMContentLoaded", async () => {
 
+        document
+            .getElementById("mobileMenu")
+            .addEventListener("click", () => {
+                document
+                    .getElementById("sidebar")
+                    .classList.toggle("open");
+            });
 
-    function showError(message) {
+        document
+            .getElementById("logoutBtn")
+            .addEventListener("click", logout);
 
-        const box = $("errorBox");
+        await checkUser();
 
-        box.textContent = message;
-        box.style.display = "block";
-    }
-
-
-    function hideError() {
-
-        $("errorBox").style.display = "none";
-    }
-
-
-    function percentage(value, total) {
-
-        if (!total) return 0;
-
-        return Math.round((value / total) * 100);
-    }
-
-
-    function formatStatus(status) {
-
-        if (!status) return "Unknown";
-
-        return status
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, c => c.toUpperCase());
-    }
-
-
-    function getBadge(status) {
-
-        const value = String(status || "").toLowerCase();
-
-        if (value === "active" || value === "available") {
-            return `<span class="badge badge-green">${formatStatus(status)}</span>`;
-        }
-
-        if (value === "completed" || value === "ended") {
-            return `<span class="badge badge-blue">${formatStatus(status)}</span>`;
-        }
-
-        if (value === "inactive" || value === "maintenance") {
-            return `<span class="badge badge-red">${formatStatus(status)}</span>`;
-        }
-
-        if (value === "pending" || value === "reserved") {
-            return `<span class="badge badge-orange">${formatStatus(status)}</span>`;
-        }
-
-        return `<span class="badge badge-gray">${formatStatus(status)}</span>`;
-    }
+    });
 
 
     /* =========================================================
-       ADMIN AUTHENTICATION
-       ========================================================= */
+       CHECK USER
+    ========================================================= */
 
-    async function checkAdmin() {
+    async function checkUser() {
 
         const {
             data: { user },
@@ -1004,59 +746,64 @@
         } = await supabaseClient.auth.getUser();
 
         if (error || !user) {
-
             window.location.href = "login.html";
-            return false;
+            return;
         }
 
+        currentUser = user;
 
-        const { data: profile, error: profileError } =
-            await supabaseClient
-                .from("profiles")
-                .select("id, full_name, role, status")
-                .eq("id", user.id)
-                .single();
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
 
+        if (profileError || !profile) {
+            showAlert("Unable to load your profile.");
+            return;
+        }
+
+        currentProfile = profile;
 
         if (
-            profileError ||
-            !profile ||
-            profile.role !== "admin"
+            profile.role !== "admin" &&
+            profile.role !== "caretaker"
         ) {
+            alert(
+                "Reports & Analysis is available only to Admin and Caretaker."
+            );
 
-            alert("Access denied. Only administrators can view Reports & Analysis.");
+            window.location.href =
+                profile.role === "warden"
+                    ? "warden.html"
+                    : "students_dashboard.html";
 
-            window.location.href = "login.html";
-
-            return false;
+            return;
         }
 
+        document.getElementById("userName").textContent =
+            profile.full_name || user.email;
 
-        if (
-            profile.status &&
-            String(profile.status).toLowerCase() === "inactive"
-        ) {
+        document.getElementById("userRole").textContent =
+            profile.role;
 
-            await supabaseClient.auth.signOut();
+        document.getElementById("dashboardLink").href =
+            profile.role === "admin"
+                ? "admin_dashboard.html"
+                : "caretaker.html";
 
-            window.location.href = "login.html";
-
-            return false;
-        }
-
-
-        return true;
+        await loadReports();
     }
 
 
     /* =========================================================
        LOAD REPORT DATA
-       ========================================================= */
+    ========================================================= */
 
-    async function loadReportData() {
-
-        hideError();
-
+    async function loadReports() {
 
         try {
 
@@ -1071,467 +818,632 @@
 
                 supabaseClient
                     .from("profiles")
-                    .select("id, full_name, email, phone, gender, role, status")
+                    .select("id,full_name,email,student_id,status")
                     .eq("role", "student"),
 
                 supabaseClient
                     .from("hostels")
-                    .select("id, name, location"),
+                    .select("*"),
 
                 supabaseClient
                     .from("rooms")
-                    .select("id, room_number, hostel_id"),
+                    .select("id,room_number,hostel_id"),
 
                 supabaseClient
                     .from("beds")
-                    .select("id, room_id, bed_number, label, bed_position, status"),
+                    .select("*"),
 
                 supabaseClient
                     .from("allocations")
-                    .select(`
-                        id,
-                        student_id,
-                        bed_id,
-                        status,
-                        allocation_date,
-                        check_in_date,
-                        check_out_date
-                    `),
+                    .select("id,student_id,bed_id,status,allocation_date,check_in_date"),
 
                 supabaseClient
                     .from("maintenance_requests")
-                    .select(`
-                        id,
-                        student_id,
-                        room_id,
-                        priority,
-                        status,
-                        created_at
-                    `)
+                    .select("id,status,priority,created_at")
             ]);
 
 
-            if (studentsResult.error) throw studentsResult.error;
-            if (hostelsResult.error) throw hostelsResult.error;
-            if (roomsResult.error) throw roomsResult.error;
-            if (bedsResult.error) throw bedsResult.error;
-            if (allocationsResult.error) throw allocationsResult.error;
-            if (maintenanceResult.error) throw maintenanceResult.error;
+            const errors = [
+                studentsResult.error,
+                hostelsResult.error,
+                roomsResult.error,
+                bedsResult.error,
+                allocationsResult.error,
+                maintenanceResult.error
+            ].filter(Boolean);
+
+            if (errors.length) {
+                throw errors[0];
+            }
 
 
-            reportData.students = studentsResult.data || [];
-            reportData.hostels = hostelsResult.data || [];
-            reportData.rooms = roomsResult.data || [];
-            reportData.beds = bedsResult.data || [];
-            reportData.allocations = allocationsResult.data || [];
-            reportData.maintenance = maintenanceResult.data || [];
+            reportData.students =
+                studentsResult.data || [];
+
+            reportData.hostels =
+                hostelsResult.data || [];
+
+            reportData.rooms =
+                roomsResult.data || [];
+
+            reportData.beds =
+                bedsResult.data || [];
+
+            reportData.allocations =
+                allocationsResult.data || [];
+
+            reportData.maintenance =
+                maintenanceResult.data || [];
 
 
-            calculateReports();
-
-
-            $("lastUpdated").textContent =
-                "Last updated: " +
-                new Date().toLocaleString();
+            renderStatistics();
+            renderBedUtilization();
+            renderHostelAnalysis();
+            renderMaintenance();
+            renderAllocationSummary();
+            renderInsights();
 
         } catch (error) {
 
             console.error(error);
 
-            showError(
-                "Unable to load reports. Check your Supabase connection and table permissions."
+            showAlert(
+                "Unable to load reports: " +
+                (error.message || "Database error")
             );
         }
     }
 
 
     /* =========================================================
-       CALCULATE REPORTS
-       ========================================================= */
+       STATISTICS
+    ========================================================= */
 
-    function calculateReports() {
+    function renderStatistics() {
 
-        const students = reportData.students;
-        const hostels = reportData.hostels;
-        const rooms = reportData.rooms;
-        const beds = reportData.beds;
-        const allocations = reportData.allocations;
-        const maintenance = reportData.maintenance;
+        const students =
+            reportData.students.length;
 
+        const hostels =
+            reportData.hostels.length;
 
-        /* STUDENTS */
-
-        const activeStudents =
-            students.filter(s =>
-                String(s.status || "").toLowerCase() !== "inactive"
-            );
+        const beds =
+            reportData.beds.length;
 
         const activeAllocations =
-            allocations.filter(a =>
-                String(a.status || "").toLowerCase() === "active"
-            );
+            reportData.allocations.filter(
+                a => a.status === "active"
+            ).length;
 
-        const allocatedStudentIds =
+
+        document.getElementById("studentCount")
+            .textContent = students;
+
+        document.getElementById("hostelCount")
+            .textContent = hostels;
+
+        document.getElementById("bedCount")
+            .textContent = beds;
+
+        document.getElementById("allocationCount")
+            .textContent = activeAllocations;
+    }
+
+
+    /* =========================================================
+       BED UTILIZATION
+    ========================================================= */
+
+    function renderBedUtilization() {
+
+        const total =
+            reportData.beds.length;
+
+        const available =
+            reportData.beds.filter(
+                b => String(b.status).toLowerCase() === "available"
+            ).length;
+
+        const occupied =
+            reportData.beds.filter(
+                b => String(b.status).toLowerCase() === "occupied"
+            ).length;
+
+
+        /*
+           If the bed status is not maintained correctly,
+           active allocations provide a useful second signal.
+        */
+
+        const activeAllocationBeds =
             new Set(
-                activeAllocations
-                    .map(a => a.student_id)
-                    .filter(Boolean)
-            );
-
-
-        const unallocatedStudents =
-            students.filter(s =>
-                !allocatedStudentIds.has(s.id)
-            );
-
-
-        /* BEDS */
-
-        const occupiedBedIds =
-            new Set(
-                activeAllocations
+                reportData.allocations
+                    .filter(a => a.status === "active")
                     .map(a => a.bed_id)
-                    .filter(Boolean)
             );
 
 
-        const occupiedBeds =
-            beds.filter(b =>
-                occupiedBedIds.has(b.id)
+        const calculatedOccupied =
+            Math.max(
+                occupied,
+                activeAllocationBeds.size
             );
 
-
-        const availableBeds =
-            beds.filter(b => {
-
-                if (occupiedBedIds.has(b.id)) {
-                    return false;
-                }
-
-                const status =
-                    String(b.status || "").toLowerCase();
-
-                return (
-                    status === "available" ||
-                    status === ""
-                );
-            });
-
-
-        const otherBeds =
-            beds.length -
-            occupiedBeds.length -
-            availableBeds.length;
-
-
-        /* MAIN STATS */
-
-        $("totalStudents").textContent = students.length;
-        $("activeStudents").textContent = activeStudents.length;
-
-        $("totalBeds").textContent = beds.length;
-        $("occupiedBeds").textContent = occupiedBeds.length;
-
-        $("totalHostels").textContent = hostels.length;
-        $("totalRooms").textContent = rooms.length;
-
-        $("availableBeds").textContent = availableBeds.length;
-
-        $("allocatedStudents").textContent =
-            allocatedStudentIds.size;
-
-        $("unallocatedStudents").textContent =
-            unallocatedStudents.length;
+        const calculatedAvailable =
+            Math.max(
+                0,
+                total - calculatedOccupied
+            );
 
 
         const occupancy =
-            percentage(
-                occupiedBeds.length,
-                beds.length
-            );
-
-        $("occupancyRate").textContent =
-            occupancy + "%";
+            total > 0
+                ? Math.round(
+                    (calculatedOccupied / total) * 100
+                )
+                : 0;
 
 
-        /* OCCUPANCY BARS */
+        document.getElementById("occupiedText")
+            .textContent =
+            `${calculatedOccupied} / ${total}`;
 
-        const occupiedPct =
-            percentage(occupiedBeds.length, beds.length);
+        document.getElementById("availableText")
+            .textContent =
+            `${calculatedAvailable} / ${total}`;
 
-        const availablePct =
-            percentage(availableBeds.length, beds.length);
-
-        const otherPct =
-            percentage(
-                Math.max(otherBeds, 0),
-                beds.length
-            );
+        document.getElementById("occupancyRate")
+            .textContent =
+            `${occupancy}%`;
 
 
-        $("occupiedPercent").textContent =
-            occupiedPct + "%";
+        document.getElementById("occupiedBar")
+            .style.width =
+            `${total ? (calculatedOccupied / total) * 100 : 0}%`;
 
-        $("availablePercent").textContent =
-            availablePct + "%";
+        document.getElementById("availableBar")
+            .style.width =
+            `${total ? (calculatedAvailable / total) * 100 : 0}%`;
 
-        $("otherPercent").textContent =
-            otherPct + "%";
-
-
-        $("occupiedProgress").style.width =
-            occupiedPct + "%";
-
-        $("availableProgress").style.width =
-            availablePct + "%";
-
-        $("otherProgress").style.width =
-            otherPct + "%";
-
-
-        /* ALLOCATIONS */
-
-        const pendingAllocations =
-            allocations.filter(a =>
-                String(a.status || "").toLowerCase() === "pending"
-            ).length;
-
-        const endedAllocations =
-            allocations.filter(a =>
-                String(a.status || "").toLowerCase() === "ended"
-            ).length;
-
-
-        $("activeAllocations").textContent =
-            activeAllocations.length;
-
-        $("pendingAllocations").textContent =
-            pendingAllocations;
-
-        $("endedAllocations").textContent =
-            endedAllocations;
-
-
-        /* MAINTENANCE */
-
-        const openMaintenance =
-            maintenance.filter(m => {
-
-                const status =
-                    String(m.status || "").toLowerCase();
-
-                return (
-                    status === "open" ||
-                    status === "pending"
-                );
-
-            }).length;
-
-
-        const progressMaintenance =
-            maintenance.filter(m => {
-
-                const status =
-                    String(m.status || "").toLowerCase();
-
-                return (
-                    status === "in_progress" ||
-                    status === "in progress"
-                );
-
-            }).length;
-
-
-        const completedMaintenance =
-            maintenance.filter(m =>
-                String(m.status || "").toLowerCase() === "completed"
-            ).length;
-
-
-        $("openMaintenance").textContent =
-            openMaintenance;
-
-        $("progressMaintenance").textContent =
-            progressMaintenance;
-
-        $("completedMaintenance").textContent =
-            completedMaintenance;
-
-
-        /* STUDENT ANALYSIS */
-
-        const inactiveStudents =
-            students.length -
-            activeStudents.length;
-
-
-        $("studentActiveAnalysis").textContent =
-            activeStudents.length;
-
-        $("studentInactiveAnalysis").textContent =
-            inactiveStudents;
-
-        $("studentAllocatedAnalysis").textContent =
-            allocatedStudentIds.size;
-
-        $("studentUnallocatedAnalysis").textContent =
-            unallocatedStudents.length;
-
-
-        /* HOSTEL TABLE */
-
-        buildHostelAnalysis();
+        document.getElementById("occupancyRateBar")
+            .style.width =
+            `${occupancy}%`;
     }
 
 
     /* =========================================================
        HOSTEL ANALYSIS
-       ========================================================= */
+    ========================================================= */
 
-    function buildHostelAnalysis() {
+    function renderHostelAnalysis() {
 
-        const tbody = $("hostelTable");
-
-        tbody.innerHTML = "";
-
+        const table =
+            document.getElementById("hostelTable");
 
         if (!reportData.hostels.length) {
 
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="loading">
-                        No hostels found.
+            table.innerHTML =
+                `<tr>
+                    <td colspan="6" class="empty">
+                        No hostels have been added yet.
                     </td>
-                </tr>
-            `;
+                </tr>`;
 
             return;
         }
 
 
-        const activeAllocations =
-            reportData.allocations.filter(a =>
-                String(a.status || "").toLowerCase() === "active"
-            );
+        table.innerHTML =
+            reportData.hostels.map(hostel => {
 
-
-        reportData.hostels.forEach(hostel => {
-
-            const hostelRooms =
-                reportData.rooms.filter(
-                    room =>
-                        room.hostel_id === hostel.id
-                );
-
-
-            const roomIds =
-                new Set(
-                    hostelRooms.map(r => r.id)
-                );
-
-
-            const hostelBeds =
-                reportData.beds.filter(
-                    bed =>
-                        roomIds.has(bed.room_id)
-                );
-
-
-            const hostelBedIds =
-                new Set(
-                    hostelBeds.map(b => b.id)
-                );
-
-
-            const occupied =
-                activeAllocations.filter(
-                    allocation =>
-                        hostelBedIds.has(
-                            allocation.bed_id
-                        )
-                ).length;
-
-
-            const available =
-                hostelBeds.filter(bed => {
-
-                    const occupiedHere =
-                        activeAllocations.some(
-                            allocation =>
-                                allocation.bed_id === bed.id
-                        );
-
-                    if (occupiedHere) {
-                        return false;
-                    }
-
-                    const status =
-                        String(
-                            bed.status || ""
-                        ).toLowerCase();
-
-                    return (
-                        status === "available" ||
-                        status === ""
+                const hostelRooms =
+                    reportData.rooms.filter(
+                        room =>
+                            room.hostel_id === hostel.id
                     );
 
-                }).length;
+
+                const roomIds =
+                    new Set(
+                        hostelRooms.map(
+                            room => room.id
+                        )
+                    );
 
 
-            const rate =
-                percentage(
-                    occupied,
-                    hostelBeds.length
-                );
+                const hostelBeds =
+                    reportData.beds.filter(
+                        bed =>
+                            roomIds.has(
+                                bed.room_id
+                            )
+                    );
 
 
-            const row =
-                document.createElement("tr");
+                const totalBeds =
+                    hostelBeds.length;
 
 
-            row.innerHTML = `
-
-                <td>
-                    <strong>${escapeHtml(hostel.name || "Unnamed Hostel")}</strong>
-                </td>
-
-                <td>
-                    ${hostelRooms.length}
-                </td>
-
-                <td>
-                    ${hostelBeds.length}
-                </td>
-
-                <td>
-                    ${occupied}
-                </td>
-
-                <td>
-                    ${available}
-                </td>
-
-                <td>
-                    ${getBadge(rate + "%")}
-                </td>
-
-            `;
+                const activeBedIds =
+                    new Set(
+                        reportData.allocations
+                            .filter(
+                                a =>
+                                    a.status === "active" &&
+                                    hostelBeds.some(
+                                        bed =>
+                                            bed.id === a.bed_id
+                                    )
+                            )
+                            .map(a => a.bed_id)
+                    );
 
 
-            tbody.appendChild(row);
+                const occupied =
+                    Math.max(
+                        hostelBeds.filter(
+                            bed =>
+                                String(bed.status)
+                                    .toLowerCase() ===
+                                "occupied"
+                        ).length,
+                        activeBedIds.size
+                    );
 
-        });
 
+                const available =
+                    Math.max(
+                        0,
+                        totalBeds - occupied
+                    );
+
+
+                const rate =
+                    totalBeds > 0
+                        ? Math.round(
+                            (occupied / totalBeds) * 100
+                        )
+                        : 0;
+
+
+                let badgeClass = "green";
+
+                if (rate >= 80) {
+                    badgeClass = "red";
+                } else if (rate >= 50) {
+                    badgeClass = "yellow";
+                }
+
+
+                return `
+                    <tr>
+                        <td><strong>${escapeHTML(hostel.name || "Unnamed")}</strong></td>
+
+                        <td>
+                            ${escapeHTML(hostel.location || "—")}
+                        </td>
+
+                        <td>${totalBeds}</td>
+
+                        <td>${occupied}</td>
+
+                        <td>${available}</td>
+
+                        <td>
+                            <span class="badge ${badgeClass}">
+                                ${rate}%
+                            </span>
+                        </td>
+                    </tr>
+                `;
+
+            }).join("");
     }
 
 
     /* =========================================================
-       HTML ESCAPE
-       ========================================================= */
+       MAINTENANCE
+    ========================================================= */
 
-    function escapeHtml(value) {
+    function renderMaintenance() {
 
-        return String(value || "")
+        const total =
+            reportData.maintenance.length;
+
+        const pending =
+            reportData.maintenance.filter(
+                item =>
+                    String(item.status)
+                        .toLowerCase() === "pending"
+            ).length;
+
+
+        document.getElementById(
+            "pendingMaintenance"
+        ).textContent = pending;
+
+
+        document.getElementById(
+            "totalMaintenance"
+        ).textContent = total;
+    }
+
+
+    /* =========================================================
+       ALLOCATION SUMMARY
+    ========================================================= */
+
+    function renderAllocationSummary() {
+
+        const box =
+            document.getElementById(
+                "allocationSummary"
+            );
+
+
+        const active =
+            reportData.allocations.filter(
+                a => a.status === "active"
+            ).length;
+
+        const ended =
+            reportData.allocations.filter(
+                a => a.status === "ended"
+            ).length;
+
+        const pending =
+            reportData.allocations.filter(
+                a => a.status === "pending"
+            ).length;
+
+
+        box.innerHTML = `
+
+            <div class="insight">
+
+                <div class="insight-icon">🟢</div>
+
+                <div>
+                    <strong>${active} Active Allocations</strong>
+
+                    <p>
+                        Students currently recorded
+                        as having active allocations.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="insight">
+
+                <div class="insight-icon">📁</div>
+
+                <div>
+                    <strong>${ended} Ended Allocations</strong>
+
+                    <p>
+                        Allocation records that have
+                        been ended.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="insight">
+
+                <div class="insight-icon">⏳</div>
+
+                <div>
+                    <strong>${pending} Pending Allocations</strong>
+
+                    <p>
+                        Allocation records currently
+                        marked as pending.
+                    </p>
+                </div>
+
+            </div>
+
+        `;
+    }
+
+
+    /* =========================================================
+       SYSTEM INSIGHTS
+    ========================================================= */
+
+    function renderInsights() {
+
+        const box =
+            document.getElementById("insights");
+
+
+        const insights = [];
+
+
+        const totalBeds =
+            reportData.beds.length;
+
+
+        const activeAllocations =
+            reportData.allocations.filter(
+                a => a.status === "active"
+            ).length;
+
+
+        const pendingMaintenance =
+            reportData.maintenance.filter(
+                item =>
+                    String(item.status)
+                        .toLowerCase() === "pending"
+            ).length;
+
+
+        const students =
+            reportData.students.length;
+
+
+        /* BED CAPACITY */
+
+        if (totalBeds === 0) {
+
+            insights.push({
+                icon: "⚠️",
+                title: "No beds recorded",
+                text:
+                    "Add rooms and beds before using occupancy analysis."
+            });
+
+        } else {
+
+            const rate =
+                Math.round(
+                    (activeAllocations / totalBeds) * 100
+                );
+
+
+            if (rate >= 90) {
+
+                insights.push({
+                    icon: "⚠️",
+                    title: "High occupancy",
+                    text:
+                        `Active allocations represent about ${rate}% of recorded beds.`
+                });
+
+            } else if (rate >= 70) {
+
+                insights.push({
+                    icon: "📊",
+                    title: "Occupancy is increasing",
+                    text:
+                        `Active allocations represent about ${rate}% of recorded beds.`
+                });
+
+            } else {
+
+                insights.push({
+                    icon: "🛏️",
+                    title: "Bed capacity available",
+                    text:
+                        `About ${100 - rate}% of recorded bed capacity is not represented by active allocations.`
+                });
+            }
+        }
+
+
+        /* STUDENT DATA */
+
+        if (students === 0) {
+
+            insights.push({
+                icon: "👨‍🎓",
+                title: "No students recorded",
+                text:
+                    "Create student accounts to begin student management."
+            });
+
+        } else {
+
+            insights.push({
+                icon: "👨‍🎓",
+                title: "Student records",
+                text:
+                    `${students} student profile${students === 1 ? "" : "s"} currently exist in HostelPro.`
+            });
+        }
+
+
+        /* MAINTENANCE */
+
+        if (pendingMaintenance > 0) {
+
+            insights.push({
+                icon: "🔧",
+                title: "Maintenance requires attention",
+                text:
+                    `${pendingMaintenance} maintenance request${pendingMaintenance === 1 ? "" : "s"} currently have pending status.`
+            });
+
+        } else {
+
+            insights.push({
+                icon: "✅",
+                title: "No pending maintenance",
+                text:
+                    "There are currently no maintenance requests marked as pending."
+            });
+        }
+
+
+        /* HOSTELS */
+
+        if (reportData.hostels.length === 0) {
+
+            insights.push({
+                icon: "🏢",
+                title: "No hostels recorded",
+                text:
+                    "Add a hostel to begin organizing rooms and beds."
+            });
+
+        } else {
+
+            insights.push({
+                icon: "🏢",
+                title: "Hostel records",
+                text:
+                    `${reportData.hostels.length} hostel${reportData.hostels.length === 1 ? "" : "s"} currently exist in the system.`
+            });
+        }
+
+
+        box.innerHTML =
+            insights.map(item => `
+                <div class="insight">
+
+                    <div class="insight-icon">
+                        ${item.icon}
+                    </div>
+
+                    <div>
+                        <strong>
+                            ${escapeHTML(item.title)}
+                        </strong>
+
+                        <p>
+                            ${escapeHTML(item.text)}
+                        </p>
+                    </div>
+
+                </div>
+            `).join("");
+    }
+
+
+    /* =========================================================
+       ALERT
+    ========================================================= */
+
+    function showAlert(message) {
+
+        const box =
+            document.getElementById("alertBox");
+
+        box.textContent = message;
+        box.style.display = "block";
+    }
+
+
+    /* =========================================================
+       HTML ESCAPING
+    ========================================================= */
+
+    function escapeHTML(value) {
+
+        return String(value ?? "")
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
@@ -1541,68 +1453,19 @@
 
 
     /* =========================================================
-       REFRESH
-       ========================================================= */
-
-    $("refreshBtn").addEventListener(
-        "click",
-        loadReportData
-    );
-
-
-    /* =========================================================
-       MOBILE MENU
-       ========================================================= */
-
-    $("mobileMenu").addEventListener(
-        "click",
-        () => {
-
-            $("sidebar")
-                .classList
-                .toggle("open");
-
-        }
-    );
-
-
-    /* =========================================================
        LOGOUT
-       ========================================================= */
+    ========================================================= */
 
-    $("logoutBtn").addEventListener(
-        "click",
-        async event => {
+    async function logout() {
 
-            event.preventDefault();
+        await supabaseClient.auth.signOut();
 
-            await supabaseClient.auth.signOut();
-
-            window.location.href = "login.html";
-
-        }
-    );
-
-
-    /* =========================================================
-       START
-       ========================================================= */
-
-    async function startReports() {
-
-        const authorized =
-            await checkAdmin();
-
-        if (!authorized) return;
-
-        await loadReportData();
-
+        window.location.href =
+            "login.html";
     }
-
-
-    startReports();
 
 </script>
 
 </body>
 </html>
+```
