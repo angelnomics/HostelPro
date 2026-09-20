@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tasks | HostelPro</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+    width: 250px;
+    background: #172033;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.brand {
+    padding: 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.brand h2 {
+    font-size: 21px;
+}
+
+.brand span {
+    color: #60a5fa;
+}
+
+.brand small {
+    display: block;
+    color: #94a3b8;
+    margin-top: 5px;
+}
+
+.nav {
+    padding: 15px 10px;
+}
+
+.nav a {
+    display: block;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.nav a:hover,
+.nav a.active {
+    background: #2563eb;
+    color: white;
+}
+
+.logout {
+    margin: 15px 10px;
+    padding: 12px 14px;
+    border: none;
+    width: calc(100% - 20px);
+    border-radius: 8px;
+    background: #dc2626;
+    color: white;
+    cursor: pointer;
+}
+
+/* ================= MAIN ================= */
+
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 25px;
+}
+
+.mobile-menu {
+    display: none;
+    background: #172033;
+    color: white;
+    border: none;
+    padding: 10px 13px;
+    border-radius: 7px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    font-size: 28px;
+}
+
+.topbar p {
+    color: #64748b;
+    margin-top: 5px;
+}
+
+.user-info {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+/* ================= STATS ================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+.stat-title {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.stat-number.danger {
+    color: #dc2626;
+}
+
+/* ================= CARDS ================= */
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.card-header h2 {
+    font-size: 19px;
+}
+
+/* ================= BUTTONS ================= */
+
+button {
+    font-family: inherit;
+}
+
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-primary:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #172033;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+/* ================= FORM ================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 17px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+/* ================= MESSAGE ================= */
+
+.message {
+    display: none;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.message.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+}
+
+.message.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ================= FILTERS ================= */
+
+.filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+/* ================= TABLE ================= */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+th,
+td {
+    padding: 13px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+}
+
+th {
+    background: #f8fafc;
+    color: #475569;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-in_progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelled {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.priority {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.priority-low {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.priority-medium {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.priority-high {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-urgent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.overdue-tag {
+    color: #dc2626;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.action-btn {
+    border: none;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    font-size: 12px;
+}
+
+.complete-btn {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.reopen-btn {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.edit-btn {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.empty,
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+}
+
+/* ================= NEXA ================= */
+
+.nexa {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    background: #2563eb;
+    color: white;
+    padding: 13px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 5px 20px rgba(37,99,235,.3);
+    z-index: 999;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1100px) {
+
+    .stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+}
+
+@media(max-width:800px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: .3s;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-grid,
+    .filters {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media(max-width:550px) {
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <h2>Hostel<span>Pro</span></h2>
+        <small>Hostel Management System</small>
+    </div>
+
+    <nav class="nav">
+
+        <a href="admin_dashboard.html">📊 Dashboard</a>
+        <a href="hostels.html">🏢 Hostels</a>
+        <a href="rooms.html">🚪 Rooms</a>
+        <a href="beds.html">🛏️ Beds</a>
+        <a href="students_dashboard.html">Students</a>
+        <a href="allocations.html">📋 Allocations</a>
+        <a href="caretakers.html">👷 Caretakers</a>
+        <a href="wardens.html">👮 Wardens</a>
+        <a href="maintenance.html">🔧 Maintenance</a>
+        <a href="discipline.html">⚠️ Discipline</a>
+        <a href="security.html">🛡️ Security</a>
+        <a href="tasks.html" class="active">✅ Tasks</a>
+        <a href="messages.html">💬 Messages</a>
+        <a href="announcements.html">📢 Announcements</a>
+        <a href="reports.html">📈 Reports</a>
+        <a href="settings.html">⚙️ Settings</a>
+
+    </nav>
+
+    <button class="logout" id="logoutBtn">
+        🚪 Logout
+    </button>
+
+</aside>
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+<button class="mobile-menu" id="mobileMenu">
+    ☰ Menu
+</button>
+
+<div class="topbar">
+
+    <div>
+        <h1>Tasks</h1>
+        <p>Assign, track and complete staff tasks.</p>
+    </div>
+
+    <div class="user-info">
+        <strong id="staffName">Loading...</strong>
+    </div>
+
+</div>
+
+<!-- ================= STATISTICS ================= -->
+
+<section class="stats">
+
+    <div class="stat">
+        <div class="stat-title">Total Tasks</div>
+        <div class="stat-number" id="totalCount">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Pending</div>
+        <div class="stat-number" id="pendingCount">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">In Progress</div>
+        <div class="stat-number" id="progressCount">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Completed</div>
+        <div class="stat-number" id="completedCount">0</div>
+    </div>
+
+    <div class="stat">
+        <div class="stat-title">Overdue</div>
+        <div class="stat-number danger" id="overdueCount">0</div>
+    </div>
+
+</section>
+
+<!-- ================= TASK FORM ================= -->
+
+<section class="card">
+
+    <div class="card-header">
+        <h2 id="formTitle">➕ Add Task</h2>
+    </div>
+
+    <div id="formMessage" class="message"></div>
+
+    <form id="taskForm">
+
+        <input type="hidden" id="taskId" value="">
+
+        <div class="form-grid">
+
+            <div class="form-group full">
+
+                <label for="title">
+                    Task Title *
+                </label>
+
+                <input
+                    type="text"
+                    id="title"
+                    placeholder="e.g. Fix leaking tap in Room 12"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="assignedTo">
+                    Assign To *
+                </label>
+
+                <select id="assignedTo" required>
+                    <option value="">
+                        Select staff member
+                    </option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="priority">
+                    Priority
+                </label>
+
+                <select id="priority">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="dueDate">
+                    Due Date
+                </label>
+
+                <input
+                    type="date"
+                    id="dueDate"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="taskStatus">
+                    Status
+                </label>
+
+                <select id="taskStatus">
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+
+            </div>
+
+            <div class="form-group full">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Optional task details..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+        <div class="form-actions">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                id="saveTaskBtn"
+            >
+                ➕ Add Task
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="cancelEditBtn"
+                style="display:none;"
+            >
+                Cancel Edit
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+<!-- ================= TASK LIST ================= -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <h2>✅ Task List</h2>
+
+        <button
+            class="btn btn-secondary"
+            id="refreshBtn"
+        >
+            🔄 Refresh
+        </button>
+
+    </div>
+
+    <div class="filters">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search title, description or staff..."
+        >
+
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+
+        <select id="priorityFilter">
+            <option value="all">All Priorities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+        </select>
+
+        <select id="assignedFilter">
+            <option value="all">All Staff</option>
+        </select>
+
+        <select id="sortFilter">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="due_soon">Due Soonest</option>
+        </select>
+
+    </div>
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Task</th>
+                    <th>Assigned To</th>
+                    <th>Priority</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="taskTable">
+
+                <tr>
+                    <td colspan="7" class="loading">
+                        Loading tasks...
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+<a href="nexa.html" class="nexa">
+🤖 Nexa
+</a>
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let currentUser = null;
+let currentProfile = null;
+
+let staff = [];
+let tasks = [];
+
+let editingTaskId = null;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const taskForm =
+    document.getElementById("taskForm");
+
+const taskTable =
+    document.getElementById("taskTable");
+
+const formMessage =
+    document.getElementById("formMessage");
+
+const assignedToSelect =
+    document.getElementById("assignedTo");
+
+const saveTaskBtn =
+    document.getElementById("saveTaskBtn");
+
+const formTitle =
+    document.getElementById("formTitle");
+
+const cancelEditBtn =
+    document.getElementById("cancelEditBtn");
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        await checkAuthentication();
+
+    }
+);
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+async function checkAuthentication() {
+
+    const {
+        data: { user }
+    } =
+        await supabaseClient.auth.getUser();
+
+    if (!user) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+    currentUser = user;
+
+    const {
+        data: profile,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                status
+            `)
+            .eq("id", user.id)
+            .single();
+
+    if (error || !profile) {
+
+        alert(
+            "Your profile could not be loaded."
+        );
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+    currentProfile = profile;
+
+    const allowedRoles = [
+        "admin",
+        "caretaker",
+        "warden"
+    ];
+
+    if (
+        !allowedRoles.includes(
+            profile.role
+        )
+    ) {
+
+        alert(
+            "You are not authorized to access tasks."
+        );
+
+        window.location.href =
+            "student_dashboard.html";
+
+        return;
+
+    }
+
+    document.getElementById(
+        "staffName"
+    ).textContent =
+        profile.full_name ||
+        profile.email;
+
+    if (profile.role === "warden") {
+
+        enableWardenViewOnly();
+
+    }
+
+    await loadEverything();
+
+}
+
+
+/* =========================================================
+   LOAD EVERYTHING
+========================================================= */
+
+async function loadEverything() {
+
+    await Promise.all([
+        loadStaff(),
+        loadTasks()
+    ]);
+
+    populateAssignedSelects();
+    updateStatistics();
+
+}
+
+
+/* =========================================================
+   STAFF
+   (admins, caretakers and wardens can all be assigned tasks)
+========================================================= */
+
+async function loadStaff() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                status
+            `)
+            .in("role", [
+                "admin",
+                "caretaker",
+                "warden"
+            ])
+            .order("full_name", {
+                ascending: true
+            });
+
+    if (error) {
+
+        console.error(
+            "Staff:",
+            error
+        );
+
+        return;
+
+    }
+
+    staff =
+        (data || []).filter(
+            member =>
+                member.status !==
+                "inactive"
+        );
+
+}
+
+
+/* =========================================================
+   TASKS
+========================================================= */
+
+async function loadTasks() {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("tasks")
+            .select(`
+                id,
+                title,
+                description,
+                assigned_to,
+                assigned_by,
+                priority,
+                status,
+                due_date,
+                created_at,
+                completed_at,
+
+                assignee:assigned_to (
+                    id,
+                    full_name,
+                    email,
+                    role
+                )
+            `)
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(
+            "Tasks:",
+            error
+        );
+
+        taskTable.innerHTML =
+            `<tr>
+                <td colspan="7" class="empty">
+                    Unable to load tasks.<br><br>
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>`;
+
+        return;
+
+    }
+
+    tasks = data || [];
+
+    renderTasks();
+
+}
+
+
+/* =========================================================
+   POPULATE ASSIGNED-TO SELECTS
+========================================================= */
+
+function populateAssignedSelects() {
+
+    assignedToSelect.innerHTML =
+        `<option value="">
+            Select staff member
+        </option>`;
+
+    const filter =
+        document.getElementById(
+            "assignedFilter"
+        );
+
+    filter.innerHTML =
+        `<option value="all">
+            All Staff
+        </option>`;
+
+    staff.forEach(
+        member => {
+
+            const label =
+                `${member.full_name} (${capitalize(member.role)})`;
+
+            const formOption =
+                document.createElement(
+                    "option"
+                );
+
+            formOption.value =
+                member.id;
+
+            formOption.textContent =
+                label;
+
+            assignedToSelect.appendChild(
+                formOption
+            );
+
+            const filterOption =
+                document.createElement(
+                    "option"
+                );
+
+            filterOption.value =
+                member.id;
+
+            filterOption.textContent =
+                label;
+
+            filter.appendChild(
+                filterOption
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CREATE / UPDATE TASK
+========================================================= */
+
+taskForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+        if (
+            currentProfile.role ===
+            "warden"
+        ) {
+
+            showMessage(
+                "Wardens can view tasks but cannot create or edit them.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        const title =
+            document.getElementById(
+                "title"
+            ).value.trim();
+
+        const assignedTo =
+            assignedToSelect.value;
+
+        const priority =
+            document.getElementById(
+                "priority"
+            ).value;
+
+        const dueDate =
+            document.getElementById(
+                "dueDate"
+            ).value || null;
+
+        const status =
+            document.getElementById(
+                "taskStatus"
+            ).value;
+
+        const description =
+            document.getElementById(
+                "description"
+            ).value.trim();
+
+        if (!title || !assignedTo) {
+
+            showMessage(
+                "Task title and assignee are required.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        saveTaskBtn.disabled = true;
+
+        saveTaskBtn.textContent =
+            editingTaskId
+                ? "Updating..."
+                : "Adding...";
+
+        const payload = {
+
+            title,
+
+            description:
+                description || null,
+
+            assigned_to:
+                assignedTo,
+
+            priority,
+
+            status,
+
+            due_date:
+                dueDate
+
+        };
+
+        let error;
+
+        if (editingTaskId) {
+
+            /*
+               If the task is being marked completed for
+               the first time, stamp completed_at. If it's
+               being reopened, clear it again.
+            */
+
+            const existing =
+                tasks.find(
+                    item =>
+                        String(item.id) ===
+                        String(editingTaskId)
+                );
+
+            if (
+                status === "completed" &&
+                existing?.status !==
+                "completed"
+            ) {
+
+                payload.completed_at =
+                    new Date().toISOString();
+
+            } else if (
+                status !== "completed"
+            ) {
+
+                payload.completed_at =
+                    null;
+
+            }
+
+            const result =
+                await supabaseClient
+                    .from("tasks")
+                    .update(payload)
+                    .eq(
+                        "id",
+                        editingTaskId
+                    );
+
+            error = result.error;
+
+        } else {
+
+            payload.assigned_by =
+                currentUser.id;
+
+            const result =
+                await supabaseClient
+                    .from("tasks")
+                    .insert(payload);
+
+            error = result.error;
+
+        }
+
+        saveTaskBtn.disabled = false;
+
+        saveTaskBtn.textContent =
+            editingTaskId
+                ? "Update Task"
+                : "➕ Add Task";
+
+        if (error) {
+
+            showMessage(
+                "Unable to save task: " +
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+        showMessage(
+            editingTaskId
+                ? "Task updated successfully."
+                : "Task added successfully.",
+            "success"
+        );
+
+        resetForm();
+
+        await loadEverything();
+
+    }
+);
+
+
+/* =========================================================
+   EDIT TASK
+========================================================= */
+
+function editTask(id) {
+
+    const task =
+        tasks.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+    if (!task) return;
+
+    editingTaskId =
+        task.id;
+
+    document.getElementById(
+        "title"
+    ).value =
+        task.title || "";
+
+    assignedToSelect.value =
+        task.assigned_to || "";
+
+    document.getElementById(
+        "priority"
+    ).value =
+        task.priority || "medium";
+
+    document.getElementById(
+        "dueDate"
+    ).value =
+        task.due_date || "";
+
+    document.getElementById(
+        "taskStatus"
+    ).value =
+        task.status || "pending";
+
+    document.getElementById(
+        "description"
+    ).value =
+        task.description || "";
+
+    formTitle.textContent =
+        "✏️ Edit Task";
+
+    saveTaskBtn.textContent =
+        "Update Task";
+
+    cancelEditBtn.style.display =
+        "inline-block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+cancelEditBtn.addEventListener(
+    "click",
+    resetForm
+);
+
+function resetForm() {
+
+    editingTaskId = null;
+
+    taskForm.reset();
+
+    document.getElementById(
+        "priority"
+    ).value = "medium";
+
+    document.getElementById(
+        "taskStatus"
+    ).value = "pending";
+
+    formTitle.textContent =
+        "➕ Add Task";
+
+    saveTaskBtn.textContent =
+        "➕ Add Task";
+
+    cancelEditBtn.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   MARK COMPLETE / REOPEN
+========================================================= */
+
+async function toggleComplete(id) {
+
+    if (
+        currentProfile.role ===
+        "warden"
+    ) {
+
+        alert(
+            "Wardens cannot update tasks."
+        );
+
+        return;
+
+    }
+
+    const task =
+        tasks.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+    if (!task) return;
+
+    const nowCompleting =
+        task.status !==
+        "completed";
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("tasks")
+            .update({
+
+                status:
+                    nowCompleting
+                        ? "completed"
+                        : "pending",
+
+                completed_at:
+                    nowCompleting
+                        ? new Date().toISOString()
+                        : null
+
+            })
+            .eq("id", id);
+
+    if (error) {
+
+        alert(
+            "Unable to update task: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+    await loadEverything();
+
+    showMessage(
+        nowCompleting
+            ? "Task marked completed."
+            : "Task reopened.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   DELETE TASK
+========================================================= */
+
+async function deleteTask(id) {
+
+    if (
+        currentProfile.role ===
+        "warden"
+    ) {
+
+        alert(
+            "Wardens cannot delete tasks."
+        );
+
+        return;
+
+    }
+
+    if (
+        !confirm(
+            "Delete this task? This cannot be undone."
+        )
+    ) return;
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("tasks")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+
+        alert(
+            "Unable to delete task: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+    if (
+        String(editingTaskId) ===
+        String(id)
+    ) {
+
+        resetForm();
+
+    }
+
+    await loadEverything();
+
+    showMessage(
+        "Task deleted.",
+        "success"
+    );
+
+}
+
+
+/* =========================================================
+   RENDER TASKS
+========================================================= */
+
+function renderTasks() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+    const priority =
+        document.getElementById(
+            "priorityFilter"
+        ).value;
+
+    const assignedTo =
+        document.getElementById(
+            "assignedFilter"
+        ).value;
+
+    const sort =
+        document.getElementById(
+            "sortFilter"
+        ).value;
+
+    let filtered =
+        [...tasks];
+
+    if (search) {
+
+        filtered =
+            filtered.filter(
+                task => {
+
+                    const text = [
+
+                        task.title,
+                        task.description,
+                        task.assignee?.full_name,
+                        task.assignee?.email
+
+                    ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+                    return text.includes(
+                        search
+                    );
+
+                }
+            );
+
+    }
+
+    if (status !== "all") {
+
+        filtered =
+            filtered.filter(
+                task =>
+                    task.status ===
+                    status
+            );
+
+    }
+
+    if (priority !== "all") {
+
+        filtered =
+            filtered.filter(
+                task =>
+                    task.priority ===
+                    priority
+            );
+
+    }
+
+    if (assignedTo !== "all") {
+
+        filtered =
+            filtered.filter(
+                task =>
+                    String(
+                        task.assigned_to
+                    ) ===
+                    String(assignedTo)
+            );
+
+    }
+
+    filtered.sort(
+        (a, b) => {
+
+            if (sort === "due_soon") {
+
+                const dueA =
+                    a.due_date
+                        ? new Date(a.due_date)
+                        : new Date(
+                            "9999-12-31"
+                        );
+
+                const dueB =
+                    b.due_date
+                        ? new Date(b.due_date)
+                        : new Date(
+                            "9999-12-31"
+                        );
+
+                return dueA - dueB;
+
+            }
+
+            const dateA =
+                new Date(
+                    a.created_at || 0
+                );
+
+            const dateB =
+                new Date(
+                    b.created_at || 0
+                );
+
+            return sort === "oldest"
+                ? dateA - dateB
+                : dateB - dateA;
+
+        }
+    );
+
+    if (!filtered.length) {
+
+        taskTable.innerHTML =
+            `<tr>
+                <td colspan="7" class="empty">
+                    No tasks found.
+                </td>
+            </tr>`;
+
+        updateStatistics();
+
+        return;
+
+    }
+
+    taskTable.innerHTML =
+        filtered.map(
+            task => {
+
+                const overdue =
+                    isOverdue(task);
+
+                return `
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(
+                                task.title
+                            )}
+                        </strong>
+                        ${
+                            task.description
+                                ? `<br><small style="color:#64748b;">${escapeHtml(
+                                    task.description
+                                )}</small>`
+                                : ""
+                        }
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            task.assignee?.full_name ||
+                            "Unassigned"
+                        )}
+                        ${
+                            task.assignee?.role
+                                ? `<br><small style="color:#64748b;">${escapeHtml(
+                                    capitalize(
+                                        task.assignee.role
+                                    )
+                                )}</small>`
+                                : ""
+                        }
+                    </td>
+
+                    <td>
+                        <span class="priority priority-${task.priority || "medium"}">
+                            ${escapeHtml(
+                                capitalize(
+                                    task.priority ||
+                                    "medium"
+                                )
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            task.due_date
+                        )}
+                        ${
+                            overdue
+                                ? `<br><span class="overdue-tag">OVERDUE</span>`
+                                : ""
+                        }
+                    </td>
+
+                    <td>
+                        <span class="status status-${task.status}">
+                            ${escapeHtml(
+                                capitalize(
+                                    (task.status || "").replace(
+                                        "_",
+                                        " "
+                                    )
+                                )
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            task.created_at
+                        )}
+                    </td>
+
+                    <td>
+
+                        ${
+                            currentProfile.role !==
+                            "warden"
+                                ? `
+                                <button
+                                    class="action-btn ${
+                                        task.status === "completed"
+                                            ? "reopen-btn"
+                                            : "complete-btn"
+                                    }"
+                                    onclick="toggleComplete('${task.id}')"
+                                >
+                                    ${
+                                        task.status === "completed"
+                                            ? "Reopen"
+                                            : "Complete"
+                                    }
+                                </button>
+
+                                <button
+                                    class="action-btn edit-btn"
+                                    onclick="editTask('${task.id}')"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    class="action-btn delete-btn"
+                                    onclick="deleteTask('${task.id}')"
+                                >
+                                    Delete
+                                </button>
+                                `
+                                : "—"
+                        }
+
+                    </td>
+
+                </tr>
+                `;
+
+            }
+        ).join("");
+
+    updateStatistics();
+
+}
+
+
+/* =========================================================
+   OVERDUE CHECK
+========================================================= */
+
+function isOverdue(task) {
+
+    if (!task.due_date) return false;
+
+    if (task.status === "completed") return false;
+
+    if (task.status === "cancelled") return false;
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+    return task.due_date < today;
+
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function updateStatistics() {
+
+    document.getElementById(
+        "totalCount"
+    ).textContent =
+        tasks.length;
+
+    document.getElementById(
+        "pendingCount"
+    ).textContent =
+        tasks.filter(
+            task =>
+                task.status ===
+                "pending"
+        ).length;
+
+    document.getElementById(
+        "progressCount"
+    ).textContent =
+        tasks.filter(
+            task =>
+                task.status ===
+                "in_progress"
+        ).length;
+
+    document.getElementById(
+        "completedCount"
+    ).textContent =
+        tasks.filter(
+            task =>
+                task.status ===
+                "completed"
+        ).length;
+
+    document.getElementById(
+        "overdueCount"
+    ).textContent =
+        tasks.filter(
+            isOverdue
+        ).length;
+
+}
+
+
+/* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    renderTasks
+);
+
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    renderTasks
+);
+
+document.getElementById(
+    "priorityFilter"
+).addEventListener(
+    "change",
+    renderTasks
+);
+
+document.getElementById(
+    "assignedFilter"
+).addEventListener(
+    "change",
+    renderTasks
+);
+
+document.getElementById(
+    "sortFilter"
+).addEventListener(
+    "change",
+    renderTasks
+);
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+document.getElementById(
+    "refreshBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        await loadEverything();
+
+        showMessage(
+            "Data refreshed.",
+            "success"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   WARDEN VIEW-ONLY MODE
+========================================================= */
+
+function enableWardenViewOnly() {
+
+    document.querySelectorAll(
+        "#taskForm input, #taskForm select, #taskForm textarea, #taskForm button"
+    ).forEach(
+        element => {
+
+            element.disabled = true;
+
+        }
+    );
+
+    const message =
+        document.createElement(
+            "div"
+        );
+
+    message.className =
+        "message success";
+
+    message.style.display =
+        "block";
+
+    message.textContent =
+        "View-only mode: Wardens can view tasks but cannot create, edit or complete them.";
+
+    taskForm.prepend(
+        message
+    );
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    formMessage.textContent =
+        text;
+
+    formMessage.className =
+        "message " + type;
+
+    formMessage.style.display =
+        "block";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   FORMATTERS
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+
+    }
+
+    return date.toLocaleDateString(
+        "en-KE",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+function capitalize(value) {
+
+    if (!value) {
+        return "—";
+    }
+
+    return value.charAt(0).toUpperCase() +
+        value.slice(1);
+
+}
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+document.getElementById(
+    "logoutBtn"
+).addEventListener(
+    "click",
+    async () => {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "login.html";
+
+    }
+);
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+document.getElementById(
+    "mobileMenu"
+).addEventListener(
+    "click",
+    () => {
+
+        document
+            .getElementById("sidebar")
+            .classList
+            .toggle("open");
+
+    }
+);
+
+</script>
+
+</body>
+</html>

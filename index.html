@@ -37,6 +37,7 @@
             color: white;
             padding: 25px 16px;
             z-index: 1000;
+            overflow-y: auto;
         }
 
         .logo {
@@ -99,20 +100,6 @@
             color: white;
         }
 
-        .sidebar-bottom {
-            position: absolute;
-            left: 16px;
-            right: 16px;
-            bottom: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 15px;
-        }
-
-        .register {
-            background: #00843d !important;
-            color: white !important;
-        }
-
         /* ==============================
            MAIN AREA
         ============================== */
@@ -120,9 +107,6 @@
         .main {
             margin-left: 250px;
             min-height: 100vh;
-
-            /* IMPORTANT:
-               Main area itself reveals when page loads */
             opacity: 0;
             transform: translateX(100px);
             animation: mainReveal 1.2s ease forwards;
@@ -310,12 +294,1055 @@
             color: white;
             border: 1px solid rgba(255,255,255,0.4);
         }
-else {
 
-                window.location.href =
-                    "hostels.html";
+        /* ==============================
+           SECTIONS
+        ============================== */
+
+        .section {
+            margin-top: 70px;
+
+            opacity: 0;
+
+            transform: translateY(70px);
+
+            transition:
+                opacity 1s ease,
+                transform 1s ease;
+        }
+
+        .section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-heading {
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .section-heading p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        /* ==============================
+           HOSTELS
+        ============================== */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 17px;
+
+            border: 1px solid #e5eaf0;
+
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+
+            box-shadow:
+                0 15px 35px rgba(15,23,42,0.1);
+        }
+
+        .card-icon {
+            height: 140px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dbeafe,
+                    #eff6ff
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 55px;
+
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card-button {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            padding: 11px;
+
+            background: #172033;
+
+            color: white;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+        }
+
+        /* ==============================
+           FEATURES
+        ============================== */
+
+        .features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .feature {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            border: 1px solid #e5eaf0;
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+        }
+
+        .feature p {
+            color: #64748b;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* ==============================
+           HOW IT WORKS
+        ============================== */
+
+        .steps {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+        }
+
+        .step {
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 17px;
+
+            border: 1px solid #e5eaf0;
+        }
+
+        .number {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 50%;
+
+            background: #2563eb;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-weight: bold;
+
+            margin-bottom: 18px;
+        }
+
+        .step p {
+            color: #64748b;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            margin-top: 8px;
+        }
+
+        /* ==============================
+           HELP
+        ============================== */
+
+        .help {
+            background: #172033;
+
+            color: white;
+
+            padding: 45px;
+
+            border-radius: 20px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 25px;
+        }
+
+        .help p {
+            color: #cbd5e1;
+
+            margin-top: 10px;
+
+            line-height: 1.6;
+        }
+
+        /* ==============================
+           CONTACT
+        ============================== */
+
+        .contact {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 18px;
+
+            border: 1px solid #e5eaf0;
+        }
+
+        .contact-card p {
+            color: #64748b;
+
+            line-height: 1.7;
+
+            margin-top: 10px;
+        }
+
+        /* ==============================
+           FOOTER
+        ============================== */
+
+        footer {
+            margin-top: 70px;
+
+            padding: 35px;
+
+            background: #172033;
+
+            color: white;
+
+            border-radius: 20px 20px 0 0;
+        }
+
+        footer p {
+            color: #94a3b8;
+
+            margin-top: 8px;
+
+            font-size: 13px;
+        }
+
+        /* ==============================
+           NEXA
+        ============================== */
+
+        .nexa {
+            position: fixed;
+
+            left: 270px;
+
+            bottom: 25px;
+
+            background: #2563eb;
+
+            color: white;
+
+            padding: 13px 19px;
+
+            border-radius: 30px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+
+            z-index: 2000;
+
+            box-shadow:
+                0 8px 25px
+                rgba(37,99,235,0.35);
+        }
+
+        /* ==============================
+           MOBILE
+        ============================== */
+
+        .mobile-button {
+            display: none;
+
+            border: none;
+
+            background: #172033;
+
+            color: white;
+
+            padding: 8px 12px;
+
+            border-radius: 7px;
+
+            font-size: 18px;
+
+            cursor: pointer;
+        }
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .cards,
+            .features {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .steps {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 750px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+
+                transition: 0.3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .mobile-button {
+                display: block;
+            }
+
+            .content {
+                padding: 18px;
+            }
+
+            .hero {
+                padding: 40px 25px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .search {
+                grid-template-columns: 1fr;
+            }
+
+            .stats,
+            .cards,
+            .features,
+            .steps,
+            .contact,
+            .access-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .help {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nexa {
+                left: 18px;
+                bottom: 18px;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =================================
+         SIDEBAR
+    ================================== -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🏠
+            </div>
+
+            <div>
+                <h2>HostelPro</h2>
+                <small>Hostel Management</small>
+            </div>
+
+        </div>
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+        <!-- LOGIN IS NOW ABOVE HOME -->
+        <a href="login.html">
+            🔐 Login
+        </a>
+
+        <a href="index.html" class="active">
+            🏠 Home
+        </a>
+
+        <a href="#how">
+            ⚙️ How It Works
+        </a>
+
+        <a href="announcements.html">
+            📢 Announcements
+        </a>
+
+        <a href="#contact">
+            📞 Contact
+        </a>
+
+        <!-- CORRECTED HELP PAGE -->
+        <a href="help_support.html">
+            ❓ Help & Support
+        </a>
+
+    </aside>
+
+
+    <!-- =================================
+         MAIN
+    ================================== -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="welcome">
+                Welcome to HostelPro
+            </div>
+
+            <div class="online">
+
+                <span class="dot"></span>
+
+                
+
+                <button
+                    class="mobile-button"
+                    id="mobileButton"
+                >
+                    ☰
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <div class="content">
+
+
+            <!-- =================================
+                 HERO
+            ================================== -->
+
+            <section class="hero">
+
+                <div class="hero-content">
+
+                    <div class="badge">
+                        SMART HOSTEL MANAGEMENT
+                    </div>
+
+                    <h1>
+                        Management simplified by 
+                        HostelAdvancedPro
+                    </h1>
+
+                    <p>
+                        HostelPro brings students,
+                        wardens, caretakers and
+                        administrators together in
+                        one simple hostel management
+                        platform.
+                    </p>
+
+                    <div class="buttons">
+
+                        <a
+                            href="login.html"
+                            class="btn primary"
+                        >
+                            🔐 Login
+                        </a>
+
+                        <a
+                            href="#how"
+                            class="btn secondary"
+                        >
+                            Learn More
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 SEARCH
+            ================================== -->
+
+            <div class="search">
+
+                <div class="field">
+
+                    <label>
+                        
+                    
+
+                    
+                        
+                    
+
+                
+
+                
+
+                    <label>
+                        
+                    </label>
+
+                    <select id="status">
+
+                        <option value="all">
+                            
+                        </option>
+
+                        <option value="active">
+                            
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button
+                    
+                    
+                
+                    
+                
+
+            </div>
+
+
+            <!-- =================================
+                 FEATURES
+            ================================== -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <h2>
+                        Everything in One Place
+                    </h2>
+
+                    <p>
+                        HostelPro helps manage
+                        the complete hostel operation.
+                    </p>
+
+                </div>
+
+                <div class="features">
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            🏢
+                        </div>
+
+                        <h3>
+                            Hostel Management
+                        </h3>
+
+                        <p>
+                            Manage hostels, rooms,
+                            beds and occupancy
+                            information.
+                        </p>
+
+                    </div>
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            👨‍🎓
+                        </div>
+
+                        <h3>
+                            Student Management
+                        </h3>
+
+                        <p>
+                            Authorized staff add students
+                            and manage their hostel
+                            accommodation information.
+                        </p>
+
+                    </div>
+
+                    <div class="feature">
+
+                        <div class="feature-icon">
+                            🛠️
+                        </div>
+
+                        <h3>
+                            Maintenance
+                        </h3>
+
+                        <p>
+                            Students can report
+                            maintenance issues and
+                            staff can manage them.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 HOW IT WORKS
+            ================================== -->
+
+            <section
+                class="section"
+                id="how"
+            >
+
+                <div class="section-heading">
+
+                    <h2>
+                        How HostelPro Works
+                    </h2>
+
+                    <p>
+                        Follow a simple process from
+                        account creation to accommodation.
+                    </p>
+
+                </div>
+
+                <div class="steps">
+
+                    <div class="step">
+
+                        <div class="number">
+                            1
+                        </div>
+
+                        <h3>
+                            Student Account
+                        </h3>
+
+                        <p>
+                            Admin or caretaker creates
+                            the student's account and
+                            provides the required details.
+                        </p>
+
+                    </div>
+
+                    <div class="step">
+
+                        <div class="number">
+                            2
+                        </div>
+
+                        <h3>
+                            Find a Hostel
+                        </h3>
+
+                        <p>
+                            Browse hostels, rooms
+                            and available beds.
+                        </p>
+
+                    </div>
+
+                    <div class="step">
+
+                        <div class="number">
+                            3
+                        </div>
+
+                        <h3>
+                            Get Allocated
+                        </h3>
+
+                        <p>
+                            Authorized staff allocate
+                            an available bed.
+                        </p>
+
+                    </div>
+
+                    <div class="step">
+
+                        <div class="number">
+                            4
+                        </div>
+
+                        <h3>
+                            Manage Your Stay
+                        </h3>
+
+                        <p>
+                            Access accommodation,
+                            announcements and
+                            services.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 HELP
+            ================================== -->
+
+            <section class="section">
+
+                <div class="help">
+
+                    <div>
+
+                        <h2>
+                            Need Help?
+                        </h2>
+
+                        <p>
+                            Nexa can guide you through
+                            HostelPro and help you
+                            understand the system.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="nexa.html"
+                        class="btn primary"
+                    >
+                        Ask Nexa
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 CONTACT
+            ================================== -->
+
+            <section
+                class="section"
+                id="contact"
+            >
+
+                <div class="section-heading"> -m
+
+                    <h2>
+                        Contact & Support
+                    </h2
+
+                    <p>
+                        Get assistance with your
+                        hostel account or accommodation.
+                    </p>
+
+                </div>
+
+                <div class="contact">
+
+                    <div class="contact-card">
+
+                        <h3>
+                            🏢 Hostel Administration
+                        </h3>
+
+                        <p>
+                            Contact your hostel
+                            administration, caretaker
+                            or warden for accommodation
+                            support.
+                        </p>
+
+                    </div>
+
+                    <div class="contact-card">
+
+                        <h3>
+                            💬 Nexa
+                        </h3>
+
+                        <p>
+                            Ask Nexa about accounts,
+                            hostels, rooms, beds,
+                            maintenance and other
+                            HostelPro features.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 FOOTER
+            ================================== -->
+
+            <footer>
+
+                <h3>
+                    HostelPro
+                </h3>
+
+                <p>
+                    Smart hostel management made simple.
+                </p>
+                   © 2026 HostelPro
+                <p>
+                   
+                    
+                
+                </p>
+            </footer>
+
+        </div>
+
+    </main>
+
+
+    <!-- =================================
+         NEXA BUTTON
+    ================================== -->
+
+    <a
+        href="nexa.html"
+        class="nexa"
+    >
+        💬 Nexa
+    </a>
+
+
+    <script>
+
+        /* =====================================
+           MOBILE SIDEBAR
+        ===================================== */
+
+        const mobileButton =
+            document.getElementById(
+                "mobileButton"
+            );
+
+        const sidebar =
+            document.getElementById(
+                "sidebar"
+            );
+
+        mobileButton.addEventListener(
+            "click",
+            function () {
+
+                sidebar.classList.toggle(
+                    "open"
+                );
 
             }
+        );
+
+
+        /* =====================================
+           SCROLL REVEAL
+        ===================================== */
+
+        const sections =
+            document.querySelectorAll(
+                ".section"
+            );
+
+        const stats =
+            document.querySelectorAll(
+                ".stat"
+            );
+
+
+        const observer =
+            new IntersectionObserver(
+                function(entries) {
+
+                    entries.forEach(
+                        function(entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add("show");
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.15
+                }
+            );
+
+
+        sections.forEach(
+            function(section) {
+
+                observer.observe(section);
+
+            }
+        );
+
+
+        /* =====================================
+           STAT REVEAL
+        ===================================== */
+
+        const statObserver =
+            new IntersectionObserver(
+                function(entries) {
+
+                    entries.forEach(
+                        function(entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add("visible");
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.2
+                }
+            );
+
+
+        stats.forEach(
+            function(stat) {
+
+                statObserver.observe(stat);
+
+            }
+        );
+
+
+        /* =====================================
+           SEARCH
+        ===================================== */
+
+        function searchHostels() {
+
+            window.location.href =
+                "hostels.html";
 
         }
 
