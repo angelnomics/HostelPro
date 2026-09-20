@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 25px 15px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #dbe3f0;
+            text-decoration: none;
+            padding: 13px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 20px;
+            background: #dc2626 !important;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .welcome {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        }
+
+        .welcome h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .student-id {
+            color: #2563eb;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        }
+
+        .stat h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat strong {
+            font-size: 28px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .accommodation {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .location-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .location-box small {
+            display: block;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .location-box strong {
+            font-size: 16px;
+        }
+
+        .list-item {
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .list-item small {
+            color: #64748b;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .quick-actions a {
+            display: block;
+            text-decoration: none;
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            color: #172033;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .quick-actions a:hover {
+            background: #e8eefc;
+            color: #2563eb;
+        }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .profile-row:last-child {
+            border-bottom: none;
+        }
+
+        .profile-row span:first-child {
+            color: #64748b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .empty {
+            color: #64748b;
+            padding: 10px 0;
+        }
+
+        .nexa-button {
+            position: fixed;
+            left: 270px;
+            bottom: 25px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 5px 18px rgba(0,0,0,.2);
+            z-index: 900;
+        }
+
+        .nexa-button:hover {
+            background: #1d4ed8;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #f5f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            font-weight: bold;
+        }
+
+        @media(max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 800px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-menu {
+                display: block;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 2000;
+                border: none;
+                background: #172033;
+                color: white;
+                font-size: 20px;
+                border-radius: 7px;
+                padding: 8px 12px;
+            }
+
+            .nexa-button {
+                left: auto;
+                right: 20px;
+            }
+        }
+
+        @media(max-width: 550px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .accommodation {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome {
+                padding-top: 55px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+    Loading HostelPro...
+</div>
+
+<button class="mobile-menu" id="mobileMenu">☰</button>
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Hostel<span>Pro</span>
+    </div>
+
+    <a href="student_dashboard.html" class="active">
+        Dashboard
+    </a>
+
+    <a href="student_profile.html">
+        My Profile
+    </a>
+
+    <a href="allocations.html">
+        My Accommodation
+    </a>
+
+    <a href="maintenance.html">
+        Maintenance
+    </a>
+
+    <a href="messages.html">
+        Messages
+    </a>
+
+    <a href="announcements.html">
+        Announcements
+    </a>
+
+    <a href="nexa.html">
+        Nexa
+    </a>
+
+    <a href="help_support.html">
+        Help & Support
+    </a>
+
+    <a href="#" class="logout" id="logoutBtn">
+        Logout
+    </a>
+
+</aside>
+
+<main class="main">
+
+    <!-- WELCOME -->
+    <section class="welcome">
+
+        <h1>
+            Welcome, <span id="studentName">Student</span> 👋
+        </h1>
+
+        <p>
+            Here's an overview of your HostelPro account.
+        </p>
+
+        <div class="student-id">
+            Student ID:
+            <span id="studentId">—</span>
+        </div>
+
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+
+        <div class="card stat">
+            <h3>Bed Status</h3>
+            <strong id="bedStatus">—</strong>
+        </div>
+
+        <div class="card stat">
+            <h3>Unread Messages</h3>
+            <strong id="unreadMessages">0</strong>
+        </div>
+
+        <div class="card stat">
+            <h3>Announcements</h3>
+            <strong id="announcementCount">0</strong>
+        </div>
+
+        <div class="card stat">
+            <h3>Maintenance</h3>
+            <strong id="maintenanceCount">0</strong>
+        </div>
+
+    </section>
+
+    <!-- ACCOMMODATION -->
+    <section class="card" style="margin-bottom:25px;">
+
+        <h2>My Accommodation</h2>
+
+        <div class="accommodation">
+
+            <div class="location-box">
+                <small>Hostel</small>
+                <strong id="hostelName">Not allocated</strong>
+            </div>
+
+            <div class="location-box">
+                <small>Room</small>
+                <strong id="roomNumber">—</strong>
+            </div>
+
+            <div class="location-box">
+                <small>Bed</small>
+                <strong id="bedNumber">—</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- TWO COLUMNS -->
+    <section class="grid">
+
+        <!-- MESSAGES -->
+        <div class="card">
+
+            <h2>Recent Messages</h2>
+
+            <div id="messagesList">
+                <div class="empty">
+                    Loading messages...
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ANNOUNCEMENTS -->
+        <div class="card">
+
+            <h2>Recent Announcements</h2>
+
+            <div id="announcementsList">
+                <div class="empty">
+                    Loading announcements...
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAINTENANCE -->
+        <div class="card">
+
+            <h2>My Maintenance Requests</h2>
+
+            <div id="maintenanceList">
+                <div class="empty">
+                    Loading maintenance requests...
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PROFILE -->
+        <div class="card">
+
+            <h2>My Profile</h2>
+
+            <div class="profile-row">
+                <span>Name</span>
+                <strong id="profileName">—</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>Email</span>
+                <strong id="profileEmail">—</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>Phone</span>
+                <strong id="profilePhone">—</strong>
+            </div>
+
+            <div class="profile-row">
+                <span>Status</span>
+                <span id="profileStatus">—</span>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- QUICK ACTIONS -->
+    <section class="card">
+
+        <h2>Quick Actions</h2>
+
+        <div class="quick-actions">
+
+            <a href="allocations.html">
+                🛏️<br>
+                Accommodation
+            </a>
+
+            <a href="maintenance.html">
+                🔧<br>
+                Maintenance
+            </a>
+
+            <a href="messages.html">
+                💬<br>
+                Messages
+            </a>
+
+            <a href="announcements.html">
+                📢<br>
+                Announcements
+            </a>
+
+        </div>
+
+    </section>
+
+</main>
+
+<a href="nexa.html" class="nexa-button">
+    Nexa
+</a>
+
+<script>
+
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7r9J9";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+let currentUser = null;
+let currentProfile = null;
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function formatDate(date) {
+
+    if (!date) return "—";
+
+    return new Date(date).toLocaleDateString(
+        "en-KE",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+}
+
+async function checkAccess() {
+
+    const {
+        data: { user },
+        error
+    } = await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    currentUser = user;
+
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select(`
+            id,
+            full_name,
+            email,
+            phone,
+            role,
+            student_id,
+            gender,
+            date_of_birth,
+            profile_image,
+            status
+        `)
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (profileError || !profile) {
+
+        console.error(profileError);
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+    currentProfile = profile;
+
+    if (profile.role !== "student") {
+
+        if (profile.role === "admin") {
+            window.location.href = "admin_dashboard.html";
+        }
+
+        else if (profile.role === "caretaker") {
+            window.location.href = "caretaker_dashboard.html";
+        }
+
+        else if (profile.role === "warden") {
+            window.location.href = "warden.html";
+        }
+
+        else {
+            window.location.href = "login.html";
+        }
+
+        return false;
+    }
+
+    if (
+        profile.status &&
+        profile.status !== "active"
+    ) {
+
+        alert(
+            "Your HostelPro account is currently inactive."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+
+        return false;
+    }
+
+    return true;
+}
+
+function loadProfile() {
+
+    const profile = currentProfile;
+
+    document.getElementById("studentName").textContent =
+        profile.full_name || "Student";
+
+    document.getElementById("studentId").textContent =
+        profile.student_id || "Not assigned";
+
+    document.getElementById("profileName").textContent =
+        profile.full_name || "—";
+
+    document.getElementById("profileEmail").textContent =
+        profile.email || currentUser.email || "—";
+
+    document.getElementById("profilePhone").textContent =
+        profile.phone || "—";
+
+    const statusElement =
+        document.getElementById("profileStatus");
+
+    statusElement.textContent =
+        profile.status || "—";
+
+    statusElement.className =
+        profile.status === "active"
+            ? "badge green"
+            : "badge yellow";
+}
+
+async function loadAccommodation() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("allocations")
+            .select(`
+                id,
+                student_id,
+                bed_id,
+                status,
+                allocation_date,
+                check_in_date,
+                check_out_date,
+                beds (
+                    id,
+                    bed_number,
+                    label,
+                    status,
+                    rooms (
+                        id,
+                        room_number,
+                        hostel_id,
+                        hostels (
+                            id,
+                            name
+                        )
+                    )
+                )
+            `)
+            .eq("student_id", currentUser.id)
+            .eq("status", "active")
+            .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "Accommodation error:",
+            error
+        );
+
+        document.getElementById("bedStatus")
+            .textContent = "Unavailable";
+
+        return;
+    }
+
+    if (!data) {
+
+        document.getElementById("bedStatus")
+            .textContent = "Not Allocated";
+
+        document.getElementById("hostelName")
+            .textContent = "Not allocated";
+
+        document.getElementById("roomNumber")
+            .textContent = "—";
+
+        document.getElementById("bedNumber")
+            .textContent = "—";
+
+        return;
+    }
+
+    const hostel =
+        data.beds?.rooms?.hostels?.name ||
+        "Unknown hostel";
+
+    const room =
+        data.beds?.rooms?.room_number ||
+        "Unknown room";
+
+    const bed =
+        data.beds?.bed_number ||
+        data.beds?.label ||
+        "Unknown bed";
+
+    document.getElementById("bedStatus")
+        .textContent = "Allocated";
+
+    document.getElementById("hostelName")
+        .textContent = hostel;
+
+    document.getElementById("roomNumber")
+        .textContent = room;
+
+    document.getElementById("bedNumber")
+        .textContent = bed;
+}
+
+async function loadMessages() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("messages")
+        .select(`
+            id,
+            sender_id,
+            subject,
+            content,
+            is_read,
+            created_at
+        `)
+        .eq("recipient_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+
+        console.error(
+            "Messages error:",
+            error
+        );
+
+        document.getElementById("messagesList").innerHTML =
+            `<div class="empty">
+                Unable to load messages.
+            </div>`;
+
+        return;
+    }
+
+    const messages = data || [];
+
+    const unread =
+        messages.filter(
+            message => !message.is_read
+        ).length;
+
+    document.getElementById("unreadMessages")
+        .textContent = unread;
+
+    const recent = messages.slice(0, 5);
+
+    if (!recent.length) {
+
+        document.getElementById("messagesList").innerHTML =
+            `<div class="empty">
+                No messages yet.
+            </div>`;
+
+        return;
+    }
+
+    document.getElementById("messagesList").innerHTML =
+        recent.map(message => `
+
+            <div class="list-item">
+
+                <strong>
+                    ${escapeHtml(
+                        message.subject || "Message"
+                    )}
+                </strong>
+
+                <small>
+                    ${escapeHtml(
+                        (message.content || "")
+                            .substring(0, 90)
+                    )}
+                    ${message.content &&
+                      message.content.length > 90
+                        ? "..."
+                        : ""}
+                </small>
+
+                <small>
+                    ${formatDate(message.created_at)}
+                    ${
+                        message.is_read
+                            ? ""
+                            : " • Unread"
+                    }
+                </small>
+
+            </div>
+
+        `).join("");
+}
+
+async function loadAnnouncements() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("announcements")
+        .select("*")
+        .order("created_at", {
+            ascending: false
+        })
+        .limit(5);
+
+    if (error) {
+
+        console.error(
+            "Announcements error:",
+            error
+        );
+
+        document.getElementById(
+            "announcementCount"
+        ).textContent = "0";
+
+        document.getElementById(
+            "announcementsList"
+        ).innerHTML =
+            `<div class="empty">
+                No announcements available.
+            </div>`;
+
+        return;
+    }
+
+    const announcements = data || [];
+
+    document.getElementById(
+        "announcementCount"
+    ).textContent = announcements.length;
+
+    if (!announcements.length) {
+
+        document.getElementById(
+            "announcementsList"
+        ).innerHTML =
+            `<div class="empty">
+                No announcements yet.
+            </div>`;
+
+        return;
+    }
+
+    document.getElementById(
+        "announcementsList"
+    ).innerHTML =
+        announcements.map(item => {
+
+            const title =
+                item.title ||
+                item.subject ||
+                "Announcement";
+
+            const content =
+                item.content ||
+                item.message ||
+                "";
+
+            return `
+                <div class="list-item">
+
+                    <strong>
+                        ${escapeHtml(title)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(
+                            content.substring(0, 90)
+                        )}
+                        ${
+                            content.length > 90
+                                ? "..."
+                                : ""
+                        }
+                    </small>
+
+                    <small>
+                        ${formatDate(
+                            item.created_at
+                        )}
+                    </small>
+
+                </div>
+            `;
+
+        }).join("");
+}
+
+async function loadMaintenance() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("maintenance_requests")
+        .select(`
+            id,
+            title,
+            description,
+            category,
+            priority,
+            status,
+            created_at
+        `)
+        .eq("student_id", currentUser.id)
+        .order("created_at", {
+            ascending: false
+        })
+        .limit(5);
+
+    if (error) {
+
+        console.error(
+            "Maintenance error:",
+            error
+        );
+
+        document.getElementById(
+            "maintenanceList"
+        ).innerHTML =
+            `<div class="empty">
+                Unable to load maintenance requests.
+            </div>`;
+
+        return;
+    }
+
+    const requests = data || [];
+
+    document.getElementById(
+        "maintenanceCount"
+    ).textContent = requests.length;
+
+    if (!requests.length) {
+
+        document.getElementById(
+            "maintenanceList"
+        ).innerHTML =
+            `<div class="empty">
+                No maintenance requests.
+            </div>`;
+
+        return;
+    }
+
+    document.getElementById(
+        "maintenanceList"
+    ).innerHTML =
+        requests.map(request => `
+
+            <div class="list-item">
+
+                <strong>
+                    ${escapeHtml(
+                        request.title || "Maintenance Request"
+                    )}
+                </strong>
+
+                <small>
+                    ${escapeHtml(
+                        request.category || "General"
+                    )}
+                    ${
+                        request.priority
+                            ? " • " +
+                              escapeHtml(request.priority)
+                            : ""
+                    }
+                </small>
+
+                <small>
+                    Status:
+                    ${escapeHtml(
+                        request.status || "Pending"
+                    )}
+                </small>
+
+            </div>
+
+        `).join("");
+}
+
+async function startDashboard() {
+
+    const allowed =
+        await checkAccess();
+
+    if (!allowed) return;
+
+    loadProfile();
+
+    await Promise.all([
+        loadAccommodation(),
+        loadMessages(),
+        loadAnnouncements(),
+        loadMaintenance()
+    ]);
+
+    document.getElementById(
+        "loadingScreen"
+    ).style.display = "none";
+}
+
+document.getElementById(
+    "mobileMenu"
+).addEventListener("click", () => {
+
+    document.getElementById(
+        "sidebar"
+    ).classList.toggle("open");
+});
+
+document.getElementById(
+    "logoutBtn"
+).addEventListener("click", async event => {
+
+    event.preventDefault();
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "login.html";
+});
+
+startDashboard();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students | HostelPro</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 25px 15px;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #dbe3f0;
+            text-decoration: none;
+            padding: 13px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 20px;
+            background: #dc2626 !important;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .role-badge {
+            background: #e8eefc;
+            color: #2563eb;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        }
+
+        .stat-card h3 {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card strong {
+            font-size: 28px;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 18px;
+            border-radius: 14px;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input,
+        select,
+        textarea {
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            padding: 11px 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary {
+            background: #e8eefc;
+            color: #2563eb;
+        }
+
+        .danger {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.06);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 13px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .allocated {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .not-allocated {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .actions button {
+            font-size: 12px;
+            padding: 7px 9px;
+        }
+
+        .loading,
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.55);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            background: transparent;
+            font-size: 24px;
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #475569;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #172033;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media(max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+                z-index: 1500;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .mobile-menu {
+                display: block;
+                background: #172033;
+                color: white;
+                position: fixed;
+                top: 15px;
+                left: 15px;
+                z-index: 1600;
+                font-size: 20px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 550px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                padding-top: 45px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<button class="mobile-menu" id="mobileMenu">☰</button>
+
+<aside class="sidebar" id="sidebar">
+    <div class="logo">Hostel<span>Pro</span></div>
+
+    <a href="admin_dashboard.html">Dashboard</a>
+    <a href="hostels.html">Hostels</a>
+    <a href="rooms.html">Rooms</a>
+    <a href="beds.html">Beds</a>
+    <a href="students.html" class="active">Students</a>
+    <a href="allocations.html">Allocations</a>
+    <a href="maintenance.html">Maintenance</a>
+    <a href="discipline.html">Discipline</a>
+    <a href="security.html">Security</a>
+    <a href="tasks.html">Tasks</a>
+    <a href="messages.html">Messages</a>
+    <a href="announcements.html">Announcements</a>
+    <a href="reports.html">Reports</a>
+    <a href="settings.html">Settings</a>
+
+    <a href="#" class="logout" id="logoutBtn">Logout</a>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <h1>Students</h1>
+            <p>Manage students, accommodation and student accounts.</p>
+        </div>
+
+        <div class="role-badge" id="roleBadge">Loading...</div>
+    </div>
+
+    <section class="stats">
+        <div class="stat-card">
+            <h3>Total Students</h3>
+            <strong id="totalStudents">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>Active Students</h3>
+            <strong id="activeStudents">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>Allocated</h3>
+            <strong id="allocatedStudents">0</strong>
+        </div>
+
+        <div class="stat-card">
+            <h3>Not Allocated</h3>
+            <strong id="notAllocatedStudents">0</strong>
+        </div>
+    </section>
+
+    <div class="toolbar">
+        <input
+            type="text"
+            id="searchInput"
+            class="search"
+            placeholder="Search by name, email or student ID..."
+        >
+
+        <select id="statusFilter">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+
+        <select id="allocationFilter">
+            <option value="all">All Accommodation</option>
+            <option value="allocated">Allocated</option>
+            <option value="not_allocated">Not Allocated</option>
+        </select>
+
+        <button class="primary" id="refreshBtn">Refresh</button>
+    </div>
+
+    <section class="table-container">
+
+        <div id="loading" class="loading">
+            Loading students...
+        </div>
+
+        <table id="studentsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Accommodation</th>
+                    <th>Hostel</th>
+                    <th>Room</th>
+                    <th>Bed</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentsBody"></tbody>
+        </table>
+
+        <div id="emptyState" class="empty" style="display:none;">
+            No students found.
+        </div>
+
+    </section>
+
+</main>
+
+<!-- EDIT STUDENT MODAL -->
+<div class="modal" id="editModal">
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h2>Edit Student</h2>
+            <button class="close" id="closeEditModal">&times;</button>
+        </div>
+
+        <input type="hidden" id="editStudentId">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="editFullName">
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="editEmail">
+        </div>
+
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="editPhone">
+        </div>
+
+        <div class="form-group">
+            <label>Gender</label>
+            <select id="editGender">
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select id="editStatus">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button class="secondary" id="cancelEdit">Cancel</button>
+            <button class="primary" id="saveEdit">Save Changes</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7r9J9";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+let currentUser = null;
+let currentProfile = null;
+let students = [];
+let allocations = [];
+
+const $ = id => document.getElementById(id);
+
+function showToast(message) {
+    const toast = $("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3000);
+}
+
+async function checkAccess() {
+
+    const {
+        data: { user },
+        error
+    } = await supabaseClient.auth.getUser();
+
+    if (error || !user) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    currentUser = user;
+
+    const { data: profile, error: profileError } =
+        await supabaseClient
+            .from("profiles")
+            .select("id,full_name,email,role,status")
+            .eq("id", user.id)
+            .maybeSingle();
+
+    if (profileError || !profile) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+        return false;
+    }
+
+    currentProfile = profile;
+
+    if (
+        profile.role !== "admin" &&
+        profile.role !== "caretaker"
+    ) {
+        if (profile.role === "student") {
+            window.location.href = "student_dashboard.html";
+        } else if (profile.role === "warden") {
+            window.location.href = "warden.html";
+        } else {
+            window.location.href = "login.html";
+        }
+
+        return false;
+    }
+
+    if (profile.status && profile.status !== "active") {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+        return false;
+    }
+
+    $("roleBadge").textContent =
+        profile.role.charAt(0).toUpperCase() +
+        profile.role.slice(1);
+
+    return true;
+}
+
+async function loadAllocations() {
+
+    const { data, error } = await supabaseClient
+        .from("allocations")
+        .select(`
+            id,
+            student_id,
+            bed_id,
+            status,
+            beds (
+                id,
+                bed_number,
+                label,
+                room_id,
+                rooms (
+                    id,
+                    room_number,
+                    hostel_id,
+                    hostels (
+                        id,
+                        name
+                    )
+                )
+            )
+        `)
+        .eq("status", "active");
+
+    if (error) {
+        console.error("Allocation error:", error);
+        allocations = [];
+        return;
+    }
+
+    allocations = data || [];
+}
+
+async function loadStudents() {
+
+    $("loading").style.display = "block";
+    $("studentsTable").style.display = "none";
+    $("emptyState").style.display = "none";
+
+    const { data, error } = await supabaseClient
+        .from("profiles")
+        .select(`
+            id,
+            full_name,
+            email,
+            phone,
+            role,
+            student_id,
+            gender,
+            date_of_birth,
+            profile_image,
+            status,
+            created_at
+        `)
+        .eq("role", "student")
+        .order("full_name", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        $("loading").textContent =
+            "Unable to load students. Check your Supabase table and permissions.";
+        return;
+    }
+
+    students = data || [];
+
+    await loadAllocations();
+
+    updateStats();
+    renderStudents();
+}
+
+function getAllocation(studentId) {
+    return allocations.find(
+        allocation => allocation.student_id === studentId
+    );
+}
+
+function updateStats() {
+
+    const active = students.filter(
+        student => student.status === "active"
+    ).length;
+
+    const allocated = students.filter(
+        student => getAllocation(student.id)
+    ).length;
+
+    $("totalStudents").textContent = students.length;
+    $("activeStudents").textContent = active;
+    $("allocatedStudents").textContent = allocated;
+    $("notAllocatedStudents").textContent =
+        students.length - allocated;
+}
+
+function renderStudents() {
+
+    const search = $("searchInput").value
+        .trim()
+        .toLowerCase();
+
+    const status = $("statusFilter").value;
+    const allocationFilter = $("allocationFilter").value;
+
+    const filtered = students.filter(student => {
+
+        const matchesSearch =
+            !search ||
+            (student.full_name || "").toLowerCase().includes(search) ||
+            (student.email || "").toLowerCase().includes(search) ||
+            (student.student_id || "").toLowerCase().includes(search);
+
+        const matchesStatus =
+            status === "all" ||
+            student.status === status;
+
+        const allocation = getAllocation(student.id);
+
+        const matchesAllocation =
+            allocationFilter === "all" ||
+            (allocationFilter === "allocated" && allocation) ||
+            (allocationFilter === "not_allocated" && !allocation);
+
+        return matchesSearch &&
+               matchesStatus &&
+               matchesAllocation;
+    });
+
+    $("loading").style.display = "none";
+
+    if (!filtered.length) {
+        $("studentsTable").style.display = "none";
+        $("emptyState").style.display = "block";
+        return;
+    }
+
+    $("studentsTable").style.display = "table";
+    $("emptyState").style.display = "none";
+
+    $("studentsBody").innerHTML = filtered.map(student => {
+
+        const allocation = getAllocation(student.id);
+
+        const hostel =
+            allocation?.beds?.rooms?.hostels?.name || "—";
+
+        const room =
+            allocation?.beds?.rooms?.room_number || "—";
+
+        const bed =
+            allocation?.beds?.bed_number ||
+            allocation?.beds?.label ||
+            "—";
+
+        const statusClass =
+            student.status === "active"
+                ? "active"
+                : "inactive";
+
+        const allocationClass =
+            allocation
+                ? "allocated"
+                : "not-allocated";
+
+        const allocationText =
+            allocation
+                ? "Allocated"
+                : "Not Allocated";
+
+        return `
+            <tr>
+
+                <td>
+                    <strong>${escapeHtml(student.full_name || "Unnamed")}</strong>
+                </td>
+
+                <td>
+                    ${escapeHtml(student.student_id || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(student.email || "—")}
+                </td>
+
+                <td>
+                    ${escapeHtml(student.phone || "—")}
+                </td>
+
+                <td>
+                    <span class="status ${statusClass}">
+                        ${escapeHtml(student.status || "unknown")}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="status ${allocationClass}">
+                        ${allocationText}
+                    </span>
+                </td>
+
+                <td>${escapeHtml(hostel)}</td>
+
+                <td>${escapeHtml(room)}</td>
+
+                <td>${escapeHtml(String(bed))}</td>
+
+                <td>
+                    <div class="actions">
+
+                        <button
+                            class="secondary"
+                            onclick="viewStudent('${student.id}')">
+                            View
+                        </button>
+
+                        <button
+                            class="secondary"
+                            onclick="editStudent('${student.id}')">
+                            Edit
+                        </button>
+
+                        ${
+                            allocation
+                            ? `
+                                <button
+                                    class="success"
+                                    onclick="viewAllocation('${student.id}')">
+                                    Allocation
+                                </button>
+                            `
+                            : `
+                                <button
+                                    class="primary"
+                                    onclick="allocateStudent('${student.id}')">
+                                    Allocate
+                                </button>
+                            `
+                        }
+
+                        ${
+                            student.status === "active"
+                            ? `
+                                <button
+                                    class="danger"
+                                    onclick="changeStudentStatus('${student.id}', 'inactive')">
+                                    Remove
+                                </button>
+                            `
+                            : `
+                                <button
+                                    class="success"
+                                    onclick="changeStudentStatus('${student.id}', 'active')">
+                                    Reactivate
+                                </button>
+                            `
+                        }
+
+                    </div>
+                </td>
+
+            </tr>
+        `;
+    }).join("");
+}
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+window.viewStudent = function(id) {
+
+    const student = students.find(s => s.id === id);
+
+    if (!student) return;
+
+    const allocation = getAllocation(id);
+
+    let message =
+        `Name: ${student.full_name || "—"}\n` +
+        `Student ID: ${student.student_id || "—"}\n` +
+        `Email: ${student.email || "—"}\n` +
+        `Phone: ${student.phone || "—"}\n` +
+        `Gender: ${student.gender || "—"}\n` +
+        `Status: ${student.status || "—"}`;
+
+    if (allocation) {
+
+        const hostel =
+            allocation.beds?.rooms?.hostels?.name || "—";
+
+        const room =
+            allocation.beds?.rooms?.room_number || "—";
+
+        const bed =
+            allocation.beds?.bed_number ||
+            allocation.beds?.label ||
+            "—";
+
+        message +=
+            `\n\nAccommodation:` +
+            `\nHostel: ${hostel}` +
+            `\nRoom: ${room}` +
+            `\nBed: ${bed}`;
+    }
+
+    alert(message);
+};
+
+window.editStudent = function(id) {
+
+    const student = students.find(s => s.id === id);
+
+    if (!student) return;
+
+    $("editStudentId").value = student.id;
+    $("editFullName").value = student.full_name || "";
+    $("editEmail").value = student.email || "";
+    $("editPhone").value = student.phone || "";
+    $("editGender").value = student.gender || "";
+    $("editStatus").value = student.status || "active";
+
+    $("editModal").classList.add("show");
+};
+
+window.viewAllocation = function(id) {
+
+    const allocation = getAllocation(id);
+
+    if (!allocation) {
+        alert("This student has no active allocation.");
+        return;
+    }
+
+    const hostel =
+        allocation.beds?.rooms?.hostels?.name || "Unknown hostel";
+
+    const room =
+        allocation.beds?.rooms?.room_number || "Unknown room";
+
+    const bed =
+        allocation.beds?.bed_number ||
+        allocation.beds?.label ||
+        "Unknown bed";
+
+    alert(
+        `Accommodation\n\n` +
+        `Hostel: ${hostel}\n` +
+        `Room: ${room}\n` +
+        `Bed: ${bed}`
+    );
+};
+
+window.allocateStudent = function(id) {
+
+    window.location.href =
+        `allocations.html?student_id=${encodeURIComponent(id)}`;
+};
+
+window.changeStudentStatus = async function(id, newStatus) {
+
+    const student = students.find(s => s.id === id);
+
+    if (!student) return;
+
+    const action =
+        newStatus === "active"
+            ? "reactivate"
+            : "remove";
+
+    if (!confirm(
+        `Are you sure you want to ${action} ${student.full_name}?`
+    )) {
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("profiles")
+        .update({ status: newStatus })
+        .eq("id", id)
+        .eq("role", "student");
+
+    if (error) {
+        console.error(error);
+        alert("Unable to update student status.");
+        return;
+    }
+
+    showToast(
+        newStatus === "active"
+            ? "Student reactivated."
+            : "Student removed."
+    );
+
+    await loadStudents();
+};
+
+$("saveEdit").addEventListener("click", async () => {
+
+    const id = $("editStudentId").value;
+
+    const full_name =
+        $("editFullName").value.trim();
+
+    const email =
+        $("editEmail").value.trim();
+
+    const phone =
+        $("editPhone").value.trim();
+
+    const gender =
+        $("editGender").value;
+
+    const status =
+        $("editStatus").value;
+
+    if (!full_name) {
+        alert("Please enter the student's name.");
+        return;
+    }
+
+    const { error } = await supabaseClient
+        .from("profiles")
+        .update({
+            full_name,
+            email,
+            phone,
+            gender,
+            status
+        })
+        .eq("id", id)
+        .eq("role", "student");
+
+    if (error) {
+        console.error(error);
+        alert("Unable to save student changes.");
+        return;
+    }
+
+    $("editModal").classList.remove("show");
+
+    showToast("Student updated successfully.");
+
+    await loadStudents();
+});
+
+function closeEdit() {
+    $("editModal").classList.remove("show");
+}
+
+$("closeEditModal").addEventListener("click", closeEdit);
+$("cancelEdit").addEventListener("click", closeEdit);
+
+$("editModal").addEventListener("click", event => {
+
+    if (event.target === $("editModal")) {
+        closeEdit();
+    }
+});
+
+$("searchInput").addEventListener(
+    "input",
+    renderStudents
+);
+
+$("statusFilter").addEventListener(
+    "change",
+    renderStudents
+);
+
+$("allocationFilter").addEventListener(
+    "change",
+    renderStudents
+);
+
+$("refreshBtn").addEventListener(
+    "click",
+    loadStudents
+);
+
+$("mobileMenu").addEventListener("click", () => {
+    $("sidebar").classList.toggle("open");
+});
+
+$("logoutBtn").addEventListener("click", async event => {
+
+    event.preventDefault();
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = "login.html";
+});
+
+async function start() {
+
+    const allowed = await checkAccess();
+
+    if (!allowed) return;
+
+    await loadStudents();
+}
+
+start();
+</script>
+
+</body>
+</html>

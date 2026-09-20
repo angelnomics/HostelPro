@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -280,38 +281,253 @@
             display: none;
         }
 
+        .compose-btn {
+            border: 0;
+            background: #2563eb;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
 
-        .compose-btn{border:0;background:#2563eb;color:#fff;padding:10px 15px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:13px}
-        .compose-btn:hover{background:#1d4ed8}
-        .compose-panel{display:none;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:22px;margin-bottom:20px}
-        .compose-panel.show{display:block}
-        .compose-panel h3{margin-bottom:18px;font-size:18px}
-        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-        .form-group{display:flex;flex-direction:column;gap:7px}
-        .form-group.full{grid-column:1/-1}
-        .form-group label{font-size:12px;color:#475569;font-weight:bold}
-        .form-group input,.form-group select,.form-group textarea{width:100%;border:1px solid #dbe2ea;border-radius:8px;padding:11px 12px;outline:none;font-size:14px;background:#fff}
-        .form-group textarea{min-height:130px;resize:vertical}
-        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-        .compose-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
-        .cancel-btn{border:1px solid #cbd5e1;background:#fff;color:#334155;padding:10px 15px;border-radius:8px;cursor:pointer}
-        .send-btn{border:0;background:#00843d;color:#fff;padding:10px 17px;border-radius:8px;cursor:pointer;font-weight:bold}
-        .send-btn:disabled{opacity:.6;cursor:not-allowed}
-        .form-message{margin-top:12px;font-size:13px;display:none}
-        .form-message.show{display:block}
-        .form-message.error{color:#dc2626}
-        .form-message.success{color:#00843d}
-        .recipient-results{position:relative;max-height:220px;overflow-y:auto;margin-top:2px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;display:none;z-index:20}
-        .recipient-results.show{display:block}
-        .recipient-result{padding:11px 12px;border-bottom:1px solid #eef2f7;cursor:pointer}
-        .recipient-result:last-child{border-bottom:0}
-        .recipient-result:hover{background:#eff6ff}
-        .recipient-name{font-weight:bold;font-size:13px;color:#172033}
-        .recipient-details,.search-hint{margin-top:3px;color:#64748b;font-size:11px}
-        .search-hint{padding:12px}
-        .selected-recipient{margin-top:7px;padding:8px 10px;border-radius:7px;background:#ecfdf5;color:#166534;font-size:12px;border:1px solid #bbf7d0}
+        .compose-btn:hover {
+            background: #1d4ed8;
+        }
 
-        @media(max-width:700px){.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}}
+        .compose-panel {
+            display: none;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .compose-panel.show {
+            display: block;
+        }
+
+        .compose-panel h3 {
+            margin-bottom: 18px;
+            font-size: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .form-group.full {
+            grid-column: 1/-1;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #475569;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            padding: 11px 12px;
+            outline: none;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .form-group textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+
+        .compose-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .cancel-btn {
+            border: 1px solid #cbd5e1;
+            background: #fff;
+            color: #334155;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .send-btn {
+            border: 0;
+            background: #00843d;
+            color: #fff;
+            padding: 10px 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .send-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .form-message {
+            margin-top: 12px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        .form-message.error {
+            color: #dc2626;
+        }
+
+        .form-message.success {
+            color: #00843d;
+        }
+
+        .recipient-results {
+            position: relative;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 2px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+            display: none;
+            z-index: 20;
+        }
+
+        .recipient-results.show {
+            display: block;
+        }
+
+        .recipient-result {
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: 0;
+            border-bottom: 1px solid #eef2f7;
+            background: #fff;
+            padding: 11px 12px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .recipient-result:last-child {
+            border-bottom: 0;
+        }
+
+        .recipient-result:hover {
+            background: #eff6ff;
+        }
+
+        .recipient-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: #172033;
+        }
+
+        .recipient-details,
+        .search-hint {
+            margin-top: 3px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .search-hint {
+            padding: 12px;
+        }
+
+        .selected-recipient {
+            margin-top: 7px;
+            padding: 8px 10px;
+            border-radius: 7px;
+            background: #ecfdf5;
+            color: #166534;
+            font-size: 12px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .feedback-panel {
+            margin-top: 24px;
+            padding: 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            background: #f8fafc;
+        }
+
+        .feedback-panel h3 {
+            margin: 0 0 6px;
+            font-size: 17px;
+        }
+
+        .feedback-help {
+            margin: 0 0 12px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .feedback-panel textarea {
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font: inherit;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .feedback-panel textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+
+        .feedback-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .feedback-status {
+            font-size: 13px;
+            margin-right: auto;
+        }
+
+        .feedback-status.error {
+            color: #dc2626;
+        }
+
+        .feedback-status.success {
+            color: #00843d;
+        }
 
         .nexa {
             position: fixed;
@@ -345,6 +561,16 @@
             text-align: center;
             padding: 40px 20px;
             color: #64748b;
+        }
+
+        @media(max-width:700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
         }
 
         @media (max-width: 900px) {
@@ -391,17 +617,7 @@
                 display: block;
             }
         }
-    
-.feedback-panel{margin-top:24px;padding:18px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;}
-.feedback-panel h3{margin:0 0 6px;font-size:17px;}
-.feedback-help{margin:0 0 12px;color:#64748b;font-size:13px;}
-.feedback-panel textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit;box-sizing:border-box;outline:none;}
-.feedback-panel textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1);}
-.feedback-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:12px;}
-.feedback-status{font-size:13px;margin-right:auto;}
-.feedback-status.error{color:#dc2626;}
-.feedback-status.success{color:#00843d;}
-</style>
+    </style>
 </head>
 
 <body>
@@ -539,59 +755,155 @@
                 <p>View and manage your HostelPro messages.</p>
             </div>
 
-            <button type="button" class="compose-btn" id="writeMessageBtn" style="display:none;">
+            <button
+                type="button"
+                class="compose-btn"
+                id="writeMessageBtn"
+                style="display:none;"
+            >
                 ✉️ Write Message
             </button>
 
         </div>
 
+
         <div class="compose-panel" id="composePanel">
+
             <h3>✉️ Write Message</h3>
 
             <form id="composeForm">
+
                 <div class="form-grid">
+
                     <div class="form-group">
-                        <label for="recipientType">Recipient Type</label>
+
+                        <label for="recipientType">
+                            Recipient Type
+                        </label>
+
                         <select id="recipientType" required>
-                            <option value="student">Student</option>
-                            <option value="caretaker">Caretaker</option>
-                            <option value="warden">Warden</option>
-                            <option value="staff">Staff Member</option>
+
+                            <option value="student">
+                                Student
+                            </option>
+
+                            <option value="caretaker">
+                                Caretaker
+                            </option>
+
+                            <option value="warden">
+                                Warden
+                            </option>
+
+                            <option value="staff">
+                                Staff Member
+                            </option>
+
                         </select>
+
                     </div>
+
 
                     <div class="form-group">
-                        <label for="recipientSearch">Search Recipient</label>
-                        <input id="recipientSearch" type="text" autocomplete="off" placeholder="Search by name or Student ID..." required>
-                        <input type="hidden" id="recipientId">
-                        <div class="recipient-results" id="recipientResults"></div>
-                        <div class="selected-recipient" id="selectedRecipient" style="display:none;"></div>
+
+                        <label for="recipientSearch">
+                            Search Recipient
+                        </label>
+
+                        <input
+                            id="recipientSearch"
+                            type="text"
+                            autocomplete="off"
+                            placeholder="Search student by name, email or Student ID..."
+                            required
+                        >
+
+                        <input
+                            type="hidden"
+                            id="recipientId"
+                        >
+
+                        <div
+                            class="recipient-results"
+                            id="recipientResults"
+                        ></div>
+
+                        <div
+                            class="selected-recipient"
+                            id="selectedRecipient"
+                            style="display:none;"
+                        ></div>
+
                     </div>
 
-                    <div class="form-group full">
-                        <label for="messageSubject">Subject</label>
-                        <input id="messageSubject" type="text" maxlength="150" placeholder="Enter message subject" required>
-                    </div>
 
                     <div class="form-group full">
-                        <label for="messageBody">Message</label>
-                        <textarea id="messageBody" maxlength="5000" placeholder="Write your message..." required></textarea>
+
+                        <label for="messageSubject">
+                            Subject
+                        </label>
+
+                        <input
+                            id="messageSubject"
+                            type="text"
+                            maxlength="150"
+                            placeholder="Enter message subject"
+                            required
+                        >
+
                     </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="messageBody">
+                            Message
+                        </label>
+
+                        <textarea
+                            id="messageBody"
+                            maxlength="5000"
+                            placeholder="Write your message..."
+                            required
+                        ></textarea>
+
+                    </div>
+
                 </div>
 
-                <div class="form-message" id="formMessage"></div>
+
+                <div
+                    class="form-message"
+                    id="formMessage"
+                ></div>
+
 
                 <div class="compose-actions">
-                    <button type="button" class="cancel-btn" id="cancelMessageBtn">Cancel</button>
-                    <button type="submit" class="send-btn" id="sendMessageBtn">Send Message</button>
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        id="cancelMessageBtn"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="send-btn"
+                        id="sendMessageBtn"
+                    >
+                        Send Message
+                    </button>
+
                 </div>
+
             </form>
+
         </div>
 
 
         <div class="layout">
-
-            <!-- MESSAGE LIST -->
 
             <div class="card">
 
@@ -599,13 +911,19 @@
 
                     <h3>Inbox</h3>
 
-                    <div class="count" id="unreadCount">
+                    <div
+                        class="count"
+                        id="unreadCount"
+                    >
                         0
                     </div>
 
                 </div>
 
-                <div class="message-list" id="messageList">
+                <div
+                    class="message-list"
+                    id="messageList"
+                >
 
                     <div class="loading">
                         Loading messages...
@@ -616,13 +934,14 @@
             </div>
 
 
-            <!-- MESSAGE VIEW -->
-
             <div class="card message-view">
 
                 <div class="card-header">
 
-                    <button class="back-button" id="backButton">
+                    <button
+                        class="back-button"
+                        id="backButton"
+                    >
                         ← Back
                     </button>
 
@@ -632,7 +951,10 @@
 
                 </div>
 
-                <div class="message-content" id="messageContent">
+                <div
+                    class="message-content"
+                    id="messageContent"
+                >
 
                     <div class="empty">
 
@@ -657,15 +979,23 @@
 </main>
 
 
-<a href="nexa.html" class="nexa" title="Open Nexa">
+<a
+    href="nexa.html"
+    class="nexa"
+    title="Open Nexa"
+>
     🤖
 </a>
 
 
 <script>
 
-const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -676,7 +1006,10 @@ const supabaseClient =
 
 function escapeHtml(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -693,10 +1026,15 @@ function getInitials(name) {
 
     if (!name) return "U";
 
-    const words = name.trim().split(/\s+/);
+    const words =
+        name.trim().split(/\s+/);
 
     if (words.length === 1) {
-        return words[0].substring(0, 2).toUpperCase();
+
+        return words[0]
+            .substring(0, 2)
+            .toUpperCase();
+
     }
 
     return (
@@ -710,7 +1048,8 @@ function formatDate(dateValue) {
 
     if (!dateValue) return "";
 
-    const date = new Date(dateValue);
+    const date =
+        new Date(dateValue);
 
     return date.toLocaleString([], {
         dateStyle: "medium",
@@ -721,206 +1060,806 @@ function formatDate(dateValue) {
 
 let currentUser = null;
 let currentProfile = null;
-
 let messages = [];
 let recipients = [];
-
-function canWriteMessages(){
-    return currentProfile && ["admin","caretaker"].includes(String(currentProfile.role || "").toLowerCase());
-}
-
 let recipientSearchTimer = null;
 
-async function loadRecipients(type, searchTerm = "") {
-    const resultsBox = document.getElementById("recipientResults");
+
+function canWriteMessages() {
+
+    return currentProfile &&
+        ["admin", "caretaker"].includes(
+            String(
+                currentProfile.role || ""
+            ).toLowerCase()
+        );
+}
+
+
+function clearRecipientSelection(
+    clearSearch = true
+) {
+
+    const searchInput =
+        document.getElementById(
+            "recipientSearch"
+        );
+
+    const recipientId =
+        document.getElementById(
+            "recipientId"
+        );
+
+    const resultsBox =
+        document.getElementById(
+            "recipientResults"
+        );
+
+    const selected =
+        document.getElementById(
+            "selectedRecipient"
+        );
+
+
+    recipientId.value = "";
+
+    resultsBox.innerHTML = "";
+
+    resultsBox.classList.remove(
+        "show"
+    );
+
+    selected.style.display =
+        "none";
+
+
+    if (clearSearch) {
+        searchInput.value = "";
+    }
+}
+
+
+function clearSelectedRecipientOnly() {
+
+    const recipientId =
+        document.getElementById(
+            "recipientId"
+        );
+
+    const selected =
+        document.getElementById(
+            "selectedRecipient"
+        );
+
+    const resultsBox =
+        document.getElementById(
+            "recipientResults"
+        );
+
+
+    recipientId.value = "";
+
+    selected.style.display =
+        "none";
+
+    resultsBox.innerHTML = "";
+
+    resultsBox.classList.remove(
+        "show"
+    );
+}
+
+
+async function loadRecipients(
+    type,
+    searchTerm = ""
+) {
+
+    const resultsBox =
+        document.getElementById(
+            "recipientResults"
+        );
+
     if (!resultsBox) return;
 
-    const search = String(searchTerm || "").trim();
-    resultsBox.innerHTML = '<div class="search-hint">Searching...</div>';
-    resultsBox.classList.add("show");
 
-    const roles = type === "student" ? ["student"] :
-                  type === "caretaker" ? ["caretaker"] :
-                  type === "warden" ? ["warden"] :
-                  ["admin", "caretaker", "warden"];
+    const search =
+        String(searchTerm || "")
+            .trim();
 
-    let query = supabaseClient
-        .from("profiles")
-        .select("id,full_name,email,role,status,student_id")
-        .in("role", roles)
-        .eq("status", "active")
-        .order("full_name", {ascending:true})
-        .limit(25);
+
+    resultsBox.innerHTML =
+        '<div class="search-hint">Searching...</div>';
+
+    resultsBox.classList.add(
+        "show"
+    );
+
+
+    let roles = [];
+
+
+    if (type === "student") {
+
+        roles = ["student"];
+
+    } else if (type === "caretaker") {
+
+        roles = ["caretaker"];
+
+    } else if (type === "warden") {
+
+        roles = ["warden"];
+
+    } else if (type === "staff") {
+
+        roles = [
+            "admin",
+            "caretaker",
+            "warden"
+        ];
+
+    }
+
+
+    let query =
+        supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                status,
+                student_id
+            `)
+            .in("role", roles)
+            .eq("status", "active")
+            .order(
+                "full_name",
+                {
+                    ascending: true
+                }
+            )
+            .limit(25);
+
 
     if (search) {
-        const safeSearch = search.replace(/[%_]/g, "");
-        query = query.or(`full_name.ilike.%${safeSearch}%,student_id.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%`);
+
+        const safeSearch =
+            search
+                .replace(/\\/g, "")
+                .replace(/%/g, "")
+                .replace(/_/g, "");
+
+
+        query = query.or(
+            `full_name.ilike.%${safeSearch}%,email.ilike.%${safeSearch}%,student_id.ilike.%${safeSearch}%`
+        );
+
     }
 
-    const {data, error} = await query;
+
+    const {
+        data,
+        error
+    } = await query;
+
+
     if (error) {
-        console.error("Recipient search error:", error);
-        resultsBox.innerHTML = '<div class="search-hint">Unable to search recipients.</div>';
+
+        console.error(
+            "Recipient search error:",
+            error
+        );
+
+
+        resultsBox.innerHTML = `
+            <div class="search-hint">
+                Unable to search recipients.
+                <br>
+                <small>
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </small>
+            </div>
+        `;
+
         return;
     }
+
 
     recipients = data || [];
+
+
     if (!recipients.length) {
-        resultsBox.innerHTML = search ? '<div class="search-hint">No matching recipient found.</div>' : '<div class="search-hint">Start typing a name or Student ID.</div>';
+
+        resultsBox.innerHTML = `
+            <div class="search-hint">
+                No matching recipient found.
+            </div>
+        `;
+
         return;
     }
 
-    resultsBox.innerHTML = recipients.map(p => `
-        <div class="recipient-result" data-recipient-id="${escapeHtml(p.id)}">
-            <div class="recipient-name">${escapeHtml(p.full_name || p.email || "User")}</div>
-            <div class="recipient-details">${escapeHtml(p.role || "User")}${p.student_id ? " • Student ID: " + escapeHtml(p.student_id) : (p.email ? " • " + escapeHtml(p.email) : "")}</div>
-        </div>`).join("");
 
-    resultsBox.querySelectorAll(".recipient-result").forEach(item => {
-        item.addEventListener("click", () => {
-            const person = recipients.find(p => String(p.id) === String(item.dataset.recipientId));
-            if (person) selectRecipient(person);
-        });
-    });
+    resultsBox.innerHTML =
+        recipients.map(
+            function(person) {
+
+                const name =
+                    person.full_name ||
+                    person.email ||
+                    "User";
+
+
+                let details =
+                    person.role ||
+                    "User";
+
+
+                if (person.student_id) {
+
+                    details +=
+                        " • Student ID: " +
+                        person.student_id;
+
+                } else if (person.email) {
+
+                    details +=
+                        " • " +
+                        person.email;
+
+                }
+
+
+                return `
+                    <button
+                        type="button"
+                        class="recipient-result"
+                        data-recipient-id="${escapeHtml(person.id)}"
+                    >
+
+                        <div class="recipient-name">
+                            ${escapeHtml(name)}
+                        </div>
+
+                        <div class="recipient-details">
+                            ${escapeHtml(details)}
+                        </div>
+
+                    </button>
+                `;
+
+            }
+        ).join("");
+
+
+    resultsBox
+        .querySelectorAll(
+            ".recipient-result"
+        )
+        .forEach(
+            function(item) {
+
+                item.addEventListener(
+                    "click",
+                    function() {
+
+                        const person =
+                            recipients.find(
+                                function(p) {
+
+                                    return String(p.id) ===
+                                        String(
+                                            item.dataset.recipientId
+                                        );
+
+                                }
+                            );
+
+
+                        if (person) {
+
+                            selectRecipient(
+                                person
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
 }
+
 
 function selectRecipient(person) {
-    document.getElementById("recipientId").value = person.id;
-    document.getElementById("recipientSearch").value = person.full_name || person.email || "";
-    document.getElementById("recipientResults").classList.remove("show");
-    const selected = document.getElementById("selectedRecipient");
-    selected.innerHTML = `✓ ${escapeHtml(person.full_name || person.email || "User")} • ${escapeHtml(person.role || "User")}${person.student_id ? " • Student ID: " + escapeHtml(person.student_id) : ""}`;
-    selected.style.display = "block";
+
+    document.getElementById(
+        "recipientId"
+    ).value = person.id;
+
+
+    document.getElementById(
+        "recipientSearch"
+    ).value =
+        person.full_name ||
+        person.email ||
+        "";
+
+
+    document.getElementById(
+        "recipientResults"
+    ).classList.remove(
+        "show"
+    );
+
+
+    const selected =
+        document.getElementById(
+            "selectedRecipient"
+        );
+
+
+    selected.innerHTML =
+        `✓ ${escapeHtml(
+            person.full_name ||
+            person.email ||
+            "User"
+        )} • ${escapeHtml(
+            person.role ||
+            "User"
+        )}${
+            person.student_id
+                ? " • Student ID: " +
+                  escapeHtml(
+                      person.student_id
+                  )
+                : ""
+        }`;
+
+
+    selected.style.display =
+        "block";
 }
 
-function clearRecipientSelection() {
-    document.getElementById("recipientSearch").value = "";
-    document.getElementById("recipientId").value = "";
-    document.getElementById("recipientResults").innerHTML = "";
-    document.getElementById("recipientResults").classList.remove("show");
-    document.getElementById("selectedRecipient").style.display = "none";
-}
 
-function showFormMessage(text,type){
-    const box=document.getElementById("formMessage");
-    if(!box) return;
-    box.textContent=text||"";
-    box.className="form-message";
-    if(text){
-        box.classList.add("show");
-        box.classList.add(type==="error"?"error":"success");
+function showFormMessage(
+    text,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "formMessage"
+        );
+
+    if (!box) return;
+
+
+    box.textContent =
+        text || "";
+
+
+    box.className =
+        "form-message";
+
+
+    if (text) {
+
+        box.classList.add(
+            "show"
+        );
+
+        box.classList.add(
+            type === "error"
+                ? "error"
+                : "success"
+        );
+
     }
 }
 
-async function sendMessage(event){
+
+async function sendMessage(event) {
+
     event.preventDefault();
 
-    if(!canWriteMessages()){
-        showFormMessage("Only Admin and Caretaker accounts can send messages.","error");
+
+    if (!canWriteMessages()) {
+
+        showFormMessage(
+            "Only Admin and Caretaker accounts can send messages.",
+            "error"
+        );
+
         return;
     }
 
-    const recipientId=document.getElementById("recipientId").value;
-    const subject=document.getElementById("messageSubject").value.trim();
-    const content=document.getElementById("messageBody").value.trim();
 
-    if(!recipientId||!subject||!content){
-        showFormMessage("Please select a recipient and complete the subject and message.","error");
+    const recipientId =
+        document.getElementById(
+            "recipientId"
+        ).value;
+
+
+    const subject =
+        document.getElementById(
+            "messageSubject"
+        ).value.trim();
+
+
+    const content =
+        document.getElementById(
+            "messageBody"
+        ).value.trim();
+
+
+    if (
+        !recipientId ||
+        !subject ||
+        !content
+    ) {
+
+        showFormMessage(
+            "Please select a recipient and complete the subject and message.",
+            "error"
+        );
+
         return;
     }
 
-    if(recipientId===currentUser.id){
-        showFormMessage("You cannot send a message to yourself.","error");
+
+    if (
+        recipientId === currentUser.id
+    ) {
+
+        showFormMessage(
+            "You cannot send a message to yourself.",
+            "error"
+        );
+
         return;
     }
 
-    const button=document.getElementById("sendMessageBtn");
-    button.disabled=true;
-    button.textContent="Sending...";
 
-    const {error}=await supabaseClient.from("messages").insert({
-        sender_id:currentUser.id,
-        recipient_id:recipientId,
-        subject,
-        content,
-        is_read:false
-    });
+    const button =
+        document.getElementById(
+            "sendMessageBtn"
+        );
 
-    if(error){
-        console.error("Send message error:",error);
-        showFormMessage("Message could not be sent: "+error.message,"error");
-        button.disabled=false;
-        button.textContent="Send Message";
+
+    button.disabled = true;
+    button.textContent =
+        "Sending...";
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .insert({
+
+                sender_id:
+                    currentUser.id,
+
+                recipient_id:
+                    recipientId,
+
+                subject:
+                    subject,
+
+                content:
+                    content,
+
+                is_read:
+                    false
+
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Send message error:",
+            error
+        );
+
+
+        showFormMessage(
+            "Message could not be sent: " +
+            error.message,
+            "error"
+        );
+
+
+        button.disabled = false;
+        button.textContent =
+            "Send Message";
+
         return;
     }
 
-    showFormMessage("Message sent successfully.","success");
-    document.getElementById("composeForm").reset();
-    clearRecipientSelection();
-    button.disabled=false;
-    button.textContent="Send Message";
 
-    setTimeout(()=>{
-        document.getElementById("composePanel").classList.remove("show");
-        showFormMessage("","");
-        document.getElementById("recipientType").value="student";
-    },900);
+    showFormMessage(
+        "Message sent successfully.",
+        "success"
+    );
+
+
+    document.getElementById(
+        "composeForm"
+    ).reset();
+
+
+    clearRecipientSelection(
+        true
+    );
+
+
+    button.disabled = false;
+    button.textContent =
+        "Send Message";
+
+
+    setTimeout(
+        function() {
+
+            document.getElementById(
+                "composePanel"
+            ).classList.remove(
+                "show"
+            );
+
+            showFormMessage(
+                "",
+                ""
+            );
+
+            document.getElementById(
+                "recipientType"
+            ).value =
+                "student";
+
+        },
+        900
+    );
 }
 
-function setupComposer(){
-    const write=document.getElementById("writeMessageBtn");
-    const panel=document.getElementById("composePanel");
-    const cancel=document.getElementById("cancelMessageBtn");
-    const type=document.getElementById("recipientType");
-    const searchInput=document.getElementById("recipientSearch");
-    const form=document.getElementById("composeForm");
 
-    if(!write||!panel||!cancel||!type||!searchInput||!form||!canWriteMessages()) return;
-    write.style.display="inline-block";
+function setupComposer() {
 
-    write.addEventListener("click",()=>{
-        panel.classList.toggle("show");
-        if(panel.classList.contains("show")){ clearRecipientSelection(); searchInput.focus(); }
-    });
+    const write =
+        document.getElementById(
+            "writeMessageBtn"
+        );
 
-    cancel.addEventListener("click",()=>{
-        panel.classList.remove("show"); form.reset(); clearRecipientSelection(); showFormMessage("","");
-    });
+    const panel =
+        document.getElementById(
+            "composePanel"
+        );
 
-    type.addEventListener("change",()=>{
-        clearRecipientSelection();
-        searchInput.placeholder = type.value === "student" ? "Search by name or Student ID..." : "Search by name...";
-    });
+    const cancel =
+        document.getElementById(
+            "cancelMessageBtn"
+        );
 
-    searchInput.addEventListener("input",()=>{
-        clearRecipientSelection();
-        clearTimeout(recipientSearchTimer);
-        const term=searchInput.value.trim();
-        if(!term) return;
-        recipientSearchTimer=setTimeout(()=>loadRecipients(type.value,term),250);
-    });
+    const type =
+        document.getElementById(
+            "recipientType"
+        );
 
-    form.addEventListener("submit",sendMessage);
+    const searchInput =
+        document.getElementById(
+            "recipientSearch"
+        );
+
+    const form =
+        document.getElementById(
+            "composeForm"
+        );
+
+
+    if (
+        !write ||
+        !panel ||
+        !cancel ||
+        !type ||
+        !searchInput ||
+        !form
+    ) {
+
+        console.error(
+            "Composer elements are missing."
+        );
+
+        return;
+    }
+
+
+    if (!canWriteMessages()) {
+
+        console.log(
+            "Current user cannot write messages."
+        );
+
+        return;
+    }
+
+
+    write.style.display =
+        "inline-block";
+
+
+    write.addEventListener(
+        "click",
+        function() {
+
+            panel.classList.toggle(
+                "show"
+            );
+
+
+            if (
+                panel.classList.contains(
+                    "show"
+                )
+            ) {
+
+                clearRecipientSelection(
+                    true
+                );
+
+                searchInput.focus();
+
+            }
+
+        }
+    );
+
+
+    cancel.addEventListener(
+        "click",
+        function() {
+
+            panel.classList.remove(
+                "show"
+            );
+
+            form.reset();
+
+            clearRecipientSelection(
+                true
+            );
+
+            showFormMessage(
+                "",
+                ""
+            );
+
+        }
+    );
+
+
+    type.addEventListener(
+        "change",
+        function() {
+
+            clearRecipientSelection(
+                true
+            );
+
+
+            if (
+                type.value ===
+                "student"
+            ) {
+
+                searchInput.placeholder =
+                    "Search student by name, email or Student ID...";
+
+            } else if (
+                type.value ===
+                "staff"
+            ) {
+
+                searchInput.placeholder =
+                    "Search staff by name or email...";
+
+            } else {
+
+                searchInput.placeholder =
+                    "Search by name or email...";
+
+            }
+
+
+            searchInput.focus();
+
+        }
+    );
+
+
+    /*
+        IMPORTANT:
+        Do NOT clear the search input
+        while the user is typing.
+    */
+
+    searchInput.addEventListener(
+        "input",
+        function() {
+
+            const term =
+                searchInput.value.trim();
+
+
+            clearSelectedRecipientOnly();
+
+
+            clearTimeout(
+                recipientSearchTimer
+            );
+
+
+            if (!term) {
+
+                return;
+
+            }
+
+
+            recipientSearchTimer =
+                setTimeout(
+                    function() {
+
+                        loadRecipients(
+                            type.value,
+                            term
+                        );
+
+                    },
+                    250
+                );
+
+        }
+    );
+
+
+    form.addEventListener(
+        "submit",
+        sendMessage
+    );
 }
 
-
-/* =========================================
-   LOAD USER
-========================================= */
 
 async function loadUser() {
 
     const {
-        data: { user },
+        data: {
+            user
+        },
         error
-    } = await supabaseClient.auth.getUser();
+    } =
+        await supabaseClient.auth.getUser();
 
-    if (error || !user) {
 
-        window.location.href = "login.html";
+    if (
+        error ||
+        !user
+    ) {
+
+        window.location.href =
+            "login.html";
 
         return false;
     }
+
 
     currentUser = user;
 
@@ -928,20 +1867,35 @@ async function loadUser() {
     const {
         data: profile,
         error: profileError
-    } = await supabaseClient
-        .from("profiles")
-        .select("id,full_name,email,role,status,student_id")
-        .eq("id", user.id)
-        .single();
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id,full_name,email,role,status,student_id"
+            )
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
 
 
-    if (profileError || !profile) {
+    if (
+        profileError ||
+        !profile
+    ) {
 
-        alert("Your profile could not be found.");
+        alert(
+            "Your profile could not be found."
+        );
+
 
         await supabaseClient.auth.signOut();
 
-        window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
+
 
         return false;
     }
@@ -949,46 +1903,66 @@ async function loadUser() {
 
     if (
         profile.status &&
-        String(profile.status).toLowerCase() !== "active"
+        String(
+            profile.status
+        ).toLowerCase() !==
+            "active"
     ) {
 
-        alert("Your account is inactive.");
+        alert(
+            "Your account is inactive."
+        );
+
 
         await supabaseClient.auth.signOut();
 
-        window.location.href = "login.html";
+
+        window.location.href =
+            "login.html";
+
 
         return false;
     }
 
 
-    currentProfile = profile;
+    currentProfile =
+        profile;
 
 
-    document.getElementById("userName").textContent =
-        profile.full_name || user.email || "User";
+    document.getElementById(
+        "userName"
+    ).textContent =
+        profile.full_name ||
+        user.email ||
+        "User";
 
 
-    document.getElementById("userRole").textContent =
-        profile.role || "User";
+    document.getElementById(
+        "userRole"
+    ).textContent =
+        profile.role ||
+        "User";
 
 
-    document.getElementById("userAvatar").textContent =
-        getInitials(profile.full_name || user.email);
+    document.getElementById(
+        "userAvatar"
+    ).textContent =
+        getInitials(
+            profile.full_name ||
+            user.email
+        );
 
 
     return true;
 }
 
 
-/* =========================================
-   LOAD MESSAGES
-========================================= */
-
 async function loadMessages() {
 
     const list =
-        document.getElementById("messageList");
+        document.getElementById(
+            "messageList"
+        );
 
 
     list.innerHTML = `
@@ -1001,39 +1975,60 @@ async function loadMessages() {
     const {
         data,
         error
-    } = await supabaseClient
-        .from("messages")
-        .select(`
-            id,
-            sender_id,
-            recipient_id,
-            subject,
-            content,
-            is_read,
-            created_at,
-            sender:sender_id (
-                full_name,
-                email,
-                role
+    } =
+        await supabaseClient
+            .from("messages")
+            .select(`
+                id,
+                sender_id,
+                recipient_id,
+                subject,
+                content,
+                is_read,
+                created_at,
+                sender:sender_id (
+                    full_name,
+                    email,
+                    role
+                )
+            `)
+            .eq(
+                "recipient_id",
+                currentUser.id
             )
-        `)
-        .eq("recipient_id", currentUser.id)
-        .order("created_at", {
-            ascending: false
-        });
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
 
     if (error) {
 
-        console.error("Message error:", error);
+        console.error(
+            "Message error:",
+            error
+        );
+
 
         list.innerHTML = `
             <div class="empty">
-                <div class="empty-icon">⚠️</div>
-                <p>Unable to load messages.</p>
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <p>
+                    Unable to load messages.
+                </p>
+
                 <small>
-                    ${escapeHtml(error.message)}
+                    ${escapeHtml(
+                        error.message
+                    )}
                 </small>
+
             </div>
         `;
 
@@ -1041,18 +2036,26 @@ async function loadMessages() {
     }
 
 
-    messages = data || [];
+    messages =
+        data || [];
 
 
     const unread =
-        messages.filter(message => !message.is_read).length;
+        messages.filter(
+            message =>
+                !message.is_read
+        ).length;
 
 
-    document.getElementById("unreadCount").textContent =
+    document.getElementById(
+        "unreadCount"
+    ).textContent =
         unread;
 
 
-    if (messages.length === 0) {
+    if (
+        messages.length === 0
+    ) {
 
         list.innerHTML = `
             <div class="empty">
@@ -1073,119 +2076,296 @@ async function loadMessages() {
 
 
     list.innerHTML =
-        messages.map(message => {
+        messages.map(
+            function(message) {
 
-            const sender =
-                message.sender || {};
-
-
-            const preview =
-                message.content
-                    ? message.content.substring(0, 70)
-                    : "";
+                const sender =
+                    message.sender ||
+                    {};
 
 
-            return `
-                <div
-                    class="message-item ${message.is_read ? "" : "unread"}"
-                    data-id="${escapeHtml(message.id)}"
-                >
+                const preview =
+                    message.content
+                        ? message.content
+                            .substring(
+                                0,
+                                70
+                            )
+                        : "";
 
-                    <strong>
-                        ${escapeHtml(
-                            message.subject || "No subject"
-                        )}
-                    </strong>
 
-                    <div class="message-preview">
-                        ${escapeHtml(preview)}
-                        ${message.content && message.content.length > 70 ? "..." : ""}
+                return `
+                    <div
+                        class="message-item ${
+                            message.is_read
+                                ? ""
+                                : "unread"
+                        }"
+                        data-id="${escapeHtml(
+                            message.id
+                        )}"
+                    >
+
+                        <strong>
+                            ${escapeHtml(
+                                message.subject ||
+                                "No subject"
+                            )}
+                        </strong>
+
+                        <div class="message-preview">
+                            ${escapeHtml(
+                                preview
+                            )}
+                            ${
+                                message.content &&
+                                message.content.length > 70
+                                    ? "..."
+                                    : ""
+                            }
+                        </div>
+
+                        <div class="message-date">
+
+                            From:
+                            ${escapeHtml(
+                                sender.full_name ||
+                                sender.email ||
+                                "HostelPro"
+                            )}
+
+                            •
+
+                            ${formatDate(
+                                message.created_at
+                            )}
+
+                        </div>
+
                     </div>
+                `;
 
-                    <div class="message-date">
-                        From:
-                        ${escapeHtml(
-                            sender.full_name ||
-                            sender.email ||
-                            "HostelPro"
-                        )}
-                        •
-                        ${formatDate(message.created_at)}
-                    </div>
-
-                </div>
-            `;
-
-        }).join("");
+            }
+        ).join("");
 
 
     document
-        .querySelectorAll(".message-item")
-        .forEach(item => {
+        .querySelectorAll(
+            ".message-item"
+        )
+        .forEach(
+            function(item) {
 
-            item.addEventListener(
-                "click",
-                () => openMessage(item.dataset.id)
-            );
+                item.addEventListener(
+                    "click",
+                    function() {
 
-        });
+                        openMessage(
+                            item.dataset.id
+                        );
 
+                    }
+                );
+
+            }
+        );
 }
 
 
-async function sendFeedback(messageId){
-    const message = messages.find(item => String(item.id) === String(messageId));
-    const text = document.getElementById("feedbackText")?.value.trim();
-    const button = document.getElementById("sendFeedbackBtn");
-    const status = document.getElementById("feedbackStatus");
-
-    if(!message || message.recipient_id !== currentUser.id){
-        return;
-    }
-
-    if(!text){
-        if(status){ status.textContent = "Please write your feedback or reply."; status.className = "feedback-status error"; }
-        return;
-    }
-
-    if(button){ button.disabled = true; button.textContent = "Sending..."; }
-    if(status){ status.textContent = ""; status.className = "feedback-status"; }
-
-    const replySubject = /^re:/i.test(message.subject || "")
-        ? (message.subject || "Re: Message")
-        : `Re: ${message.subject || "Message"}`;
-
-    const { error } = await supabaseClient.from("messages").insert({
-        sender_id: currentUser.id,
-        recipient_id: message.sender_id,
-        subject: replySubject,
-        content: text,
-        is_read: false
-    });
-
-    if(error){
-        console.error("Feedback/reply error:", error);
-        if(status){ status.textContent = "Feedback could not be sent: " + error.message; status.className = "feedback-status error"; }
-        if(button){ button.disabled = false; button.textContent = "Send Feedback"; }
-        return;
-    }
-
-    if(status){ status.textContent = "Feedback sent successfully."; status.className = "feedback-status success"; }
-    const textarea = document.getElementById("feedbackText");
-    if(textarea) textarea.value = "";
-    if(button){ button.disabled = false; button.textContent = "Send Feedback"; }
-}
-
-
-/* =========================================
-   OPEN MESSAGE
-========================================= */
-
-async function openMessage(messageId) {
+async function sendFeedback(
+    messageId
+) {
 
     const message =
         messages.find(
-            item => String(item.id) === String(messageId)
+            item =>
+                String(item.id) ===
+                String(messageId)
+        );
+
+
+    const text =
+        document.getElementById(
+            "feedbackText"
+        )?.value.trim();
+
+
+    const button =
+        document.getElementById(
+            "sendFeedbackBtn"
+        );
+
+
+    const status =
+        document.getElementById(
+            "feedbackStatus"
+        );
+
+
+    if (
+        !message ||
+        message.recipient_id !==
+            currentUser.id
+    ) {
+
+        return;
+    }
+
+
+    if (!text) {
+
+        if (status) {
+
+            status.textContent =
+                "Please write your feedback or reply.";
+
+            status.className =
+                "feedback-status error";
+
+        }
+
+        return;
+    }
+
+
+    if (button) {
+
+        button.disabled = true;
+        button.textContent =
+            "Sending...";
+
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            "";
+
+        status.className =
+            "feedback-status";
+
+    }
+
+
+    const replySubject =
+        /^re:/i.test(
+            message.subject || ""
+        )
+            ? (
+                message.subject ||
+                "Re: Message"
+            )
+            : `Re: ${
+                message.subject ||
+                "Message"
+            }`;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("messages")
+            .insert({
+
+                sender_id:
+                    currentUser.id,
+
+                recipient_id:
+                    message.sender_id,
+
+                subject:
+                    replySubject,
+
+                content:
+                    text,
+
+                is_read:
+                    false
+
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Feedback/reply error:",
+            error
+        );
+
+
+        if (status) {
+
+            status.textContent =
+                "Feedback could not be sent: " +
+                error.message;
+
+            status.className =
+                "feedback-status error";
+
+        }
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "Send Feedback";
+
+        }
+
+        return;
+    }
+
+
+    if (status) {
+
+        status.textContent =
+            "Feedback sent successfully.";
+
+        status.className =
+            "feedback-status success";
+
+    }
+
+
+    const textarea =
+        document.getElementById(
+            "feedbackText"
+        );
+
+
+    if (textarea) {
+
+        textarea.value = "";
+
+    }
+
+
+    if (button) {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "Send Feedback";
+
+    }
+}
+
+
+async function openMessage(
+    messageId
+) {
+
+    const message =
+        messages.find(
+            item =>
+                String(item.id) ===
+                String(messageId)
         );
 
 
@@ -1193,24 +2373,32 @@ async function openMessage(messageId) {
 
 
     const sender =
-        message.sender || {};
+        message.sender ||
+        {};
 
 
-    document.getElementById("viewTitle").textContent =
-        message.subject || "Message";
+    document.getElementById(
+        "viewTitle"
+    ).textContent =
+        message.subject ||
+        "Message";
 
 
-    document.getElementById("messageContent").innerHTML = `
+    document.getElementById(
+        "messageContent"
+    ).innerHTML = `
 
         <h2 class="message-subject">
             ${escapeHtml(
-                message.subject || "No subject"
+                message.subject ||
+                "No subject"
             )}
         </h2>
 
         <div class="message-meta">
 
             From:
+
             <strong>
                 ${escapeHtml(
                     sender.full_name ||
@@ -1221,38 +2409,87 @@ async function openMessage(messageId) {
 
             •
 
-            ${formatDate(message.created_at)}
+            ${formatDate(
+                message.created_at
+            )}
 
         </div>
 
         <div class="message-body">
             ${escapeHtml(
-                message.content || ""
+                message.content ||
+                ""
             )}
         </div>
 
-        ${message.recipient_id === currentUser.id ? `
-            <div class="feedback-panel" id="feedbackPanel">
-                <h3>💬 Reply / Give Feedback</h3>
-                <p class="feedback-help">Send a response to the person who sent you this message.</p>
-                <textarea id="feedbackText" maxlength="5000" placeholder="Write your feedback or reply..."></textarea>
-                <div class="feedback-actions">
-                    <span id="feedbackStatus" class="feedback-status"></span>
-                    <button type="button" class="send-btn" id="sendFeedbackBtn" onclick="sendFeedback('${escapeHtml(String(message.id))}')">Send Feedback</button>
-                </div>
-            </div>
-        ` : ""}
+        ${
+            message.recipient_id ===
+            currentUser.id
+                ? `
+                    <div
+                        class="feedback-panel"
+                        id="feedbackPanel"
+                    >
+
+                        <h3>
+                            💬 Reply / Give Feedback
+                        </h3>
+
+                        <p class="feedback-help">
+                            Send a response to the person who sent you this message.
+                        </p>
+
+                        <textarea
+                            id="feedbackText"
+                            maxlength="5000"
+                            placeholder="Write your feedback or reply..."
+                        ></textarea>
+
+                        <div class="feedback-actions">
+
+                            <span
+                                id="feedbackStatus"
+                                class="feedback-status"
+                            ></span>
+
+                            <button
+                                type="button"
+                                class="send-btn"
+                                id="sendFeedbackBtn"
+                                onclick="sendFeedback('${escapeHtml(
+                                    String(
+                                        message.id
+                                    )
+                                )}')"
+                            >
+                                Send Feedback
+                            </button>
+
+                        </div>
+
+                    </div>
+                `
+                : ""
+        }
 
     `;
 
 
-    document.getElementById("backButton").onclick =
+    document.getElementById(
+        "backButton"
+    ).onclick =
         function() {
 
-            document.getElementById("viewTitle").textContent =
+            document.getElementById(
+                "viewTitle"
+            ).textContent =
                 "Select a message";
 
-            document.getElementById("messageContent").innerHTML = `
+
+            document.getElementById(
+                "messageContent"
+            ).innerHTML = `
+
                 <div class="empty">
 
                     <div class="empty-icon">
@@ -1264,92 +2501,126 @@ async function openMessage(messageId) {
                     </p>
 
                 </div>
+
             `;
+
         };
 
 
-    if (!message.is_read) {
+    if (
+        !message.is_read
+    ) {
 
-        const { error } =
+        const {
+            error
+        } =
             await supabaseClient
                 .from("messages")
                 .update({
                     is_read: true
                 })
-                .eq("id", message.id)
-                .eq("recipient_id", currentUser.id);
+                .eq(
+                    "id",
+                    message.id
+                )
+                .eq(
+                    "recipient_id",
+                    currentUser.id
+                );
 
 
         if (!error) {
 
-            message.is_read = true;
+            message.is_read =
+                true;
+
 
             const unread =
-                messages.filter(item => !item.is_read).length;
+                messages.filter(
+                    item =>
+                        !item.is_read
+                ).length;
 
-            document.getElementById("unreadCount").textContent =
+
+            document.getElementById(
+                "unreadCount"
+            ).textContent =
                 unread;
+
 
             const item =
                 document.querySelector(
                     `.message-item[data-id="${message.id}"]`
                 );
 
+
             if (item) {
-                item.classList.remove("unread");
+
+                item.classList.remove(
+                    "unread"
+                );
+
             }
+
         }
+
     }
+
 }
 
 
-/* =========================================
-   LOGOUT
-========================================= */
+/* LOGOUT */
 
-document
-    .getElementById("logoutBtn")
-    .addEventListener("click", async function(event) {
+document.getElementById(
+    "logoutBtn"
+).addEventListener(
+    "click",
+    async function(event) {
 
         event.preventDefault();
 
         await supabaseClient.auth.signOut();
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
-    });
+    }
+);
 
 
-/* =========================================
-   MOBILE MENU
-========================================= */
+/* MOBILE MENU */
 
-document
-    .getElementById("menuBtn")
-    .addEventListener("click", function() {
+document.getElementById(
+    "menuBtn"
+).addEventListener(
+    "click",
+    function() {
 
         document
             .getElementById("sidebar")
             .classList.toggle("open");
 
-    });
+    }
+);
 
 
-/* =========================================
-   START
-========================================= */
+/* START */
 
 async function init() {
 
     const authenticated =
         await loadUser();
 
+
     if (!authenticated) {
         return;
     }
 
+
     setupComposer();
+
     await loadMessages();
+
 }
 
 
@@ -1359,3 +2630,5 @@ init();
 
 </body>
 </html>
+
+  

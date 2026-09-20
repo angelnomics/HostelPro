@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,7 +22,10 @@
             color: #172033;
         }
 
-        /* SIDEBAR */
+        /* =========================
+           SIDEBAR
+        ========================= */
+
         .sidebar {
             position: fixed;
             left: 0;
@@ -78,13 +82,19 @@
             color: white;
         }
 
-        /* MAIN */
+        /* =========================
+           MAIN
+        ========================= */
+
         .main {
             margin-left: 250px;
             min-height: 100vh;
         }
 
-        /* TOPBAR */
+        /* =========================
+           TOPBAR
+        ========================= */
+
         .topbar {
             height: 70px;
             background: white;
@@ -136,12 +146,14 @@
             font-size: 12px;
         }
 
-        /* CONTENT */
+        /* =========================
+           CONTENT
+        ========================= */
+
         .content {
             padding: 30px;
         }
 
-        /* WELCOME */
         .welcome {
             background: linear-gradient(135deg, #172033, #2563eb);
             color: white;
@@ -160,7 +172,10 @@
             font-size: 14px;
         }
 
-        /* STATS */
+        /* =========================
+           STATS
+        ========================= */
+
         .stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -199,7 +214,10 @@
             font-size: 13px;
         }
 
-        /* GRID */
+        /* =========================
+           DASHBOARD GRID
+        ========================= */
+
         .dashboard-grid {
             display: grid;
             grid-template-columns: 1.4fr 1fr;
@@ -232,7 +250,10 @@
             font-size: 13px;
         }
 
-        /* OCCUPANCY */
+        /* =========================
+           OCCUPANCY
+        ========================= */
+
         .occupancy-number {
             font-size: 40px;
             font-weight: bold;
@@ -257,11 +278,16 @@
         .occupancy-details {
             display: flex;
             justify-content: space-between;
+            gap: 10px;
             font-size: 13px;
             color: #64748b;
+            flex-wrap: wrap;
         }
 
-        /* QUICK ACTIONS */
+        /* =========================
+           QUICK ACTIONS
+        ========================= */
+
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -275,6 +301,9 @@
             text-decoration: none;
             color: #172033;
             transition: 0.2s;
+            cursor: pointer;
+            background: white;
+            display: block;
         }
 
         .action:hover {
@@ -292,7 +321,10 @@
             color: #64748b;
         }
 
-        /* TABLE */
+        /* =========================
+           TABLE
+        ========================= */
+
         .table-container {
             overflow-x: auto;
         }
@@ -344,7 +376,10 @@
             color: #991b1b;
         }
 
-        /* NEXA */
+        /* =========================
+           NEXA
+        ========================= */
+
         .nexa {
             background: #f8fafc;
             border-left: 4px solid #2563eb;
@@ -371,7 +406,10 @@
             font-size: 13px;
         }
 
-        /* MOBILE BUTTON */
+        /* =========================
+           MOBILE BUTTON
+        ========================= */
+
         .menu-btn {
             display: none;
             border: none;
@@ -383,15 +421,201 @@
             font-size: 18px;
         }
 
-        /* LOADING */
         .loading {
             text-align: center;
             padding: 20px;
             color: #64748b;
         }
 
-        /* RESPONSIVE */
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 5000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(-15px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 22px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .modal-close {
+            border: none;
+            background: #f1f5f9;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: #475569;
+        }
+
+        .modal-close:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .modal-body {
+            padding: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #334155;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+            color: #172033;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 18px 22px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .form-message {
+            display: none;
+            padding: 11px 13px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .form-message.show {
+            display: block;
+        }
+
+        .form-message.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .form-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
         @media (max-width: 1100px) {
+
             .stats {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -446,13 +670,32 @@
             .welcome h2 {
                 font-size: 21px;
             }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-overlay {
+                padding: 10px;
+            }
+
+            .modal-footer {
+                flex-direction: column-reverse;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
 <aside class="sidebar" id="sidebar">
 
     <div class="logo">
@@ -544,21 +787,30 @@
 </aside>
 
 
-<!-- MAIN -->
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
 <main class="main">
 
     <!-- TOPBAR -->
+
     <header class="topbar">
 
         <div style="display:flex;align-items:center;gap:12px;">
 
-            <button class="menu-btn" id="menuBtn">
+            <button class="menu-btn" id="menuBtn" type="button">
                 ☰
             </button>
 
             <div class="page-title">
+
                 <h1>Admin Dashboard</h1>
-                <p>HostelPro management overview</p>
+
+                <p>
+                    HostelPro management overview
+                </p>
+
             </div>
 
         </div>
@@ -570,8 +822,15 @@
             </div>
 
             <div class="admin-info">
-                <strong id="adminName">Administrator</strong>
-                <span>System Administrator</span>
+
+                <strong id="adminName">
+                    Administrator
+                </strong>
+
+                <span>
+                    System Administrator
+                </span>
+
             </div>
 
         </div>
@@ -579,25 +838,35 @@
     </header>
 
 
-    <!-- CONTENT -->
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+
     <section class="content">
 
         <!-- WELCOME -->
+
         <div class="welcome">
 
             <h2>
-                Welcome back, <span id="welcomeName">Administrator</span> 
+                Welcome back,
+                <span id="welcomeName">
+                    Administrator
+                </span>
             </h2>
 
             <p>
-                Manage hostels, students, rooms, beds, staff and daily hostel
-                operations from one place.
+                Manage hostels, students, rooms, beds, staff and daily
+                hostel operations from one place.
             </p>
 
         </div>
 
 
-        <!-- STATISTICS -->
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
         <div class="stats">
 
             <div class="stat-card">
@@ -606,9 +875,13 @@
                     🎓
                 </div>
 
-                <h3 id="studentsCount">0</h3>
+                <h3 id="studentsCount">
+                    0
+                </h3>
 
-                <p>Total Students</p>
+                <p>
+                    Total Students
+                </p>
 
             </div>
 
@@ -619,9 +892,13 @@
                     🏢
                 </div>
 
-                <h3 id="hostelsCount">0</h3>
+                <h3 id="hostelsCount">
+                    0
+                </h3>
 
-                <p>Total Hostels</p>
+                <p>
+                    Total Hostels
+                </p>
 
             </div>
 
@@ -632,9 +909,13 @@
                     🛏️
                 </div>
 
-                <h3 id="bedsCount">0</h3>
+                <h3 id="bedsCount">
+                    0
+                </h3>
 
-                <p>Total Beds</p>
+                <p>
+                    Total Beds
+                </p>
 
             </div>
 
@@ -645,24 +926,39 @@
                     🔧
                 </div>
 
-                <h3 id="maintenanceCount">0</h3>
+                <h3 id="maintenanceCount">
+                    0
+                </h3>
 
-                <p>Open Maintenance</p>
+                <p>
+                    Open Maintenance
+                </p>
 
             </div>
 
         </div>
 
 
-        <!-- DASHBOARD GRID -->
+        <!-- =================================================
+             DASHBOARD GRID
+        ================================================== -->
+
         <div class="dashboard-grid">
 
             <!-- OCCUPANCY -->
+
             <div class="card">
 
                 <div class="card-header">
-                    <h3>Bed Occupancy</h3>
-                    <a href="beds.html">View Beds</a>
+
+                    <h3>
+                        Bed Occupancy
+                    </h3>
+
+                    <a href="beds.html">
+                        View Beds
+                    </a>
+
                 </div>
 
                 <div class="occupancy-number" id="occupancyPercentage">
@@ -674,7 +970,12 @@
                 </p>
 
                 <div class="progress">
-                    <div class="progress-bar" id="occupancyBar"></div>
+
+                    <div
+                        class="progress-bar"
+                        id="occupancyBar">
+                    </div>
+
                 </div>
 
                 <div class="occupancy-details">
@@ -700,42 +1001,144 @@
 
 
             <!-- QUICK ACTIONS -->
+
             <div class="card">
 
                 <div class="card-header">
-                    <h3>Quick Actions</h3>
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
                 </div>
 
                 <div class="quick-actions">
 
-                    <a href="hostels.html" class="action">
-                        <strong>🏢 Add Hostel</strong>
-                        <span>Create a new hostel</span>
+                    <!-- IMPORTANT:
+                         These buttons now OPEN MODALS.
+                         They do NOT navigate away.
+                    -->
+
+                    <button
+                        type="button"
+                        class="action"
+                        id="openHostelModal">
+
+                        <strong>
+                            🏢 Add Hostel
+                        </strong>
+
+                        <span>
+                            Create a new hostel
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action"
+                        id="openRoomModal">
+
+                        <strong>
+                            🚪 Add Room
+                        </strong>
+
+                        <span>
+                            Create a room inside a hostel
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action"
+                        id="openBedModal">
+
+                        <strong>
+                            🛏️ Add Bed
+                        </strong>
+
+                        <span>
+                            Create a bed inside a room
+                        </span>
+
+                    </button>
+
+
+                    <a
+                        href="allocations.html"
+                        class="action">
+
+                        <strong>
+                            📋 Allocate Bed
+                        </strong>
+
+                        <span>
+                            Assign a bed to a student
+                        </span>
+
                     </a>
 
-                    <a href="rooms.html" class="action">
-                        <strong>🚪 Add Room</strong>
-                        <span>Create hostel rooms</span>
+
+                    <a
+                        href="students_dashboard.html"
+                        class="action">
+
+                        <strong>
+                            🎓 Students
+                        </strong>
+
+                        <span>
+                            Manage students
+                        </span>
+
                     </a>
 
-                    <a href="students_dashboard.html" class="action">
-                        <strong>🎓 Students</strong>
-                        <span>Manage students</span>
+
+                    <a
+                        href="announcements.html"
+                        class="action">
+
+                        <strong>
+                            📢 Announcement
+                        </strong>
+
+                        <span>
+                            Send an announcement
+                        </span>
+
                     </a>
 
-                    <a href="allocations.html" class="action">
-                        <strong>🛏️ Allocate Bed</strong>
-                        <span>Assign students beds</span>
+
+                    <a
+                        href="reports.html"
+                        class="action">
+
+                        <strong>
+                            📊 Reports
+                        </strong>
+
+                        <span>
+                            View system reports
+                        </span>
+
                     </a>
 
-                    <a href="announcements.html" class="action">
-                        <strong>📢 Announcement</strong>
-                        <span>Send an announcement</span>
-                    </a>
 
-                    <a href="reports.html" class="action">
-                        <strong>📊 Reports</strong>
-                        <span>View system reports</span>
+                    <a
+                        href="nexa.html"
+                        class="action">
+
+                        <strong>
+                            🤖 Nexa AI
+                        </strong>
+
+                        <span>
+                            Analyze hostel operations
+                        </span>
+
                     </a>
 
                 </div>
@@ -745,12 +1148,19 @@
         </div>
 
 
-        <!-- RECENT ALLOCATIONS -->
-        <div class="card" style="margin-bottom:25px;">
+        <!-- =================================================
+             RECENT ALLOCATIONS
+        ================================================== -->
+
+        <div
+            class="card"
+            style="margin-bottom:25px;">
 
             <div class="card-header">
 
-                <h3>Recent Allocations</h3>
+                <h3>
+                    Recent Allocations
+                </h3>
 
                 <a href="allocations.html">
                     View All
@@ -765,12 +1175,31 @@
                     <thead>
 
                         <tr>
-                            <th>Student</th>
-                            <th>Student ID</th>
-                            <th>Hostel</th>
-                            <th>Room</th>
-                            <th>Bed</th>
-                            <th>Status</th>
+
+                            <th>
+                                Student
+                            </th>
+
+                            <th>
+                                Student ID
+                            </th>
+
+                            <th>
+                                Hostel
+                            </th>
+
+                            <th>
+                                Room
+                            </th>
+
+                            <th>
+                                Bed
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
                         </tr>
 
                     </thead>
@@ -778,9 +1207,15 @@
                     <tbody id="allocationsTable">
 
                         <tr>
-                            <td colspan="6" class="loading">
+
+                            <td
+                                colspan="6"
+                                class="loading">
+
                                 Loading allocations...
+
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -792,19 +1227,30 @@
         </div>
 
 
-        <!-- NEXA -->
+        <!-- =================================================
+             NEXA
+        ================================================== -->
+
         <div class="card nexa">
 
-            <h3>🤖 Nexa AI Assistant</h3>
+            <h3>
+                🤖 Nexa AI Assistant
+            </h3>
 
             <p>
+
                 Nexa helps HostelPro administrators understand hostel
                 activity, identify problems, monitor occupancy and make
                 better management decisions using system data.
+
             </p>
 
-            <a href="nexa.html" class="nexa-button">
+            <a
+                href="nexa.html"
+                class="nexa-button">
+
                 Open Nexa
+
             </a>
 
         </div>
@@ -814,14 +1260,610 @@
 </main>
 
 
+<!-- =========================================================
+     ADD HOSTEL MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="hostelModal">
+
+    <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hostelModalTitle">
+
+        <div class="modal-header">
+
+            <h2 id="hostelModalTitle">
+                🏢 Add New Hostel
+            </h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="hostelModal">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form id="hostelForm">
+
+            <div class="modal-body">
+
+                <div
+                    class="form-message"
+                    id="hostelMessage">
+                </div>
+
+                <div class="form-group">
+
+                    <label>
+                        Hostel Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hostelName"
+                        placeholder="e.g. Main Student Hostel"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Hostel Code
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hostelCode"
+                        placeholder="e.g. MSH-001">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="hostelLocation"
+                        placeholder="e.g. Main Campus">
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Total Rooms
+                        </label>
+
+                        <input
+                            type="number"
+                            id="hostelTotalRooms"
+                            min="0"
+                            value="0">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Total Beds
+                        </label>
+
+                        <input
+                            type="number"
+                            id="hostelTotalBeds"
+                            min="0"
+                            value="0">
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select id="hostelStatus">
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        id="hostelDescription"
+                        placeholder="Brief description of the hostel">
+                    </textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-close-modal="hostelModal">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="saveHostelBtn">
+
+                    Create Hostel
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ADD ROOM MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="roomModal">
+
+    <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="roomModalTitle">
+
+        <div class="modal-header">
+
+            <h2 id="roomModalTitle">
+                🚪 Add New Room
+            </h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="roomModal">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form id="roomForm">
+
+            <div class="modal-body">
+
+                <div
+                    class="form-message"
+                    id="roomMessage">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Hostel
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="roomHostel"
+                        required>
+
+                        <option value="">
+                            Select hostel
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Room Number
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="roomNumber"
+                            placeholder="e.g. 101"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Floor
+                        </label>
+
+                        <input
+                            type="number"
+                            id="roomFloor"
+                            min="0"
+                            placeholder="e.g. 1">
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Room Type
+                        </label>
+
+                        <select id="roomType">
+
+                            <option value="standard">
+                                Standard
+                            </option>
+
+                            <option value="single">
+                                Single
+                            </option>
+
+                            <option value="double">
+                                Double
+                            </option>
+
+                            <option value="shared">
+                                Shared
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Capacity
+                        </label>
+
+                        <input
+                            type="number"
+                            id="roomCapacity"
+                            min="1"
+                            value="1">
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select id="roomStatus">
+
+                        <option value="available">
+                            Available
+                        </option>
+
+                        <option value="full">
+                            Full
+                        </option>
+
+                        <option value="maintenance">
+                            Maintenance
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-close-modal="roomModal">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="saveRoomBtn">
+
+                    Create Room
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ADD BED MODAL
+========================================================= -->
+
+<div
+    class="modal-overlay"
+    id="bedModal">
+
+    <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="bedModalTitle">
+
+        <div class="modal-header">
+
+            <h2 id="bedModalTitle">
+                🛏️ Add New Bed
+            </h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                data-close-modal="bedModal">
+
+                ×
+
+            </button>
+
+        </div>
+
+        <form id="bedForm">
+
+            <div class="modal-body">
+
+                <div
+                    class="form-message"
+                    id="bedMessage">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Hostel
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="bedHostel"
+                        required>
+
+                        <option value="">
+                            Select hostel
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Room
+                        <span class="required">*</span>
+                    </label>
+
+                    <select
+                        id="bedRoom"
+                        required
+                        disabled>
+
+                        <option value="">
+                            Select hostel first
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Bed Number
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="bedNumber"
+                            placeholder="e.g. A-1"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Bed Label
+                        </label>
+
+                        <input
+                            type="text"
+                            id="bedLabel"
+                            placeholder="e.g. A-1 Lower">
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label>
+                            Bed Position
+                        </label>
+
+                        <select id="bedPosition">
+
+                            <option value="single">
+                                Single
+                            </option>
+
+                            <option value="lower">
+                                Lower
+                            </option>
+
+                            <option value="upper">
+                                Upper
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="bedStatus">
+
+                            <option value="available">
+                                Available
+                            </option>
+
+                            <option value="occupied">
+                                Occupied
+                            </option>
+
+                            <option value="maintenance">
+                                Maintenance
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-close-modal="bedModal">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="saveBedBtn">
+
+                    Create Bed
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
 <script>
 
-    /* =========================================
-       SUPABASE CONFIGURATION
-    ========================================= */
+    /* =========================================================
+       SUPABASE
+    ========================================================= */
 
-    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+    const SUPABASE_URL =
+        "https://keeyaworqbjsjfekorhd.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+        "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
     const supabaseClient =
         window.supabase.createClient(
@@ -830,13 +1872,16 @@
         );
 
 
-    /* =========================================
-       HELPER
-    ========================================= */
+    /* =========================================================
+       HELPER FUNCTIONS
+    ========================================================= */
 
     function escapeHtml(value) {
 
-        if (value === null || value === undefined) {
+        if (
+            value === null ||
+            value === undefined
+        ) {
             return "";
         }
 
@@ -851,12 +1896,19 @@
 
     function getInitials(name) {
 
-        if (!name) return "A";
+        if (!name) {
+            return "A";
+        }
 
-        const words = name.trim().split(/\s+/);
+        const words =
+            name.trim().split(/\s+/);
 
         if (words.length === 1) {
-            return words[0].substring(0, 2).toUpperCase();
+
+            return words[0]
+                .substring(0, 2)
+                .toUpperCase();
+
         }
 
         return (
@@ -866,20 +1918,215 @@
     }
 
 
-    /* =========================================
+    function showMessage(elementId, message, type) {
+
+        const element =
+            document.getElementById(elementId);
+
+        element.textContent = message;
+
+        element.className =
+            "form-message show " + type;
+    }
+
+
+    function clearMessage(elementId) {
+
+        const element =
+            document.getElementById(elementId);
+
+        element.textContent = "";
+
+        element.className =
+            "form-message";
+    }
+
+
+    /* =========================================================
+       MODAL FUNCTIONS
+    ========================================================= */
+
+    function openModal(modalId) {
+
+        document
+            .getElementById(modalId)
+            .classList.add("show");
+
+        document.body.style.overflow = "hidden";
+    }
+
+
+    function closeModal(modalId) {
+
+        document
+            .getElementById(modalId)
+            .classList.remove("show");
+
+        document.body.style.overflow = "";
+    }
+
+
+    document
+        .querySelectorAll("[data-close-modal]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    closeModal(
+                        this.dataset.closeModal
+                    );
+
+                }
+            );
+
+        });
+
+
+    document
+        .querySelectorAll(".modal-overlay")
+        .forEach(overlay => {
+
+            overlay.addEventListener(
+                "click",
+                function(event) {
+
+                    if (event.target === overlay) {
+
+                        closeModal(
+                            overlay.id
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key !== "Escape") {
+                return;
+            }
+
+            document
+                .querySelectorAll(".modal-overlay.show")
+                .forEach(modal => {
+
+                    closeModal(modal.id);
+
+                });
+
+        }
+    );
+
+
+    /* =========================================================
+       OPEN BUTTONS
+    ========================================================= */
+
+    document
+        .getElementById("openHostelModal")
+        .addEventListener(
+            "click",
+            function() {
+
+                clearMessage("hostelMessage");
+
+                document
+                    .getElementById("hostelForm")
+                    .reset();
+
+                openModal("hostelModal");
+
+            }
+        );
+
+
+    document
+        .getElementById("openRoomModal")
+        .addEventListener(
+            "click",
+            async function() {
+
+                clearMessage("roomMessage");
+
+                document
+                    .getElementById("roomForm")
+                    .reset();
+
+                await loadHostelOptions(
+                    "roomHostel"
+                );
+
+                openModal("roomModal");
+
+            }
+        );
+
+
+    document
+        .getElementById("openBedModal")
+        .addEventListener(
+            "click",
+            async function() {
+
+                clearMessage("bedMessage");
+
+                document
+                    .getElementById("bedForm")
+                    .reset();
+
+                const roomSelect =
+                    document.getElementById(
+                        "bedRoom"
+                    );
+
+                roomSelect.innerHTML = `
+                    <option value="">
+                        Select hostel first
+                    </option>
+                `;
+
+                roomSelect.disabled = true;
+
+                await loadHostelOptions(
+                    "bedHostel"
+                );
+
+                openModal("bedModal");
+
+            }
+        );
+
+
+    /* =========================================================
        CHECK ADMIN
-    ========================================= */
+    ========================================================= */
 
     async function loadAdmin() {
 
         const {
-            data: { user },
+            data: {
+                user
+            },
             error: authError
-        } = await supabaseClient.auth.getUser();
+        } =
+            await supabaseClient.auth.getUser();
 
-        if (authError || !user) {
 
-            window.location.href = "login.html";
+        if (
+            authError ||
+            !user
+        ) {
+
+            window.location.href =
+                "login.html";
 
             return null;
         }
@@ -888,30 +2135,47 @@
         const {
             data: profile,
             error
-        } = await supabaseClient
-            .from("profiles")
-            .select("full_name,email,role")
-            .eq("id", user.id)
-            .single();
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "full_name,email,role"
+                )
+                .eq(
+                    "id",
+                    user.id
+                )
+                .single();
 
 
-        if (error || !profile) {
+        if (
+            error ||
+            !profile
+        ) {
 
-            alert("Your profile could not be found.");
+            alert(
+                "Your profile could not be found."
+            );
 
             await supabaseClient.auth.signOut();
 
-            window.location.href = "login.html";
+            window.location.href =
+                "login.html";
 
             return null;
         }
 
 
-        if (profile.role !== "admin") {
+        if (
+            profile.role !== "admin"
+        ) {
 
-            alert("Access denied. Only administrators can access this page.");
+            alert(
+                "Access denied. Only administrators can access this page."
+            );
 
-            window.location.href = "login.html";
+            window.location.href =
+                "login.html";
 
             return null;
         }
@@ -923,21 +2187,845 @@
             "Administrator";
 
 
-        document.getElementById("adminName").textContent = name;
+        document
+            .getElementById("adminName")
+            .textContent = name;
 
-        document.getElementById("welcomeName").textContent = name;
 
-        document.getElementById("adminAvatar").textContent =
-            getInitials(name);
+        document
+            .getElementById("welcomeName")
+            .textContent = name;
+
+
+        document
+            .getElementById("adminAvatar")
+            .textContent =
+                getInitials(name);
 
 
         return profile;
     }
 
 
-    /* =========================================
+    /* =========================================================
+       LOAD HOSTELS INTO SELECTS
+    ========================================================= */
+
+    async function loadHostelOptions(selectId) {
+
+        const select =
+            document.getElementById(selectId);
+
+
+        select.innerHTML = `
+            <option value="">
+                Loading hostels...
+            </option>
+        `;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("hostels")
+                .select(
+                    "id,name"
+                )
+                .order(
+                    "name",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Hostel loading error:",
+                error
+            );
+
+            select.innerHTML = `
+                <option value="">
+                    Unable to load hostels
+                </option>
+            `;
+
+            return;
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            select.innerHTML = `
+                <option value="">
+                    No hostels available
+                </option>
+            `;
+
+            return;
+        }
+
+
+        select.innerHTML = `
+            <option value="">
+                Select hostel
+            </option>
+        `;
+
+
+        data.forEach(hostel => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                hostel.id;
+
+            option.textContent =
+                hostel.name;
+
+            select.appendChild(
+                option
+            );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       LOAD ROOMS FOR SELECTED HOSTEL
+    ========================================================= */
+
+    async function loadRoomsForHostel(
+        hostelId
+    ) {
+
+        const roomSelect =
+            document.getElementById(
+                "bedRoom"
+            );
+
+
+        if (!hostelId) {
+
+            roomSelect.innerHTML = `
+                <option value="">
+                    Select hostel first
+                </option>
+            `;
+
+            roomSelect.disabled = true;
+
+            return;
+        }
+
+
+        roomSelect.disabled = true;
+
+        roomSelect.innerHTML = `
+            <option value="">
+                Loading rooms...
+            </option>
+        `;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("rooms")
+                .select(
+                    "id,room_number"
+                )
+                .eq(
+                    "hostel_id",
+                    hostelId
+                )
+                .order(
+                    "room_number",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Room loading error:",
+                error
+            );
+
+            roomSelect.innerHTML = `
+                <option value="">
+                    Unable to load rooms
+                </option>
+            `;
+
+            return;
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            roomSelect.innerHTML = `
+                <option value="">
+                    No rooms in this hostel
+                </option>
+            `;
+
+            roomSelect.disabled = true;
+
+            return;
+        }
+
+
+        roomSelect.innerHTML = `
+            <option value="">
+                Select room
+            </option>
+        `;
+
+
+        data.forEach(room => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                room.id;
+
+            option.textContent =
+                "Room " +
+                room.room_number;
+
+            roomSelect.appendChild(
+                option
+            );
+
+        });
+
+
+        roomSelect.disabled = false;
+
+    }
+
+
+    /* =========================================================
+       BED HOSTEL CHANGE
+    ========================================================= */
+
+    document
+        .getElementById("bedHostel")
+        .addEventListener(
+            "change",
+            function() {
+
+                loadRoomsForHostel(
+                    this.value
+                );
+
+            }
+        );
+
+
+    /* =========================================================
+       ADD HOSTEL
+    ========================================================= */
+
+    document
+        .getElementById("hostelForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const button =
+                    document.getElementById(
+                        "saveHostelBtn"
+                    );
+
+
+                clearMessage(
+                    "hostelMessage"
+                );
+
+
+                const name =
+                    document
+                        .getElementById(
+                            "hostelName"
+                        )
+                        .value
+                        .trim();
+
+
+                const code =
+                    document
+                        .getElementById(
+                            "hostelCode"
+                        )
+                        .value
+                        .trim();
+
+
+                const location =
+                    document
+                        .getElementById(
+                            "hostelLocation"
+                        )
+                        .value
+                        .trim();
+
+
+                const totalRooms =
+                    parseInt(
+                        document
+                            .getElementById(
+                                "hostelTotalRooms"
+                            )
+                            .value,
+                        10
+                    ) || 0;
+
+
+                const totalBeds =
+                    parseInt(
+                        document
+                            .getElementById(
+                                "hostelTotalBeds"
+                            )
+                            .value,
+                        10
+                    ) || 0;
+
+
+                const status =
+                    document
+                        .getElementById(
+                            "hostelStatus"
+                        )
+                        .value;
+
+
+                const description =
+                    document
+                        .getElementById(
+                            "hostelDescription"
+                        )
+                        .value
+                        .trim();
+
+
+                if (!name) {
+
+                    showMessage(
+                        "hostelMessage",
+                        "Please enter the hostel name.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Creating...";
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("hostels")
+                        .insert([
+                            {
+                                name: name,
+                                hostel_code:
+                                    code || null,
+                                location:
+                                    location || null,
+                                total_rooms:
+                                    totalRooms,
+                                total_beds:
+                                    totalBeds,
+                                status: status,
+                                description:
+                                    description || null
+                            }
+                        ]);
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Hostel";
+
+
+                if (error) {
+
+                    console.error(
+                        "Create hostel error:",
+                        error
+                    );
+
+                    showMessage(
+                        "hostelMessage",
+                        error.message ||
+                        "Unable to create hostel.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                showMessage(
+                    "hostelMessage",
+                    "Hostel created successfully.",
+                    "success"
+                );
+
+
+                await loadStatistics();
+
+
+                setTimeout(
+                    function() {
+
+                        closeModal(
+                            "hostelModal"
+                        );
+
+                    },
+                    900
+                );
+
+            }
+        );
+
+
+    /* =========================================================
+       ADD ROOM
+    ========================================================= */
+
+    document
+        .getElementById("roomForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const button =
+                    document.getElementById(
+                        "saveRoomBtn"
+                    );
+
+
+                clearMessage(
+                    "roomMessage"
+                );
+
+
+                const hostelId =
+                    document
+                        .getElementById(
+                            "roomHostel"
+                        )
+                        .value;
+
+
+                const roomNumber =
+                    document
+                        .getElementById(
+                            "roomNumber"
+                        )
+                        .value
+                        .trim();
+
+
+                const floorValue =
+                    document
+                        .getElementById(
+                            "roomFloor"
+                        )
+                        .value;
+
+
+                const roomType =
+                    document
+                        .getElementById(
+                            "roomType"
+                        )
+                        .value;
+
+
+                const capacity =
+                    parseInt(
+                        document
+                            .getElementById(
+                                "roomCapacity"
+                            )
+                            .value,
+                        10
+                    ) || 1;
+
+
+                const status =
+                    document
+                        .getElementById(
+                            "roomStatus"
+                        )
+                        .value;
+
+
+                if (!hostelId) {
+
+                    showMessage(
+                        "roomMessage",
+                        "Please select a hostel.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (!roomNumber) {
+
+                    showMessage(
+                        "roomMessage",
+                        "Please enter the room number.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Creating...";
+
+
+                /*
+                 * The main fields used here are:
+                 * hostel_id
+                 * room_number
+                 * status
+                 *
+                 * Additional fields are included
+                 * only where available in the
+                 * current HostelPro design.
+                 */
+
+                const roomData = {
+
+                    hostel_id:
+                        hostelId,
+
+                    room_number:
+                        roomNumber,
+
+                    status:
+                        status
+
+                };
+
+
+                /*
+                 * Add optional fields when
+                 * they have been supplied.
+                 */
+
+                if (floorValue !== "") {
+
+                    roomData.floor =
+                        parseInt(
+                            floorValue,
+                            10
+                        );
+                }
+
+
+                if (roomType) {
+
+                    roomData.room_type =
+                        roomType;
+                }
+
+
+                if (capacity) {
+
+                    roomData.capacity =
+                        capacity;
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("rooms")
+                        .insert([
+                            roomData
+                        ]);
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Room";
+
+
+                if (error) {
+
+                    console.error(
+                        "Create room error:",
+                        error
+                    );
+
+                    showMessage(
+                        "roomMessage",
+                        error.message ||
+                        "Unable to create room.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                showMessage(
+                    "roomMessage",
+                    "Room created successfully.",
+                    "success"
+                );
+
+
+                await loadStatistics();
+
+
+                setTimeout(
+                    function() {
+
+                        closeModal(
+                            "roomModal"
+                        );
+
+                    },
+                    900
+                );
+
+            }
+        );
+
+
+    /* =========================================================
+       ADD BED
+    ========================================================= */
+
+    document
+        .getElementById("bedForm")
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const button =
+                    document.getElementById(
+                        "saveBedBtn"
+                    );
+
+
+                clearMessage(
+                    "bedMessage"
+                );
+
+
+                const roomId =
+                    document
+                        .getElementById(
+                            "bedRoom"
+                        )
+                        .value;
+
+
+                const bedNumber =
+                    document
+                        .getElementById(
+                            "bedNumber"
+                        )
+                        .value
+                        .trim();
+
+
+                const bedLabel =
+                    document
+                        .getElementById(
+                            "bedLabel"
+                        )
+                        .value
+                        .trim();
+
+
+                const bedPosition =
+                    document
+                        .getElementById(
+                            "bedPosition"
+                        )
+                        .value;
+
+
+                const status =
+                    document
+                        .getElementById(
+                            "bedStatus"
+                        )
+                        .value;
+
+
+                if (!roomId) {
+
+                    showMessage(
+                        "bedMessage",
+                        "Please select a room.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (!bedNumber) {
+
+                    showMessage(
+                        "bedMessage",
+                        "Please enter the bed number.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Creating...";
+
+
+                const bedData = {
+
+                    room_id:
+                        roomId,
+
+                    bed_number:
+                        bedNumber,
+
+                    status:
+                        status,
+
+                    bed_position:
+                        bedPosition
+
+                };
+
+
+                if (bedLabel) {
+
+                    bedData.label =
+                        bedLabel;
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("beds")
+                        .insert([
+                            bedData
+                        ]);
+
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Create Bed";
+
+
+                if (error) {
+
+                    console.error(
+                        "Create bed error:",
+                        error
+                    );
+
+                    showMessage(
+                        "bedMessage",
+                        error.message ||
+                        "Unable to create bed.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                showMessage(
+                    "bedMessage",
+                    "Bed created successfully.",
+                    "success"
+                );
+
+
+                await loadStatistics();
+
+
+                setTimeout(
+                    function() {
+
+                        closeModal(
+                            "bedModal"
+                        );
+
+                    },
+                    900
+                );
+
+            }
+        );
+
+
+    /* =========================================================
        LOAD STATISTICS
-    ========================================= */
+    ========================================================= */
 
     async function loadStatistics() {
 
@@ -946,19 +3034,31 @@
         const {
             count: studentCount,
             error: studentError
-        } = await supabaseClient
-            .from("profiles")
-            .select("id", {
-                count: "exact",
-                head: true
-            })
-            .eq("role", "student");
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "role",
+                    "student"
+                );
 
 
         if (!studentError) {
 
-            document.getElementById("studentsCount").textContent =
-                studentCount || 0;
+            document
+                .getElementById(
+                    "studentsCount"
+                )
+                .textContent =
+                    studentCount || 0;
+
         }
 
 
@@ -967,18 +3067,27 @@
         const {
             count: hostelCount,
             error: hostelError
-        } = await supabaseClient
-            .from("hostels")
-            .select("id", {
-                count: "exact",
-                head: true
-            });
+        } =
+            await supabaseClient
+                .from("hostels")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                );
 
 
         if (!hostelError) {
 
-            document.getElementById("hostelsCount").textContent =
-                hostelCount || 0;
+            document
+                .getElementById(
+                    "hostelsCount"
+                )
+                .textContent =
+                    hostelCount || 0;
+
         }
 
 
@@ -987,59 +3096,111 @@
         const {
             data: beds,
             error: bedsError
-        } = await supabaseClient
-            .from("beds")
-            .select("id,status");
+        } =
+            await supabaseClient
+                .from("beds")
+                .select(
+                    "id,status"
+                );
 
 
-        if (!bedsError && beds) {
+        if (
+            !bedsError &&
+            beds
+        ) {
 
-            const total = beds.length;
-
-            const occupied = beds.filter(
-                bed =>
-                    String(bed.status).toLowerCase() === "occupied"
-            ).length;
-
-            const available = beds.filter(
-                bed =>
-                    String(bed.status).toLowerCase() === "available"
-            ).length;
-
-            const maintenance = beds.filter(
-                bed =>
-                    String(bed.status).toLowerCase() === "maintenance"
-            ).length;
+            const total =
+                beds.length;
 
 
-            document.getElementById("bedsCount").textContent =
-                total;
+            const occupied =
+                beds.filter(
+                    bed =>
+                        String(
+                            bed.status
+                        ).toLowerCase()
+                        === "occupied"
+                ).length;
 
 
-            document.getElementById("occupiedBeds").textContent =
-                occupied;
+            const available =
+                beds.filter(
+                    bed =>
+                        String(
+                            bed.status
+                        ).toLowerCase()
+                        === "available"
+                ).length;
 
 
-            document.getElementById("availableBeds").textContent =
-                available;
+            const maintenance =
+                beds.filter(
+                    bed =>
+                        String(
+                            bed.status
+                        ).toLowerCase()
+                        === "maintenance"
+                ).length;
 
 
-            document.getElementById("maintenanceBeds").textContent =
-                maintenance;
+            document
+                .getElementById(
+                    "bedsCount"
+                )
+                .textContent =
+                    total;
+
+
+            document
+                .getElementById(
+                    "occupiedBeds"
+                )
+                .textContent =
+                    occupied;
+
+
+            document
+                .getElementById(
+                    "availableBeds"
+                )
+                .textContent =
+                    available;
+
+
+            document
+                .getElementById(
+                    "maintenanceBeds"
+                )
+                .textContent =
+                    maintenance;
 
 
             const percentage =
                 total > 0
-                    ? Math.round((occupied / total) * 100)
+                    ? Math.round(
+                        (
+                            occupied /
+                            total
+                        ) * 100
+                    )
                     : 0;
 
 
-            document.getElementById("occupancyPercentage").textContent =
-                percentage + "%";
+            document
+                .getElementById(
+                    "occupancyPercentage"
+                )
+                .textContent =
+                    percentage + "%";
 
 
-            document.getElementById("occupancyBar").style.width =
-                percentage + "%";
+            document
+                .getElementById(
+                    "occupancyBar"
+                )
+                .style.width =
+                    percentage + "%";
+
         }
 
 
@@ -1048,71 +3209,89 @@
         const {
             count: maintenanceCount,
             error: maintenanceError
-        } = await supabaseClient
-            .from("maintenance_requests")
-            .select("id", {
-                count: "exact",
-                head: true
-            })
-            .neq("status", "completed");
+        } =
+            await supabaseClient
+                .from("maintenance_requests")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .neq(
+                    "status",
+                    "completed"
+                );
 
 
         if (!maintenanceError) {
 
-            document.getElementById("maintenanceCount").textContent =
-                maintenanceCount || 0;
+            document
+                .getElementById(
+                    "maintenanceCount"
+                )
+                .textContent =
+                    maintenanceCount || 0;
+
         }
 
     }
 
 
-    /* =========================================
+    /* =========================================================
        LOAD RECENT ALLOCATIONS
-    ========================================= */
+    ========================================================= */
 
     async function loadRecentAllocations() {
 
         const table =
-            document.getElementById("allocationsTable");
+            document.getElementById(
+                "allocationsTable"
+            );
 
 
         const {
             data,
             error
-        } = await supabaseClient
-            .from("allocations")
-            .select(`
-                id,
-                status,
-                allocation_date,
-                student_id,
-                bed_id,
+        } =
+            await supabaseClient
+                .from("allocations")
+                .select(`
+                    id,
+                    status,
+                    allocation_date,
+                    student_id,
+                    bed_id,
 
-                profiles:student_id (
-                    full_name,
-                    email,
-                    student_id
-                ),
+                    profiles:student_id (
+                        full_name,
+                        email,
+                        student_id
+                    ),
 
-                beds:bed_id (
-                    bed_number,
-                    label,
-                    room_id,
+                    beds:bed_id (
+                        bed_number,
+                        label,
+                        room_id,
 
-                    rooms:room_id (
-                        room_number,
-                        hostel_id,
+                        rooms:room_id (
+                            room_number,
+                            hostel_id,
 
-                        hostels:hostel_id (
-                            name
+                            hostels:hostel_id (
+                                name
+                            )
                         )
                     )
+                `)
+                .order(
+                    "allocation_date",
+                    {
+                        ascending: false
+                    }
                 )
-            `)
-            .order("allocation_date", {
-                ascending: false
-            })
-            .limit(5);
+                .limit(5);
 
 
         if (error) {
@@ -1124,8 +3303,12 @@
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="6" class="loading">
+                    <td
+                        colspan="6"
+                        class="loading">
+
                         Unable to load allocations.
+
                     </td>
                 </tr>
             `;
@@ -1134,12 +3317,19 @@
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+            !data ||
+            data.length === 0
+        ) {
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="6" class="loading">
+                    <td
+                        colspan="6"
+                        class="loading">
+
                         No allocations found.
+
                     </td>
                 </tr>
             `;
@@ -1148,135 +3338,188 @@
         }
 
 
-        table.innerHTML = data.map(allocation => {
+        table.innerHTML =
+            data.map(
+                allocation => {
 
-            const student =
-                allocation.profiles || {};
+                    const student =
+                        allocation.profiles ||
+                        {};
 
-            const bed =
-                allocation.beds || {};
+                    const bed =
+                        allocation.beds ||
+                        {};
 
-            const room =
-                bed.rooms || {};
+                    const room =
+                        bed.rooms ||
+                        {};
 
-            const hostel =
-                room.hostels || {};
-
-
-            let status =
-                allocation.status || "active";
-
-
-            status =
-                String(status).toLowerCase();
+                    const hostel =
+                        room.hostels ||
+                        {};
 
 
-            let statusClass = "active";
+                    let status =
+                        allocation.status ||
+                        "active";
 
 
-            if (status === "pending") {
-                statusClass = "pending";
-            }
-
-            if (status === "completed") {
-                statusClass = "completed";
-            }
-
-            if (
-                status === "cancelled" ||
-                status === "inactive"
-            ) {
-                statusClass = "cancelled";
-            }
+                    status =
+                        String(
+                            status
+                        ).toLowerCase();
 
 
-            return `
-                <tr>
+                    let statusClass =
+                        "active";
 
-                    <td>
-                        <strong>
-                            ${escapeHtml(
-                                student.full_name ||
-                                "Unknown Student"
-                            )}
-                        </strong>
-                    </td>
 
-                    <td>
-                        ${escapeHtml(
-                            student.student_id || "-"
-                        )}
-                    </td>
+                    if (
+                        status ===
+                        "pending"
+                    ) {
 
-                    <td>
-                        ${escapeHtml(
-                            hostel.name || "-"
-                        )}
-                    </td>
+                        statusClass =
+                            "pending";
 
-                    <td>
-                        ${escapeHtml(
-                            room.room_number || "-"
-                        )}
-                    </td>
+                    }
 
-                    <td>
-                        ${escapeHtml(
-                            bed.label ||
-                            bed.bed_number ||
-                            "-"
-                        )}
-                    </td>
 
-                    <td>
-                        <span class="status ${statusClass}">
-                            ${escapeHtml(status)}
-                        </span>
-                    </td>
+                    if (
+                        status ===
+                        "completed"
+                    ) {
 
-                </tr>
-            `;
+                        statusClass =
+                            "completed";
 
-        }).join("");
+                    }
+
+
+                    if (
+                        status ===
+                            "cancelled" ||
+                        status ===
+                            "inactive"
+                    ) {
+
+                        statusClass =
+                            "cancelled";
+
+                    }
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        student.full_name ||
+                                        "Unknown Student"
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    student.student_id ||
+                                    "-"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    hostel.name ||
+                                    "-"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    room.room_number ||
+                                    "-"
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    bed.label ||
+                                    bed.bed_number ||
+                                    "-"
+                                )}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="status ${statusClass}">
+
+                                    ${escapeHtml(
+                                        status
+                                    )}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            ).join("");
 
     }
 
 
-    /* =========================================
+    /* =========================================================
        LOGOUT
-    ========================================= */
+    ========================================================= */
 
     document
         .getElementById("logoutBtn")
-        .addEventListener("click", async function(event) {
+        .addEventListener(
+            "click",
+            async function(event) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            await supabaseClient.auth.signOut();
+                await supabaseClient
+                    .auth
+                    .signOut();
 
-            window.location.href = "login.html";
+                window.location.href =
+                    "login.html";
 
-        });
+            }
+        );
 
 
-    /* =========================================
+    /* =========================================================
        MOBILE MENU
-    ========================================= */
+    ========================================================= */
 
     document
         .getElementById("menuBtn")
-        .addEventListener("click", function() {
+        .addEventListener(
+            "click",
+            function() {
 
-            document
-                .getElementById("sidebar")
-                .classList.toggle("open");
+                document
+                    .getElementById(
+                        "sidebar"
+                    )
+                    .classList.toggle(
+                        "open"
+                    );
 
-        });
+            }
+        );
 
 
-    /* =========================================
-       START DASHBOARD
-    ========================================= */
+    /* =========================================================
+       INITIALIZE
+    ========================================================= */
 
     async function initDashboard() {
 
@@ -1303,3 +3546,4 @@
 
 </body>
 </html>
+

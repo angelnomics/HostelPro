@@ -5552,7 +5552,32 @@ async function logout() {
 ========================================================= */
 
 init();
+async function askNexa(message, context = "") {
+    try {
+        const response = await fetch("/api/nexa", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: message,
+                context: context
+            })
+        });
 
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Nexa request failed");
+        }
+
+        return data.answer;
+
+    } catch (error) {
+        console.error("Nexa error:", error);
+        return "Sorry, Nexa is temporarily unavailable.";
+    }
+}
 </script>
 
 </body>

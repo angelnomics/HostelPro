@@ -489,7 +489,7 @@
                 🛏️ Beds
             </a>
 
-            href="students_dashboard.html"
+            <a href="students_dashboard.html">
                 🎓 Students
             </a>
 
@@ -1196,6 +1196,14 @@
                     getStatus(bed);
 
 
+                /*
+                   Guard every field with `|| ""` so a
+                   missing name/student_id can't leak the
+                   literal words "undefined" or "null" into
+                   the searchable text (which would then
+                   wrongly match if someone typed "undefined").
+                */
+
                 const searchableText = `
 
                     ${bed.label || ""}
@@ -1205,23 +1213,23 @@
                     ${position || ""}
 
                     ${room
-                        ? room.room_number
+                        ? (room.room_number || "")
                         : ""}
 
                     ${hostel
-                        ? hostel.name
+                        ? (hostel.name || "")
                         : ""}
 
                     ${hostel
-                        ? hostel.location
+                        ? (hostel.location || "")
                         : ""}
 
                     ${occupant
-                        ? occupant.full_name
+                        ? (occupant.full_name || "")
                         : ""}
 
                     ${occupant
-                        ? occupant.student_id
+                        ? (occupant.student_id || "")
                         : ""}
 
                 `.toLowerCase();
