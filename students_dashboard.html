@@ -214,7 +214,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 950px;
+            min-width: 1280px;
         }
 
         th,
@@ -319,6 +319,23 @@
             background: #1d4ed8;
         }
 
+        /* ACTIONS */
+        .actions{display:flex;flex-wrap:wrap;gap:7px;min-width:310px}
+        .action-btn{border:none;border-radius:7px;padding:8px 10px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+        .action-btn:hover{transform:translateY(-1px)}
+        .btn-view{background:#e0f2fe;color:#0369a1}.btn-edit{background:#fef3c7;color:#92400e}
+        .btn-allocate{background:#dcfce7;color:#166534}.btn-remove{background:#fee2e2;color:#b91c1c}
+        .btn-reactivate{background:#dbeafe;color:#1d4ed8}
+        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.58);z-index:2000;align-items:center;justify-content:center;padding:20px}
+        .modal.show{display:flex}.modal-card{width:100%;max-width:560px;background:white;border-radius:16px;box-shadow:0 25px 70px rgba(0,0,0,.25);overflow:hidden}
+        .modal-header{padding:20px 22px;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center}
+        .modal-header h3{font-size:19px}.close-modal{border:none;background:#f1f5f9;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px}
+        .modal-body{padding:22px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+        .form-group label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px}.form-group.full{grid-column:1/-1}
+        .readonly-field{background:#f8fafc;color:#64748b}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+        .primary-btn,.secondary-btn{border:none;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:600}
+        .primary-btn{background:#2563eb;color:white}.secondary-btn{background:#e2e8f0;color:#334155}
+        .modal-message{margin-top:12px;font-size:13px;color:#dc2626}
         /* MOBILE */
         .menu-btn {
             display: none;
@@ -583,13 +600,14 @@
                                 <th>Status</th>
                                 <th>Hostel</th>
                                 <th>Room</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
                         <tbody id="studentsTable">
 
                             <tr>
-                                <td colspan="8" class="loading">
+                                <td colspan="9" class="loading">
                                     Loading students...
                                 </td>
                             </tr>
@@ -636,7 +654,25 @@
 
     let students = [];
     let allocations = [];
+    let currentUser = null;
+    let currentProfile = null;
+    let editingStudentId = null;
 
+
+    /* ACCESS CONTROL */
+    async function checkAccess(){
+        const {data:{user}}=await db.auth.getUser();
+        if(!user){window.location.href="login.html";return false}
+        currentUser=user;
+        const {data:profile,error}=await db.from("profiles").select("full_name,email,role,status").eq("id",user.id).single();
+        if(error||!profile){await db.auth.signOut();window.location.href="login.html";return false}
+        currentProfile=profile;
+        if(!["admin","caretaker"].includes(profile.role)||profile.status!=="active"){
+            alert("Access denied. Only Admin and Caretaker can manage students.");
+            await db.auth.signOut();window.location.href="login.html";return false
+        }
+        return true
+    }
 
     /* ==============================
        LOAD STUDENTS
@@ -648,7 +684,7 @@
 
         table.innerHTML = `
             <tr>
-                <td colspan="8" class="loading">
+                <td colspan="9" class="loading">
                     Loading students...
                 </td>
             </tr>
@@ -735,7 +771,7 @@
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="8" class="error">
+                    <td colspan="9" class="error">
                         Failed to load students.
                         <br>
                         ${escapeHtml(error.message || "Unknown error")}
@@ -880,7 +916,7 @@
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="8" class="empty">
+                    <td colspan="9" class="empty">
                         No students found.
                     </td>
                 </tr>
@@ -996,12 +1032,93 @@
 
                     </td>
 
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn btn-view" onclick="viewStudent('${student.id}')">👁 View</button>
+                            <button class="action-btn btn-edit" onclick="openEditStudent('${student.id}')">✏️ Edit</button>
+                            ${
+                                allocations.some(a => a.student_id === student.id)
+                                ? `<button class="action-btn btn-view" onclick="viewAllocation('${student.id}')">📋 View Allocation</button>`
+                                : `<button class="action-btn btn-allocate" onclick="allocateStudent('${student.id}')">🛏️ Allocate Bed</button>`
+                            }
+                            ${
+                                student.status === "active"
+                                ? `<button class="action-btn btn-remove" onclick="removeStudent('${student.id}')">🗑️ Remove</button>`
+                                : `<button class="action-btn btn-reactivate" onclick="reactivateStudent('${student.id}')">♻️ Reactivate</button>`
+                            }
+                        </div>
+                    </td>
+
                 </tr>
 
             `;
 
         }).join("");
 
+    }
+
+
+    /* ==============================
+       STUDENT ACTIONS
+    ============================== */
+
+    function viewStudent(id){
+        const s=students.find(x=>x.id===id); if(!s)return;
+        const l=getStudentLocation(id);
+        alert("Student Details\n\nName: "+(s.full_name||"—")+"\nStudent ID: "+(s.student_id||"—")+"\nEmail: "+(s.email||"—")+"\nPhone: "+(s.phone||"—")+"\nGender: "+(s.gender||"—")+"\nStatus: "+(s.status||"—")+"\nHostel: "+(l.hostel||"Not assigned")+"\nRoom: "+(l.room?"Room "+l.room:"Not assigned"));
+    }
+
+    function allocateStudent(id){
+        const s=students.find(x=>x.id===id); if(!s)return;
+        if(s.status!=="active"){alert("Only an active student can be allocated a bed.");return}
+        window.location.href="allocations.html?student_id="+encodeURIComponent(id);
+    }
+
+    function viewAllocation(id){
+        window.location.href="allocations.html?student_id="+encodeURIComponent(id);
+    }
+
+    function openEditStudent(id){
+        const s=students.find(x=>x.id===id); if(!s)return;
+        editingStudentId=id;
+        editStudentId.value=s.student_id||"Not assigned";
+        editEmail.value=s.email||"";
+        editFullName.value=s.full_name||"";
+        editPhone.value=s.phone||"";
+        editGender.value=s.gender||"";
+        editStatus.value=s.status||"active";
+        editMessage.textContent="";
+        editModal.classList.add("show");
+    }
+
+    function closeEditStudent(){editingStudentId=null;editModal.classList.remove("show")}
+
+    async function saveStudentChanges(){
+        if(!editingStudentId)return;
+        const fullName=editFullName.value.trim(), phone=editPhone.value.trim(), gender=editGender.value, status=editStatus.value;
+        if(!fullName){editMessage.textContent="Full name is required.";return}
+        saveEdit.disabled=true; saveEdit.textContent="Saving...";
+        const {error}=await db.from("profiles").update({full_name:fullName,phone:phone||null,gender:gender||null,status}).eq("id",editingStudentId).eq("role","student");
+        saveEdit.disabled=false; saveEdit.textContent="Save Changes";
+        if(error){editMessage.textContent="Failed to update student: "+error.message;return}
+        closeEditStudent(); await loadStudents();
+    }
+
+    async function removeStudent(id){
+        const s=students.find(x=>x.id===id); if(!s)return;
+        if(allocations.some(a=>a.student_id===id)){alert("This student has an active bed allocation. End the allocation before removing the student.");return}
+        if(!confirm("Remove "+(s.full_name||"this student")+"?\n\nThe account will be deactivated and its records preserved."))return;
+        const {error}=await db.from("profiles").update({status:"inactive"}).eq("id",id).eq("role","student");
+        if(error){alert("Failed to remove student: "+error.message);return}
+        await loadStudents();
+    }
+
+    async function reactivateStudent(id){
+        const s=students.find(x=>x.id===id); if(!s)return;
+        if(!confirm("Reactivate "+(s.full_name||"this student")+"?"))return;
+        const {error}=await db.from("profiles").update({status:"active"}).eq("id",id).eq("role","student");
+        if(error){alert("Failed to reactivate student: "+error.message);return}
+        await loadStudents();
     }
 
 
@@ -1067,11 +1184,16 @@
     });
 
 
+    document.getElementById("closeEditModal").addEventListener("click",closeEditStudent);
+    document.getElementById("cancelEdit").addEventListener("click",closeEditStudent);
+    document.getElementById("saveEdit").addEventListener("click",saveStudentChanges);
+    document.getElementById("editModal").addEventListener("click",e=>{if(e.target.id==="editModal")closeEditStudent()});
+
     /* ==============================
        START
     ============================== */
 
-    loadStudents();
+    (async()=>{if(await checkAccess()) loadStudents()})();
 
 </script>
 
