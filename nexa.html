@@ -1667,143 +1667,157 @@ function quickAsk(question) {
 
 async function askNexa() {
 
-    const input =
-        document.getElementById(
-            "questionInput"
-        );
+    const input = document.getElementById("questionInput");
+    const question = input.value.trim();
 
+    if (!question) return;
 
-    const question =
-        input.value.trim();
+    addMessage(escapeHTML(question), "user");
+    input.value = "";
 
-
-    if (!question)
-        return;
-
-
-    addMessage(
-        escapeHTML(question),
-        "user"
-    );
-
-
-    input.value =
-        "";
-
-
-    addMessage(
-        "Thinking...",
-        "nexa"
-    );
-
-
-    const thinkingMessage =
-        document.querySelector(
-            "#chatBox .message.nexa:last-child"
-        );
-
+    addMessage("Thinking...", "nexa");
+    const thinkingMessage = document.querySelector("#chatBox .message.nexa:last-child");
 
     try {
-
-        /*
-           FIRST:
-           Check navigation commands.
-        */
-
-        const target =
-            getNavigationTarget(
-                question
-            );
-
+        /* Navigation still works normally. */
+        const target = getNavigationTarget(question);
 
         if (target) {
-
-            if (
-                canNavigate(
-                    target
-                )
-            ) {
-
-                thinkingMessage.innerHTML =
-                    `🧭 Opening the requested HostelPro page...`;
-
-
-                setTimeout(
-                    () =>
-                        navigateTo(
-                            target
-                        ),
-                    700
-                );
-
-
+            if (canNavigate(target)) {
+                thinkingMessage.innerHTML = "🧭 Opening the requested HostelPro page...";
+                setTimeout(() => navigateTo(target), 700);
                 return;
             }
 
-
-            thinkingMessage.innerHTML =
-                `🔒 Your current role does not have access to that page.`;
-
+            thinkingMessage.innerHTML = "🔒 Your current role does not have access to that page.";
             return;
         }
 
-
         /*
-           SECOND:
-           Context Search.
+           Keep the existing HostelPro database intelligence.
+           If the question maps to a known database query, its result
+           is supplied to Gemini as trusted application context.
         */
+        let databaseContext = "";
 
-        const contextResponse =
-            await processContextQuestion(
-                question
-            );
-
-
-        if (contextResponse) {
-
-            thinkingMessage.innerHTML =
-                contextResponse;
-
-            showPanel(
-                "context"
-            );
-
-            document.getElementById(
-                "contextResults"
-            ).innerHTML =
-                contextResponse;
-
-            return;
+        try {
+            const contextResponse = await processContextQuestion(question);
+            if (contextResponse) {
+                databaseContext += "\nContext-search result:\n" + contextResponse;
+            }
+        } catch (contextError) {
+            console.warn("Context search unavailable:", contextError);
         }
 
+        try {
+            const databaseResponse = await processQuestion(question);
+            if (databaseResponse && !databaseResponse.includes("I couldn't understand that question yet")) {
+                databaseContext += "\nDatabase assistant result:\n" + databaseResponse;
+            }
+        } catch (dbError) {
+            console.warn("Database assistant unavailable:", dbError);
+        }
 
-        /*
-           THIRD:
-           Standard database assistant.
-        */
+        /* Build a compact live snapshot for natural questions. */
+        const liveData = await getNexaLiveContext();
+        databaseContext += "\nLive HostelPro data:\n" + JSON.stringify(liveData);
 
-        const response =
-            await processQuestion(
-                question
-            );
+        const history = getNexaConversationHistory();
 
+        const response = await fetch("/api/nexa", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: question,
+                history,
+                context: databaseContext,
+                user: {
+                    id: currentUser?.id || null,
+                    role: currentProfile?.role || "student",
+                    name: currentProfile?.full_name || currentUser?.email || "User"
+                }
+            })
+        });
 
-        thinkingMessage.innerHTML =
-            response;
+        const data = await response.json();
 
+        if (!response.ok) {
+            throw new Error(data.error || "Nexa request failed");
+        }
+
+        thinkingMessage.innerHTML = formatNexaResponse(data.answer || "I don't have an answer for that yet.");
 
     } catch (error) {
-
-        console.error(
-            error
-        );
-
-
-        thinkingMessage.innerHTML =
-            databaseError(
-                error
-            );
+        console.error("Nexa error:", error);
+        thinkingMessage.innerHTML = `
+            <div class="error">
+                ⚠️ Nexa could not complete that request.<br><br>
+                ${escapeHTML(error.message || "Please try again.")}
+            </div>
+        `;
     }
+}
+
+
+/* =========================================================
+   GEMINI CONVERSATION SUPPORT
+========================================================= */
+
+function getNexaConversationHistory() {
+    const messages = Array.from(document.querySelectorAll("#chatBox .message"));
+
+    return messages
+        .slice(-12)
+        .map(message => ({
+            role: message.classList.contains("user") ? "user" : "model",
+            text: message.textContent.trim()
+        }))
+        .filter(item => item.text);
+}
+
+
+async function getNexaLiveContext() {
+    const safe = {};
+
+    try {
+        const [students, hostels, rooms, beds, allocations, maintenance] = await Promise.all([
+            supabaseClient.from("profiles").select("id,full_name,email,role,student_id,status").eq("role", "student"),
+            supabaseClient.from("hostels").select("id,name,location,total_rooms,total_beds,status"),
+            supabaseClient.from("rooms").select("id,room_number,hostel_id,status"),
+            supabaseClient.from("beds").select("id,room_id,bed_number,status,bed_position,label"),
+            supabaseClient.from("allocations").select("id,student_id,bed_id,status,allocation_date,check_in_date,check_out_date").eq("status", "active"),
+            supabaseClient.from("maintenance_requests").select("id,room_id,title,category,priority,status,created_at").in("status", ["pending", "open", "in_progress"])
+        ]);
+
+        safe.students = students.error ? [] : students.data;
+        safe.hostels = hostels.error ? [] : hostels.data;
+        safe.rooms = rooms.error ? [] : rooms.data;
+        safe.beds = beds.error ? [] : beds.data;
+        safe.active_allocations = allocations.error ? [] : allocations.data;
+        safe.pending_maintenance = maintenance.error ? [] : maintenance.data;
+
+        return safe;
+    } catch (error) {
+        console.warn("Could not build live Nexa context:", error);
+        return safe;
+    }
+}
+
+
+function formatNexaResponse(answer) {
+    const text = String(answer || "").trim();
+
+    /* Escape HTML first so Gemini cannot inject executable markup. */
+    let safe = escapeHTML(text);
+
+    /* Simple readable formatting. */
+    safe = safe
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br>");
+
+    return safe;
 }
 
 
@@ -5552,32 +5566,6 @@ async function logout() {
 ========================================================= */
 
 init();
-async function askNexa(message, context = "") {
-    try {
-        const response = await fetch("/api/nexa", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: message,
-                context: context
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Nexa request failed");
-        }
-
-        return data.answer;
-
-    } catch (error) {
-        console.error("Nexa error:", error);
-        return "Sorry, Nexa is temporarily unavailable.";
-    }
-}
 </script>
 
 </body>
