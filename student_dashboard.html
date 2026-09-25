@@ -6,7 +6,11 @@
 
     <title>Student Dashboard | HostelPro</title>
 
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Shared HostelPro Supabase configuration -->
+    <script src="supabase-config.js"></script>
 
     <style>
         * {
@@ -163,6 +167,8 @@
 
         .list-item small {
             color: #64748b;
+            display: block;
+            line-height: 1.5;
         }
 
         .quick-actions {
@@ -190,6 +196,7 @@
         .profile-row {
             display: flex;
             justify-content: space-between;
+            gap: 15px;
             padding: 12px 0;
             border-bottom: 1px solid #edf0f5;
         }
@@ -228,6 +235,14 @@
         .empty {
             color: #64748b;
             padding: 10px 0;
+        }
+
+        .error-message {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
         }
 
         .nexa-button {
@@ -306,6 +321,7 @@
                 font-size: 20px;
                 border-radius: 7px;
                 padding: 8px 12px;
+                cursor: pointer;
             }
 
             .nexa-button {
@@ -331,6 +347,11 @@
             .welcome {
                 padding-top: 55px;
             }
+
+            .profile-row {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -341,7 +362,9 @@
     Loading HostelPro...
 </div>
 
-<button class="mobile-menu" id="mobileMenu">☰</button>
+<button class="mobile-menu" id="mobileMenu">
+    ☰
+</button>
 
 <aside class="sidebar" id="sidebar">
 
@@ -393,7 +416,8 @@
     <section class="welcome">
 
         <h1>
-            Welcome, <span id="studentName">Student</span> 👋
+            Welcome,
+            <span id="studentName">Student</span> 👋
         </h1>
 
         <p>
@@ -568,20 +592,37 @@
 
 <script>
 
-const SUPABASE_URL =
-    "https://keeyaworqbjsjfekorhd.supabase.co";
+/* =========================================================
+   HOSTELPRO SUPABASE CLIENT
+   ========================================================= */
 
-const SUPABASE_KEY =
-    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7r9J9";
+const supabaseClient = window.supabaseClient;
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
+if (!supabaseClient) {
+
+    console.error(
+        "HOSTELPRO: Shared Supabase client was not loaded."
     );
+
+    alert(
+        "HostelPro could not connect to Supabase. Please check supabase-config.js."
+    );
+
+    window.location.href = "login.html";
+}
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+   ========================================================= */
 
 let currentUser = null;
 let currentProfile = null;
+
+
+/* =========================================================
+   SECURITY / DISPLAY HELPERS
+   ========================================================= */
 
 function escapeHtml(value) {
 
@@ -593,11 +634,18 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
+
 function formatDate(date) {
 
     if (!date) return "—";
 
-    return new Date(date).toLocaleDateString(
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return "—";
+    }
+
+    return parsedDate.toLocaleDateString(
         "en-KE",
         {
             day: "numeric",
@@ -607,212 +655,441 @@ function formatDate(date) {
     );
 }
 
+
+/* =========================================================
+   CHECK USER ACCESS
+   ========================================================= */
+
 async function checkAccess() {
 
-    const {
-        data: { user },
-        error
-    } = await supabaseClient.auth.getUser();
+    try {
 
-    if (error || !user) {
-        window.location.href = "login.html";
-        return false;
-    }
+        const {
+            data: { user },
+            error
+        } = await supabaseClient.auth.getUser();
 
-    currentUser = user;
 
-    const {
-        data: profile,
-        error: profileError
-    } = await supabaseClient
-        .from("profiles")
-        .select(`
-            id,
-            full_name,
-            email,
-            phone,
-            role,
-            student_id,
-            gender,
-            date_of_birth,
-            profile_image,
-            status
-        `)
-        .eq("id", user.id)
-        .maybeSingle();
+        if (error) {
 
-    if (profileError || !profile) {
+            console.error(
+                "HOSTELPRO Auth error:",
+                error
+            );
 
-        console.error(profileError);
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href = "login.html";
-
-        return false;
-    }
-
-    currentProfile = profile;
-
-    if (profile.role !== "student") {
-
-        if (profile.role === "admin") {
-            window.location.href = "admin_dashboard.html";
-        }
-
-        else if (profile.role === "caretaker") {
-            window.location.href = "caretaker_dashboard.html";
-        }
-
-        else if (profile.role === "warden") {
-            window.location.href = "warden.html";
-        }
-
-        else {
             window.location.href = "login.html";
+
+            return false;
         }
 
-        return false;
-    }
 
-    if (
-        profile.status &&
-        profile.status !== "active"
-    ) {
+        if (!user) {
 
-        alert(
-            "Your HostelPro account is currently inactive."
+            console.warn(
+                "HOSTELPRO: No authenticated user."
+            );
+
+            window.location.href = "login.html";
+
+            return false;
+        }
+
+
+        currentUser = user;
+
+
+        console.log(
+            "HOSTELPRO: Authenticated user:",
+            user.id
         );
 
-        await supabaseClient.auth.signOut();
 
-        window.location.href = "login.html";
+        /* =================================================
+           LOAD PROFILE
+           ================================================= */
+
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                phone,
+                role,
+                student_id,
+                gender,
+                date_of_birth,
+                
+                status
+            `)
+            .eq("id", user.id)
+            .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "HOSTELPRO Profile error:",
+                profileError
+            );
+
+            alert(
+                "Unable to load your HostelPro profile."
+            );
+
+            return false;
+        }
+
+
+        if (!profile) {
+
+            console.error(
+                "HOSTELPRO: No profile found."
+            );
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+
+            return false;
+        }
+
+
+        currentProfile = profile;
+
+
+        console.log(
+            "HOSTELPRO PROFILE:",
+            profile
+        );
+
+
+        /* =================================================
+           ROLE CHECK
+           ================================================= */
+
+        const role =
+            String(profile.role || "")
+                .toLowerCase()
+                .trim();
+
+
+        if (role !== "student") {
+
+            console.warn(
+                "HOSTELPRO: Wrong role:",
+                role
+            );
+
+
+            if (role === "admin") {
+
+                window.location.href =
+                    "admin_dashboard.html";
+
+            }
+
+            else if (role === "caretaker") {
+
+                window.location.href =
+                    "caretaker.html";
+
+            }
+
+            else if (role === "warden") {
+
+                window.location.href =
+                    "warden.html";
+
+            }
+
+            else {
+
+                window.location.href =
+                    "login.html";
+            }
+
+
+            return false;
+        }
+
+
+        /* =================================================
+           ACCOUNT STATUS
+           ================================================= */
+
+        const status =
+            String(profile.status || "")
+                .toLowerCase()
+                .trim();
+
+
+        if (
+            status &&
+            status !== "active"
+        ) {
+
+            alert(
+                "Your HostelPro account is currently inactive."
+            );
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "login.html";
+
+            return false;
+        }
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "HOSTELPRO checkAccess error:",
+            error
+        );
+
+        window.location.href =
+            "login.html";
 
         return false;
     }
-
-    return true;
 }
+
+
+/* =========================================================
+   LOAD PROFILE INFORMATION
+   ========================================================= */
 
 function loadProfile() {
 
-    const profile = currentProfile;
+    const profile =
+        currentProfile;
 
-    document.getElementById("studentName").textContent =
-        profile.full_name || "Student";
 
-    document.getElementById("studentId").textContent =
-        profile.student_id || "Not assigned";
+    if (!profile) {
+        return;
+    }
 
-    document.getElementById("profileName").textContent =
-        profile.full_name || "—";
 
-    document.getElementById("profileEmail").textContent =
-        profile.email || currentUser.email || "—";
+    document.getElementById(
+        "studentName"
+    ).textContent =
+        profile.full_name ||
+        "Student";
 
-    document.getElementById("profilePhone").textContent =
-        profile.phone || "—";
+
+    document.getElementById(
+        "studentId"
+    ).textContent =
+        profile.student_id ||
+        "Not assigned";
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        profile.full_name ||
+        "—";
+
+
+    document.getElementById(
+        "profileEmail"
+    ).textContent =
+        profile.email ||
+        currentUser?.email ||
+        "—";
+
+
+    document.getElementById(
+        "profilePhone"
+    ).textContent =
+        profile.phone ||
+        "—";
+
 
     const statusElement =
-        document.getElementById("profileStatus");
+        document.getElementById(
+            "profileStatus"
+        );
+
 
     statusElement.textContent =
-        profile.status || "—";
+        profile.status ||
+        "—";
+
 
     statusElement.className =
-        profile.status === "active"
-            ? "badge green"
-            : "badge yellow";
+        String(profile.status || "")
+            .toLowerCase() === "active"
+                ? "badge green"
+                : "badge yellow";
 }
+
+
+/* =========================================================
+   LOAD ACCOMMODATION
+   ========================================================= */
 
 async function loadAccommodation() {
 
-    const { data, error } =
-        await supabaseClient
-            .from("allocations")
-            .select(`
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("allocations")
+        .select(`
+            id,
+            student_id,
+            bed_id,
+            status,
+            allocation_date,
+            check_in_date,
+            check_out_date,
+            beds (
                 id,
-                student_id,
-                bed_id,
+                bed_number,
+                label,
                 status,
-                allocation_date,
-                check_in_date,
-                check_out_date,
-                beds (
+                rooms (
                     id,
-                    bed_number,
-                    label,
-                    status,
-                    rooms (
+                    room_number,
+                    hostel_id,
+                    hostels (
                         id,
-                        room_number,
-                        hostel_id,
-                        hostels (
-                            id,
-                            name
-                        )
+                        name
                     )
                 )
-            `)
-            .eq("student_id", currentUser.id)
-            .eq("status", "active")
-            .maybeSingle();
+            )
+        `)
+        .eq(
+            "student_id",
+            currentUser.id
+        )
+        .eq(
+            "status",
+            "active"
+        )
+        .maybeSingle();
+
 
     if (error) {
 
         console.error(
-            "Accommodation error:",
+            "HOSTELPRO Accommodation error:",
             error
         );
 
-        document.getElementById("bedStatus")
-            .textContent = "Unavailable";
+
+        document.getElementById(
+            "bedStatus"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "hostelName"
+        ).textContent =
+            "Unable to load";
+
+
+        document.getElementById(
+            "roomNumber"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "bedNumber"
+        ).textContent =
+            "—";
+
 
         return;
     }
+
 
     if (!data) {
 
-        document.getElementById("bedStatus")
-            .textContent = "Not Allocated";
+        document.getElementById(
+            "bedStatus"
+        ).textContent =
+            "Not Allocated";
 
-        document.getElementById("hostelName")
-            .textContent = "Not allocated";
 
-        document.getElementById("roomNumber")
-            .textContent = "—";
+        document.getElementById(
+            "hostelName"
+        ).textContent =
+            "Not allocated";
 
-        document.getElementById("bedNumber")
-            .textContent = "—";
+
+        document.getElementById(
+            "roomNumber"
+        ).textContent =
+            "—";
+
+
+        document.getElementById(
+            "bedNumber"
+        ).textContent =
+            "—";
+
 
         return;
     }
+
 
     const hostel =
         data.beds?.rooms?.hostels?.name ||
         "Unknown hostel";
 
+
     const room =
         data.beds?.rooms?.room_number ||
         "Unknown room";
+
 
     const bed =
         data.beds?.bed_number ||
         data.beds?.label ||
         "Unknown bed";
 
-    document.getElementById("bedStatus")
-        .textContent = "Allocated";
 
-    document.getElementById("hostelName")
-        .textContent = hostel;
+    document.getElementById(
+        "bedStatus"
+    ).textContent =
+        "Allocated";
 
-    document.getElementById("roomNumber")
-        .textContent = room;
 
-    document.getElementById("bedNumber")
-        .textContent = bed;
+    document.getElementById(
+        "hostelName"
+    ).textContent =
+        hostel;
+
+
+    document.getElementById(
+        "roomNumber"
+    ).textContent =
+        room;
+
+
+    document.getElementById(
+        "bedNumber"
+    ).textContent =
+        bed;
 }
+
+
+/* =========================================================
+   LOAD MESSAGES
+   ========================================================= */
 
 async function loadMessages() {
 
@@ -829,83 +1106,131 @@ async function loadMessages() {
             is_read,
             created_at
         `)
-        .eq("recipient_id", currentUser.id)
-        .order("created_at", {
-            ascending: false
-        });
+        .eq(
+            "recipient_id",
+            currentUser.id
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
 
     if (error) {
 
         console.error(
-            "Messages error:",
+            "HOSTELPRO Messages error:",
             error
         );
 
-        document.getElementById("messagesList").innerHTML =
-            `<div class="empty">
+
+        document.getElementById(
+            "messagesList"
+        ).innerHTML = `
+            <div class="empty">
                 Unable to load messages.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
-    const messages = data || [];
+
+    const messages =
+        data || [];
+
 
     const unread =
         messages.filter(
-            message => !message.is_read
+            message =>
+                !message.is_read
         ).length;
 
-    document.getElementById("unreadMessages")
-        .textContent = unread;
 
-    const recent = messages.slice(0, 5);
+    document.getElementById(
+        "unreadMessages"
+    ).textContent =
+        unread;
+
+
+    const recent =
+        messages.slice(0, 5);
+
 
     if (!recent.length) {
 
-        document.getElementById("messagesList").innerHTML =
-            `<div class="empty">
+        document.getElementById(
+            "messagesList"
+        ).innerHTML = `
+            <div class="empty">
                 No messages yet.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
-    document.getElementById("messagesList").innerHTML =
-        recent.map(message => `
 
-            <div class="list-item">
+    document.getElementById(
+        "messagesList"
+    ).innerHTML =
 
-                <strong>
-                    ${escapeHtml(
-                        message.subject || "Message"
-                    )}
-                </strong>
+        recent.map(
+            message => `
 
-                <small>
-                    ${escapeHtml(
-                        (message.content || "")
-                            .substring(0, 90)
-                    )}
-                    ${message.content &&
-                      message.content.length > 90
-                        ? "..."
-                        : ""}
-                </small>
+                <div class="list-item">
 
-                <small>
-                    ${formatDate(message.created_at)}
-                    ${
-                        message.is_read
-                            ? ""
-                            : " • Unread"
-                    }
-                </small>
+                    <strong>
+                        ${escapeHtml(
+                            message.subject ||
+                            "Message"
+                        )}
+                    </strong>
 
-            </div>
+                    <small>
+                        ${escapeHtml(
+                            (
+                                message.content ||
+                                ""
+                            ).substring(0, 90)
+                        )}
 
-        `).join("");
+                        ${
+                            message.content &&
+                            message.content.length > 90
+                                ? "..."
+                                : ""
+                        }
+                    </small>
+
+                    <small>
+
+                        ${formatDate(
+                            message.created_at
+                        )}
+
+                        ${
+                            message.is_read
+                                ? ""
+                                : " • Unread"
+                        }
+
+                    </small>
+
+                </div>
+
+            `
+        ).join("");
 }
+
+
+/* =========================================================
+   LOAD ANNOUNCEMENTS
+   ========================================================= */
 
 async function loadAnnouncements() {
 
@@ -915,94 +1240,129 @@ async function loadAnnouncements() {
     } = await supabaseClient
         .from("announcements")
         .select("*")
-        .order("created_at", {
-            ascending: false
-        })
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        )
         .limit(5);
+
 
     if (error) {
 
         console.error(
-            "Announcements error:",
+            "HOSTELPRO Announcements error:",
             error
         );
 
+
         document.getElementById(
             "announcementCount"
-        ).textContent = "0";
+        ).textContent =
+            "0";
+
 
         document.getElementById(
             "announcementsList"
-        ).innerHTML =
-            `<div class="empty">
+        ).innerHTML = `
+            <div class="empty">
                 No announcements available.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
-    const announcements = data || [];
+
+    const announcements =
+        data || [];
+
 
     document.getElementById(
         "announcementCount"
-    ).textContent = announcements.length;
+    ).textContent =
+        announcements.length;
+
 
     if (!announcements.length) {
 
         document.getElementById(
             "announcementsList"
-        ).innerHTML =
-            `<div class="empty">
+        ).innerHTML = `
+            <div class="empty">
                 No announcements yet.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
+
     document.getElementById(
         "announcementsList"
     ).innerHTML =
-        announcements.map(item => {
 
-            const title =
-                item.title ||
-                item.subject ||
-                "Announcement";
+        announcements.map(
+            item => {
 
-            const content =
-                item.content ||
-                item.message ||
-                "";
+                const title =
+                    item.title ||
+                    item.subject ||
+                    "Announcement";
 
-            return `
-                <div class="list-item">
 
-                    <strong>
-                        ${escapeHtml(title)}
-                    </strong>
+                const content =
+                    item.content ||
+                    item.message ||
+                    "";
 
-                    <small>
-                        ${escapeHtml(
-                            content.substring(0, 90)
-                        )}
-                        ${
-                            content.length > 90
-                                ? "..."
-                                : ""
-                        }
-                    </small>
 
-                    <small>
-                        ${formatDate(
-                            item.created_at
-                        )}
-                    </small>
+                return `
 
-                </div>
-            `;
+                    <div class="list-item">
 
-        }).join("");
+                        <strong>
+                            ${escapeHtml(title)}
+                        </strong>
+
+                        <small>
+
+                            ${escapeHtml(
+                                content.substring(
+                                    0,
+                                    90
+                                )
+                            )}
+
+                            ${
+                                content.length > 90
+                                    ? "..."
+                                    : ""
+                            }
+
+                        </small>
+
+                        <small>
+                            ${formatDate(
+                                item.created_at
+                            )}
+                        </small>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
 }
+
+
+/* =========================================================
+   LOAD MAINTENANCE REQUESTS
+   ========================================================= */
 
 async function loadMaintenance() {
 
@@ -1020,92 +1380,138 @@ async function loadMaintenance() {
             status,
             created_at
         `)
-        .eq("student_id", currentUser.id)
-        .order("created_at", {
-            ascending: false
-        })
+        .eq(
+            "student_id",
+            currentUser.id
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        )
         .limit(5);
+
 
     if (error) {
 
         console.error(
-            "Maintenance error:",
+            "HOSTELPRO Maintenance error:",
             error
         );
 
+
         document.getElementById(
             "maintenanceList"
-        ).innerHTML =
-            `<div class="empty">
+        ).innerHTML = `
+            <div class="empty">
                 Unable to load maintenance requests.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
-    const requests = data || [];
+
+    const requests =
+        data || [];
+
 
     document.getElementById(
         "maintenanceCount"
-    ).textContent = requests.length;
+    ).textContent =
+        requests.length;
+
 
     if (!requests.length) {
 
         document.getElementById(
             "maintenanceList"
-        ).innerHTML =
-            `<div class="empty">
+        ).innerHTML = `
+            <div class="empty">
                 No maintenance requests.
-            </div>`;
+            </div>
+        `;
+
 
         return;
     }
 
+
     document.getElementById(
         "maintenanceList"
     ).innerHTML =
-        requests.map(request => `
 
-            <div class="list-item">
+        requests.map(
+            request => `
 
-                <strong>
-                    ${escapeHtml(
-                        request.title || "Maintenance Request"
-                    )}
-                </strong>
+                <div class="list-item">
 
-                <small>
-                    ${escapeHtml(
-                        request.category || "General"
-                    )}
-                    ${
-                        request.priority
-                            ? " • " +
-                              escapeHtml(request.priority)
-                            : ""
-                    }
-                </small>
+                    <strong>
+                        ${escapeHtml(
+                            request.title ||
+                            "Maintenance Request"
+                        )}
+                    </strong>
 
-                <small>
-                    Status:
-                    ${escapeHtml(
-                        request.status || "Pending"
-                    )}
-                </small>
+                    <small>
 
-            </div>
+                        ${escapeHtml(
+                            request.category ||
+                            "General"
+                        )}
 
-        `).join("");
+                        ${
+                            request.priority
+                                ? " • " +
+                                  escapeHtml(
+                                      request.priority
+                                  )
+                                : ""
+                        }
+
+                    </small>
+
+                    <small>
+
+                        Status:
+                        ${escapeHtml(
+                            request.status ||
+                            "Pending"
+                        )}
+
+                    </small>
+
+                </div>
+
+            `
+        ).join("");
 }
 
+
+/* =========================================================
+   START DASHBOARD
+   ========================================================= */
+
 async function startDashboard() {
+
+    console.log(
+        "HOSTELPRO: Starting student dashboard..."
+    );
+
 
     const allowed =
         await checkAccess();
 
-    if (!allowed) return;
+
+    if (!allowed) {
+        return;
+    }
+
 
     loadProfile();
+
 
     await Promise.all([
         loadAccommodation(),
@@ -1114,31 +1520,78 @@ async function startDashboard() {
         loadMaintenance()
     ]);
 
+
     document.getElementById(
         "loadingScreen"
-    ).style.display = "none";
+    ).style.display =
+        "none";
+
+
+    console.log(
+        "HOSTELPRO: Student dashboard loaded successfully."
+    );
 }
+
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
 
 document.getElementById(
     "mobileMenu"
-).addEventListener("click", () => {
+).addEventListener(
+    "click",
+    () => {
 
-    document.getElementById(
-        "sidebar"
-    ).classList.toggle("open");
-});
+        document.getElementById(
+            "sidebar"
+        ).classList.toggle(
+            "open"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
 
 document.getElementById(
     "logoutBtn"
-).addEventListener("click", async event => {
+).addEventListener(
+    "click",
+    async event => {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    await supabaseClient.auth.signOut();
 
-    window.location.href =
-        "login.html";
-});
+        try {
+
+            await supabaseClient.auth.signOut();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "HOSTELPRO Logout error:",
+                error
+            );
+
+        }
+
+
+        window.location.href =
+            "login.html";
+
+    }
+);
+
+
+/* =========================================================
+   START
+   ========================================================= */
 
 startDashboard();
 

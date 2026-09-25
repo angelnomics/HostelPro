@@ -1,835 +1,1046 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Admin Dashboard | HostelPro</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        body {
-            background: #f5f7fb;
-            color: #172033;
-        }
-
-        /* =========================
-           SIDEBAR
-        ========================= */
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 250px;
-            height: 100vh;
-            background: #172033;
-            color: white;
-            padding: 20px 15px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            padding: 10px;
-            margin-bottom: 25px;
-        }
-
-        .logo span {
-            color: #2563eb;
-        }
-
-        .menu-title {
-            font-size: 11px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            margin: 20px 10px 8px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #cbd5e1;
-            text-decoration: none;
-            padding: 11px 12px;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            font-size: 14px;
-            transition: 0.2s;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        .logout {
-            margin-top: 20px;
-            background: #dc2626;
-            color: white;
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        .main {
-            margin-left: 250px;
-            min-height: 100vh;
-        }
-
-        /* =========================
-           TOPBAR
-        ========================= */
-
-        .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 500;
-        }
-
-        .page-title h1 {
-            font-size: 22px;
-        }
-
-        .page-title p {
-            font-size: 13px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-
-        .admin-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #2563eb;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .admin-info strong {
-            display: block;
-            font-size: 14px;
-        }
-
-        .admin-info span {
-            color: #64748b;
-            font-size: 12px;
-        }
-
-        /* =========================
-           CONTENT
-        ========================= */
-
-        .content {
-            padding: 30px;
-        }
-
-        .welcome {
-            background: linear-gradient(135deg, #172033, #2563eb);
-            color: white;
-            border-radius: 14px;
-            padding: 25px;
-            margin-bottom: 25px;
-        }
-
-        .welcome h2 {
-            font-size: 25px;
-            margin-bottom: 8px;
-        }
-
-        .welcome p {
-            color: #dbeafe;
-            font-size: 14px;
-        }
-
-        /* =========================
-           STATS
-        ========================= */
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            background: #eff6ff;
-            color: #2563eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 21px;
-            margin-bottom: 15px;
-        }
-
-        .stat-card h3 {
-            font-size: 27px;
-            margin-bottom: 5px;
-        }
-
-        .stat-card p {
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        /* =========================
-           DASHBOARD GRID
-        ========================= */
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .card-header h3 {
-            font-size: 17px;
-        }
-
-        .card-header a {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        /* =========================
-           OCCUPANCY
-        ========================= */
-
-        .occupancy-number {
-            font-size: 40px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .progress {
-            height: 12px;
-            background: #e2e8f0;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 15px 0;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #2563eb;
-            transition: width 0.5s;
-        }
-
-        .occupancy-details {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            font-size: 13px;
-            color: #64748b;
-            flex-wrap: wrap;
-        }
-
-        /* =========================
-           QUICK ACTIONS
-        ========================= */
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .action {
-            border: 1px solid #e2e8f0;
-            border-radius: 9px;
-            padding: 15px;
-            text-decoration: none;
-            color: #172033;
-            transition: 0.2s;
-            cursor: pointer;
-            background: white;
-            display: block;
-        }
-
-        .action:hover {
-            border-color: #2563eb;
-            background: #eff6ff;
-        }
-
-        .action strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .action span {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        /* =========================
-           TABLE
-        ========================= */
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 13px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 13px;
-        }
-
-        th {
-            color: #64748b;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .status {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .status.active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status.completed {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .status.cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        /* =========================
-           NEXA
-        ========================= */
-
-        .nexa {
-            background: #f8fafc;
-            border-left: 4px solid #2563eb;
-        }
-
-        .nexa h3 {
-            margin-bottom: 8px;
-        }
-
-        .nexa p {
-            color: #64748b;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .nexa-button {
-            display: inline-block;
-            margin-top: 15px;
-            background: #2563eb;
-            color: white;
-            padding: 9px 15px;
-            border-radius: 7px;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        /* =========================
-           MOBILE BUTTON
-        ========================= */
-
-        .menu-btn {
-            display: none;
-            border: none;
-            background: #172033;
-            color: white;
-            padding: 9px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #64748b;
-        }
-
-        /* =========================
-           MODAL
-        ========================= */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.65);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            z-index: 5000;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal {
-            width: 100%;
-            max-width: 560px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
-            animation: modalIn 0.2s ease;
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: translateY(-15px) scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 22px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .modal-header h2 {
-            font-size: 20px;
-        }
-
-        .modal-close {
-            border: none;
-            background: #f1f5f9;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            color: #475569;
-        }
-
-        .modal-close:hover {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .modal-body {
-            padding: 22px;
-        }
-
-        .form-group {
-            margin-bottom: 17px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 7px;
-            color: #334155;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 13px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            outline: none;
-            font-size: 14px;
-            background: white;
-            color: #172033;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 18px 22px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 11px 18px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #334155;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e1;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .form-message {
-            display: none;
-            padding: 11px 13px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-
-        .form-message.show {
-            display: block;
-        }
-
-        .form-message.success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .form-message.error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1100px) {
-
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 800px) {
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: 0.3s;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main {
-                margin-left: 0;
-            }
-
-            .menu-btn {
-                display: block;
-            }
-
-            .topbar {
-                padding: 0 15px;
-            }
-
-            .content {
-                padding: 15px;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .admin-info {
-                display: none;
-            }
-        }
-
-        @media (max-width: 550px) {
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .quick-actions {
-                grid-template-columns: 1fr;
-            }
-
-            .welcome h2 {
-                font-size: 21px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-overlay {
-                padding: 10px;
-            }
-
-            .modal-footer {
-                flex-direction: column-reverse;
-            }
-
-            .modal-footer .btn {
-                width: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HostelPro | Admin Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --secondary:#0f172a;
+    --background:#f8fafc;
+    --card:#ffffff;
+    --text:#0f172a;
+    --muted:#64748b;
+    --border:#e2e8f0;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+    --purple:#7c3aed;
+    --sidebar-width:260px;
+}
+
+body{
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:var(--background);
+    color:var(--text);
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:var(--sidebar-width);
+    height:100vh;
+    background:#0f172a;
+    color:white;
+    padding:20px 14px;
+    overflow-y:auto;
+    z-index:1000;
+    transition:.3s ease;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 10px 25px;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    margin-bottom:18px;
+}
+
+.brand-logo{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#2563eb,#60a5fa);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:19px;
+}
+
+.brand-text h2{
+    font-size:18px;
+}
+
+.brand-text span{
+    font-size:11px;
+    color:#94a3b8;
+}
+
+.nav-section{
+    margin:18px 8px 8px;
+    font-size:10px;
+    text-transform:uppercase;
+    color:#64748b;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.nav-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    color:#cbd5e1;
+    text-decoration:none;
+    padding:11px 12px;
+    border-radius:9px;
+    margin-bottom:3px;
+    font-size:14px;
+    transition:.2s;
+}
+
+.nav-link:hover{
+    background:#1e293b;
+    color:white;
+}
+
+.nav-link.active{
+    background:#2563eb;
+    color:white;
+}
+
+.nav-icon{
+    width:21px;
+    text-align:center;
+    font-size:16px;
+}
+
+.logout-link{
+    color:#fca5a5;
+}
+
+.logout-link:hover{
+    background:rgba(220,38,38,.15);
+    color:#fecaca;
+}
+
+/* MAIN */
+
+.main{
+    margin-left:var(--sidebar-width);
+    min-height:100vh;
+}
+
+.topbar{
+    height:72px;
+    background:white;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    position:sticky;
+    top:0;
+    z-index:900;
+}
+
+.menu-btn{
+    display:none;
+    border:0;
+    background:#f1f5f9;
+    width:40px;
+    height:40px;
+    border-radius:9px;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.topbar-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.admin-profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.avatar{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#dbeafe;
+    color:#1d4ed8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:13px;
+}
+
+.admin-info{
+    line-height:1.3;
+}
+
+.admin-info strong{
+    display:block;
+    font-size:13px;
+}
+
+.admin-info span{
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* CONTENT */
+
+.content{
+    padding:30px;
+    max-width:1600px;
+    margin:auto;
+}
+
+.page-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.page-header h1{
+    font-size:27px;
+    margin-bottom:6px;
+}
+
+.page-header p{
+    color:var(--muted);
+    font-size:14px;
+}
+
+.header-actions{
+    display:flex;
+    gap:10px;
+}
+
+.btn{
+    border:none;
+    border-radius:9px;
+    padding:11px 17px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+}
+
+.btn-primary{
+    background:var(--primary);
+    color:white;
+}
+
+.btn-primary:hover{
+    background:var(--primary-dark);
+}
+
+.btn-light{
+    background:white;
+    color:var(--text);
+    border:1px solid var(--border);
+}
+
+.btn-light:hover{
+    background:#f8fafc;
+}
+
+.btn-danger{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.btn-success{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+/* STATS */
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.stat-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 2px 5px rgba(15,23,42,.03);
+}
+
+.stat-info span{
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.stat-info strong{
+    font-size:27px;
+}
+
+.stat-icon{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px;
+}
+
+.blue{
+    background:#dbeafe;
+    color:#2563eb;
+}
+
+.green{
+    background:#dcfce7;
+    color:#16a34a;
+}
+
+.orange{
+    background:#fef3c7;
+    color:#d97706;
+}
+
+.red{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+/* GRID */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.35fr .65fr;
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:22px;
+    box-shadow:0 2px 5px rgba(15,23,42,.03);
+}
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.card-header h2{
+    font-size:17px;
+}
+
+.card-header a{
+    font-size:12px;
+    color:var(--primary);
+    text-decoration:none;
+}
+
+/* OCCUPANCY */
+
+.occupancy-number{
+    display:flex;
+    align-items:end;
+    gap:8px;
+    margin:10px 0 15px;
+}
+
+.occupancy-number strong{
+    font-size:42px;
+}
+
+.occupancy-number span{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.progress{
+    width:100%;
+    height:12px;
+    background:#e2e8f0;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0;
+    background:#2563eb;
+    border-radius:20px;
+    transition:.5s;
+}
+
+.occupancy-breakdown{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:22px;
+}
+
+.occupancy-item{
+    padding:13px;
+    border-radius:10px;
+    background:#f8fafc;
+}
+
+.occupancy-item span{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:5px;
+}
+
+.occupancy-item strong{
+    font-size:18px;
+}
+
+/* QUICK ACTIONS */
+
+.quick-actions{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+}
+
+.quick-action{
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:13px;
+    text-decoration:none;
+    color:var(--text);
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    background:white;
+    transition:.2s;
+    text-align:left;
+}
+
+.quick-action:hover{
+    border-color:#93c5fd;
+    background:#eff6ff;
+    transform:translateY(-1px);
+}
+
+.quick-action span{
+    display:block;
+    font-size:20px;
+    margin-bottom:7px;
+}
+
+/* TABLE */
+
+.table-card{
+    background:white;
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 5px rgba(15,23,42,.03);
+}
+
+.table-header{
+    padding:20px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.table-header h2{
+    font-size:17px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    text-align:left;
+    padding:13px 22px;
+    font-size:11px;
+    color:#64748b;
+    background:#f8fafc;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    white-space:nowrap;
+}
+
+td{
+    padding:15px 22px;
+    border-top:1px solid #f1f5f9;
+    font-size:13px;
+    white-space:nowrap;
+}
+
+.student-cell{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.student-avatar{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:#dbeafe;
+    color:#2563eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    font-weight:700;
+}
+
+.muted{
+    color:var(--muted);
+    font-size:11px;
+}
+
+.status{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:10px;
+    font-weight:700;
+}
+
+.status-active{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.status-pending{
+    background:#fef3c7;
+    color:#b45309;
+}
+
+.status-ended{
+    background:#f1f5f9;
+    color:#64748b;
+}
+
+.empty{
+    text-align:center;
+    padding:35px;
+    color:var(--muted);
+    font-size:13px;
+}
+
+/* MODAL */
+
+.modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.55);
+    z-index:2000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-overlay.show{
+    display:flex;
+}
+
+.modal{
+    width:100%;
+    max-width:560px;
+    background:white;
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.2);
+    max-height:90vh;
+    overflow-y:auto;
+}
+
+.modal-header{
+    padding:20px 22px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-header h2{
+    font-size:18px;
+}
+
+.close-btn{
+    border:0;
+    background:#f1f5f9;
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.modal-body{
+    padding:22px;
+}
+
+.form-group{
+    margin-bottom:16px;
+}
+
+.form-group label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:7px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    outline:none;
+    font-family:inherit;
+    font-size:13px;
+    background:white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#60a5fa;
+    box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.modal-footer{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding-top:8px;
+}
+
+/* TOAST */
+
+.toast{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    background:#0f172a;
+    color:white;
+    padding:14px 18px;
+    border-radius:10px;
+    font-size:13px;
+    z-index:5000;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    transform:translateY(120px);
+    opacity:0;
+    transition:.3s;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+.toast.success{
+    background:#15803d;
+}
+
+.toast.error{
+    background:#b91c1c;
+}
+
+/* LOADING */
+
+.loading{
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:10000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+}
+
+.loading.hidden{
+    display:none;
+}
+
+.spinner{
+    width:42px;
+    height:42px;
+    border:4px solid #e2e8f0;
+    border-top-color:#2563eb;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin-bottom:15px;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+.loading p{
+    font-size:13px;
+    color:#64748b;
+}
+
+/* ERROR */
+
+.dashboard-error{
+    position:fixed;
+    inset:0;
+    background:white;
+    z-index:9999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px;
+}
+
+.dashboard-error.show{
+    display:flex;
+}
+
+.error-box{
+    max-width:420px;
+}
+
+.error-icon{
+    font-size:45px;
+    margin-bottom:15px;
+}
+
+.error-box h2{
+    margin-bottom:8px;
+}
+
+.error-box p{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:20px;
+}
+
+/* NEXA */
+
+.nexa-button{
+    position:fixed;
+    left:280px;
+    bottom:25px;
+    z-index:950;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:12px;
+    padding:12px 19px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 8px 25px rgba(37,99,235,.3);
+    transition:.2s;
+}
+
+.nexa-button:hover{
+    transform:translateY(-2px);
+    background:#1d4ed8;
+}
+
+/* MOBILE */
+
+@media(max-width:1100px){
+    .stats-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        transform:translateX(-100%);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .menu-btn{
+        display:block;
+    }
+
+    .topbar{
+        padding:0 18px;
+    }
+
+    .content{
+        padding:20px 15px;
+    }
+
+    .page-header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .stats-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .nexa-button{
+        left:auto;
+        right:18px;
+        bottom:18px;
+    }
+}
+
+@media(max-width:550px){
+
+    .stats-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .admin-info{
+        display:none;
+    }
+
+    .header-actions{
+        width:100%;
+    }
+
+    .header-actions .btn{
+        flex:1;
+    }
+
+    .page-header h1{
+        font-size:23px;
+    }
+
+    .occupancy-breakdown{
+        grid-template-columns:1fr;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<!-- =========================================================
-     SIDEBAR
-========================================================= -->
+<!-- LOADING -->
+<div class="loading" id="loadingScreen">
+    <div class="spinner"></div>
+    <p>Loading HostelPro dashboard...</p>
+</div>
 
+<!-- ERROR -->
+<div class="dashboard-error" id="dashboardError">
+    <div class="error-box">
+        <div class="error-icon">⚠️</div>
+        <h2>Dashboard Access Error</h2>
+        <p id="dashboardErrorText">
+            Unable to load the administrator dashboard.
+        </p>
+        <button class="btn btn-primary" onclick="window.location.href='login.html'">
+            Return to Login
+        </button>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
 
-    <div class="logo">
-        Hostel<span>Pro</span>
+    <div class="brand">
+        <div class="brand-logo">HP</div>
+
+        <div class="brand-text">
+            <h2>HostelPro</h2>
+            <span>Management System</span>
+        </div>
     </div>
 
-    <div class="menu-title">Main</div>
+    <div class="nav-section">Main</div>
 
     <a href="admin_dashboard.html" class="nav-link active">
-        🏠 Dashboard
+        <span class="nav-icon">▦</span>
+        Dashboard
     </a>
 
     <a href="hostels.html" class="nav-link">
-        🏢 Hostels
+        <span class="nav-icon">🏢</span>
+        Hostels
     </a>
 
     <a href="rooms.html" class="nav-link">
-        🚪 Rooms
+        <span class="nav-icon">🚪</span>
+        Rooms
     </a>
 
     <a href="beds.html" class="nav-link">
-        🛏️ Beds
+        <span class="nav-icon">🛏</span>
+        Beds
     </a>
 
-    <div class="menu-title">People</div>
-
-    <a href="students_dashboard.html" class="nav-link">
-        🎓 Students
+    <a href="students.html" class="nav-link">
+        <span class="nav-icon">👨‍🎓</span>
+        Students
     </a>
 
-    <a href="caretakers.html" class="nav-link">
-        👤 Caretakers
+    <div class="nav-section">Management</div>
+
+    <a href="caretaker.html" class="nav-link">
+        <span class="nav-icon">👤</span>
+        Caretakers
     </a>
 
     <a href="wardens.html" class="nav-link">
-        👨‍💼 Wardens
+        <span class="nav-icon">👮</span>
+        Wardens
     </a>
 
-    <div class="menu-title">Management</div>
-
     <a href="allocations.html" class="nav-link">
-        📋 Allocations
+        <span class="nav-icon">📋</span>
+        Allocations
     </a>
 
     <a href="maintenance.html" class="nav-link">
-        🔧 Maintenance
+        <span class="nav-icon">🔧</span>
+        Maintenance
     </a>
 
     <a href="discipline.html" class="nav-link">
-        ⚠️ Discipline
+        <span class="nav-icon">⚖</span>
+        Discipline
     </a>
 
     <a href="security.html" class="nav-link">
-        🛡️ Security
+        <span class="nav-icon">🛡</span>
+        Security
     </a>
 
     <a href="tasks.html" class="nav-link">
-        ✅ Tasks
+        <span class="nav-icon">✓</span>
+        Tasks
     </a>
 
-    <div class="menu-title">Communication</div>
+    <div class="nav-section">Communication</div>
 
     <a href="messages.html" class="nav-link">
-        💬 Messages
+        <span class="nav-icon">💬</span>
+        Messages
     </a>
 
     <a href="announcements.html" class="nav-link">
-        📢 Announcements
+        <span class="nav-icon">📢</span>
+        Announcements
     </a>
-
-    <div class="menu-title">System</div>
 
     <a href="reports.html" class="nav-link">
-        📊 Reports
+        <span class="nav-icon">📊</span>
+        Reports & Analysis
     </a>
+
+    <div class="nav-section">System</div>
 
     <a href="settings.html" class="nav-link">
-        ⚙️ Settings
+        <span class="nav-icon">⚙</span>
+        Settings
     </a>
 
-    <a href="nexa.html" class="nav-link">
-        🤖 Nexa AI
+    <a href="help_support.html" class="nav-link">
+        <span class="nav-icon">❓</span>
+        Help & Support
     </a>
 
-    <a href="#" class="nav-link logout" id="logoutBtn">
-        🚪 Logout
+    <a href="#" class="nav-link logout-link" id="logoutBtn">
+        <span class="nav-icon">↪</span>
+        Logout
     </a>
 
 </aside>
 
-
-<!-- =========================================================
-     MAIN
-========================================================= -->
-
+<!-- MAIN -->
 <main class="main">
 
     <!-- TOPBAR -->
-
     <header class="topbar">
 
-        <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-btn" id="menuBtn">
+            ☰
+        </button>
 
-            <button class="menu-btn" id="menuBtn" type="button">
-                ☰
-            </button>
+        <div></div>
 
-            <div class="page-title">
+        <div class="topbar-right">
 
-                <h1>Admin Dashboard</h1>
+            <div class="admin-profile">
 
-                <p>
-                    HostelPro management overview
-                </p>
+                <div class="avatar" id="adminAvatar">
+                    AD
+                </div>
 
-            </div>
+                <div class="admin-info">
+                    <strong id="adminName">
+                        Administrator
+                    </strong>
 
-        </div>
-
-        <div class="admin-profile">
-
-            <div class="avatar" id="adminAvatar">
-                A
-            </div>
-
-            <div class="admin-info">
-
-                <strong id="adminName">
-                    Administrator
-                </strong>
-
-                <span>
-                    System Administrator
-                </span>
+                    <span>
+                        System Administrator
+                    </span>
+                </div>
 
             </div>
 
@@ -837,111 +1048,96 @@
 
     </header>
 
-
-    <!-- =====================================================
-         CONTENT
-    ====================================================== -->
-
+    <!-- CONTENT -->
     <section class="content">
 
-        <!-- WELCOME -->
+        <div class="page-header">
 
-        <div class="welcome">
-
-            <h2>
-                Welcome back,
-                <span id="welcomeName">
-                    Administrator
-                </span>
-            </h2>
-
-            <p>
-                Manage hostels, students, rooms, beds, staff and daily
-                hostel operations from one place.
-            </p>
-
-        </div>
-
-
-        <!-- =================================================
-             STATISTICS
-        ================================================== -->
-
-        <div class="stats">
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    🎓
-                </div>
-
-                <h3 id="studentsCount">
-                    0
-                </h3>
+            <div>
+                <h1>Admin Dashboard</h1>
 
                 <p>
-                    Total Students
+                    Welcome back,
+                    <strong id="welcomeName">Administrator</strong>.
+                    Here's what's happening in your hostels.
                 </p>
+            </div>
+
+            <div class="header-actions">
+
+                <button class="btn btn-light"
+                        onclick="window.location.href='reports.html'">
+                    📊 Reports
+                </button>
+
+                <button class="btn btn-primary"
+                        onclick="openModal('hostelModal')">
+                    + Add Hostel
+                </button>
 
             </div>
 
+        </div>
+
+        <!-- STATS -->
+
+        <div class="stats-grid">
 
             <div class="stat-card">
 
-                <div class="stat-icon">
+                <div class="stat-info">
+                    <span>Total Students</span>
+                    <strong id="totalStudents">0</strong>
+                </div>
+
+                <div class="stat-icon blue">
+                    👨‍🎓
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-info">
+                    <span>Total Hostels</span>
+                    <strong id="totalHostels">0</strong>
+                </div>
+
+                <div class="stat-icon green">
                     🏢
                 </div>
 
-                <h3 id="hostelsCount">
-                    0
-                </h3>
-
-                <p>
-                    Total Hostels
-                </p>
-
             </div>
-
 
             <div class="stat-card">
 
-                <div class="stat-icon">
-                    🛏️
+                <div class="stat-info">
+                    <span>Total Beds</span>
+                    <strong id="totalBeds">0</strong>
                 </div>
 
-                <h3 id="bedsCount">
-                    0
-                </h3>
-
-                <p>
-                    Total Beds
-                </p>
+                <div class="stat-icon orange">
+                    🛏
+                </div>
 
             </div>
 
-
             <div class="stat-card">
 
-                <div class="stat-icon">
+                <div class="stat-info">
+                    <span>Open Maintenance</span>
+                    <strong id="openMaintenance">0</strong>
+                </div>
+
+                <div class="stat-icon red">
                     🔧
                 </div>
-
-                <h3 id="maintenanceCount">
-                    0
-                </h3>
-
-                <p>
-                    Open Maintenance
-                </p>
 
             </div>
 
         </div>
 
-
-        <!-- =================================================
-             DASHBOARD GRID
-        ================================================== -->
+        <!-- MAIN DASHBOARD GRID -->
 
         <div class="dashboard-grid">
 
@@ -951,54 +1147,52 @@
 
                 <div class="card-header">
 
-                    <h3>
-                        Bed Occupancy
-                    </h3>
+                    <h2>Bed Occupancy</h2>
 
                     <a href="beds.html">
-                        View Beds
+                        View Beds →
                     </a>
 
                 </div>
 
-                <div class="occupancy-number" id="occupancyPercentage">
-                    0%
+                <div class="occupancy-number">
+
+                    <strong id="occupancyPercentage">
+                        0%
+                    </strong>
+
+                    <span>
+                        occupied
+                    </span>
+
                 </div>
 
-                <p style="color:#64748b;font-size:13px;">
-                    Current hostel bed occupancy
-                </p>
-
                 <div class="progress">
+                    <div class="progress-bar"
+                         id="occupancyBar">
+                    </div>
+                </div>
 
-                    <div
-                        class="progress-bar"
-                        id="occupancyBar">
+                <div class="occupancy-breakdown">
+
+                    <div class="occupancy-item">
+                        <span>Occupied</span>
+                        <strong id="occupiedBeds">0</strong>
+                    </div>
+
+                    <div class="occupancy-item">
+                        <span>Available</span>
+                        <strong id="availableBeds">0</strong>
+                    </div>
+
+                    <div class="occupancy-item">
+                        <span>Maintenance</span>
+                        <strong id="maintenanceBeds">0</strong>
                     </div>
 
                 </div>
 
-                <div class="occupancy-details">
-
-                    <span>
-                        🟢 Occupied:
-                        <strong id="occupiedBeds">0</strong>
-                    </span>
-
-                    <span>
-                        🔵 Available:
-                        <strong id="availableBeds">0</strong>
-                    </span>
-
-                    <span>
-                        🔧 Maintenance:
-                        <strong id="maintenanceBeds">0</strong>
-                    </span>
-
-                </div>
-
             </div>
-
 
             <!-- QUICK ACTIONS -->
 
@@ -1006,138 +1200,73 @@
 
                 <div class="card-header">
 
-                    <h3>
-                        Quick Actions
-                    </h3>
+                    <h2>Quick Actions</h2>
 
                 </div>
 
                 <div class="quick-actions">
 
-                    <!-- IMPORTANT:
-                         These buttons now OPEN MODALS.
-                         They do NOT navigate away.
-                    -->
+                    <button class="quick-action"
+                            onclick="openModal('hostelModal')">
 
-                    <button
-                        type="button"
-                        class="action"
-                        id="openHostelModal">
-
-                        <strong>
-                            🏢 Add Hostel
-                        </strong>
-
-                        <span>
-                            Create a new hostel
-                        </span>
+                        <span>🏢</span>
+                        Add Hostel
 
                     </button>
 
+                    <button class="quick-action"
+                            onclick="openRoomModal()">
 
-                    <button
-                        type="button"
-                        class="action"
-                        id="openRoomModal">
-
-                        <strong>
-                            🚪 Add Room
-                        </strong>
-
-                        <span>
-                            Create a room inside a hostel
-                        </span>
+                        <span>🚪</span>
+                        Add Room
 
                     </button>
 
+                    <button class="quick-action"
+                            onclick="openBedModal()">
 
-                    <button
-                        type="button"
-                        class="action"
-                        id="openBedModal">
-
-                        <strong>
-                            🛏️ Add Bed
-                        </strong>
-
-                        <span>
-                            Create a bed inside a room
-                        </span>
+                        <span>🛏</span>
+                        Add Bed
 
                     </button>
 
+                    <a href="allocations.html"
+                       class="quick-action">
 
-                    <a
-                        href="allocations.html"
-                        class="action">
-
-                        <strong>
-                            📋 Allocate Bed
-                        </strong>
-
-                        <span>
-                            Assign a bed to a student
-                        </span>
+                        <span>📋</span>
+                        Allocate Bed
 
                     </a>
 
+                    <a href="students.html"
+                       class="quick-action">
 
-                    <a
-                        href="students_dashboard.html"
-                        class="action">
-
-                        <strong>
-                            🎓 Students
-                        </strong>
-
-                        <span>
-                            Manage students
-                        </span>
+                        <span>👨‍🎓</span>
+                        Students
 
                     </a>
 
+                    <a href="announcements.html"
+                       class="quick-action">
 
-                    <a
-                        href="announcements.html"
-                        class="action">
-
-                        <strong>
-                            📢 Announcement
-                        </strong>
-
-                        <span>
-                            Send an announcement
-                        </span>
+                        <span>📢</span>
+                        Announcement
 
                     </a>
 
+                    <a href="reports.html"
+                       class="quick-action">
 
-                    <a
-                        href="reports.html"
-                        class="action">
-
-                        <strong>
-                            📊 Reports
-                        </strong>
-
-                        <span>
-                            View system reports
-                        </span>
+                        <span>📊</span>
+                        Reports
 
                     </a>
 
+                    <a href="nexa.html"
+                       class="quick-action">
 
-                    <a
-                        href="nexa.html"
-                        class="action">
-
-                        <strong>
-                            🤖 Nexa AI
-                        </strong>
-
-                        <span>
-                            Analyze hostel operations
-                        </span>
+                        <span>✨</span>
+                        Nexa AI
 
                     </a>
 
@@ -1147,59 +1276,35 @@
 
         </div>
 
+        <!-- RECENT ALLOCATIONS -->
 
-        <!-- =================================================
-             RECENT ALLOCATIONS
-        ================================================== -->
+        <div class="table-card">
 
-        <div
-            class="card"
-            style="margin-bottom:25px;">
+            <div class="table-header">
 
-            <div class="card-header">
+                <h2>Recent Allocations</h2>
 
-                <h3>
-                    Recent Allocations
-                </h3>
-
-                <a href="allocations.html">
+                <a href="allocations.html"
+                   class="btn btn-light">
                     View All
                 </a>
 
             </div>
 
-            <div class="table-container">
+            <div class="table-wrap">
 
                 <table>
 
                     <thead>
 
                         <tr>
-
-                            <th>
-                                Student
-                            </th>
-
-                            <th>
-                                Student ID
-                            </th>
-
-                            <th>
-                                Hostel
-                            </th>
-
-                            <th>
-                                Room
-                            </th>
-
-                            <th>
-                                Bed
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
+                            <th>Student</th>
+                            <th>Student ID</th>
+                            <th>Hostel</th>
+                            <th>Room</th>
+                            <th>Bed</th>
+                            <th>Date</th>
+                            <th>Status</th>
                         </tr>
 
                     </thead>
@@ -1207,15 +1312,10 @@
                     <tbody id="allocationsTable">
 
                         <tr>
-
-                            <td
-                                colspan="6"
-                                class="loading">
-
+                            <td colspan="7"
+                                class="empty">
                                 Loading allocations...
-
                             </td>
-
                         </tr>
 
                     </tbody>
@@ -1226,67 +1326,29 @@
 
         </div>
 
-
-        <!-- =================================================
-             NEXA
-        ================================================== -->
-
-        <div class="card nexa">
-
-            <h3>
-                🤖 Nexa AI Assistant
-            </h3>
-
-            <p>
-
-                Nexa helps HostelPro administrators understand hostel
-                activity, identify problems, monitor occupancy and make
-                better management decisions using system data.
-
-            </p>
-
-            <a
-                href="nexa.html"
-                class="nexa-button">
-
-                Open Nexa
-
-            </a>
-
-        </div>
-
     </section>
 
 </main>
 
+<!-- NEXA -->
+<button class="nexa-button"
+        onclick="window.location.href='nexa.html'">
+    Nexa
+</button>
 
-<!-- =========================================================
-     ADD HOSTEL MODAL
-========================================================= -->
+<!-- ADD HOSTEL MODAL -->
 
-<div
-    class="modal-overlay"
-    id="hostelModal">
+<div class="modal-overlay" id="hostelModal">
 
-    <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="hostelModalTitle">
+    <div class="modal">
 
         <div class="modal-header">
 
-            <h2 id="hostelModalTitle">
-                🏢 Add New Hostel
-            </h2>
+            <h2>Add Hostel</h2>
 
-            <button
-                type="button"
-                class="modal-close"
-                data-close-modal="hostelModal">
-
+            <button class="close-btn"
+                    onclick="closeModal('hostelModal')">
                 ×
-
             </button>
 
         </div>
@@ -1295,40 +1357,34 @@
 
             <div class="modal-body">
 
-                <div
-                    class="form-message"
-                    id="hostelMessage">
-                </div>
+                <div class="form-grid">
 
-                <div class="form-group">
+                    <div class="form-group">
 
-                    <label>
-                        Hostel Name
-                        <span class="required">*</span>
-                    </label>
+                        <label>
+                            Hostel Name *
+                        </label>
 
-                    <input
-                        type="text"
-                        id="hostelName"
-                        placeholder="e.g. Main Student Hostel"
-                        required>
+                        <input type="text"
+                               id="hostelName"
+                               required
+                               placeholder="e.g. Main Student Hostel">
 
-                </div>
+                    </div>
 
+                    <div class="form-group">
 
-                <div class="form-group">
+                        <label>
+                            Hostel Code
+                        </label>
 
-                    <label>
-                        Hostel Code
-                    </label>
+                        <input type="text"
+                               id="hostelCode"
+                               placeholder="e.g. MSH">
 
-                    <input
-                        type="text"
-                        id="hostelCode"
-                        placeholder="e.g. MSH-001">
+                    </div>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -1336,15 +1392,13 @@
                         Location
                     </label>
 
-                    <input
-                        type="text"
-                        id="hostelLocation"
-                        placeholder="e.g. Main Campus">
+                    <input type="text"
+                           id="hostelLocation"
+                           placeholder="Hostel location">
 
                 </div>
 
-
-                <div class="form-row">
+                <div class="form-grid">
 
                     <div class="form-group">
 
@@ -1352,14 +1406,12 @@
                             Total Rooms
                         </label>
 
-                        <input
-                            type="number"
-                            id="hostelTotalRooms"
-                            min="0"
-                            value="0">
+                        <input type="number"
+                               id="hostelRooms"
+                               min="0"
+                               value="0">
 
                     </div>
-
 
                     <div class="form-group">
 
@@ -1367,16 +1419,14 @@
                             Total Beds
                         </label>
 
-                        <input
-                            type="number"
-                            id="hostelTotalBeds"
-                            min="0"
-                            value="0">
+                        <input type="number"
+                               id="hostelBeds"
+                               min="0"
+                               value="0">
 
                     </div>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -1398,42 +1448,33 @@
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label>
                         Description
                     </label>
 
-                    <textarea
-                        id="hostelDescription"
-                        placeholder="Brief description of the hostel">
-                    </textarea>
+                    <textarea id="hostelDescription"
+                              rows="3"
+                              placeholder="Hostel description"></textarea>
 
                 </div>
 
-            </div>
+                <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn btn-light"
+                            onclick="closeModal('hostelModal')">
+                        Cancel
+                    </button>
 
-            <div class="modal-footer">
+                    <button type="submit"
+                            class="btn btn-primary"
+                            id="saveHostelBtn">
+                        Add Hostel
+                    </button>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-close-modal="hostelModal">
-
-                    Cancel
-
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="saveHostelBtn">
-
-                    Create Hostel
-
-                </button>
+                </div>
 
             </div>
 
@@ -1443,34 +1484,19 @@
 
 </div>
 
+<!-- ADD ROOM MODAL -->
 
-<!-- =========================================================
-     ADD ROOM MODAL
-========================================================= -->
+<div class="modal-overlay" id="roomModal">
 
-<div
-    class="modal-overlay"
-    id="roomModal">
-
-    <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="roomModalTitle">
+    <div class="modal">
 
         <div class="modal-header">
 
-            <h2 id="roomModalTitle">
-                🚪 Add New Room
-            </h2>
+            <h2>Add Room</h2>
 
-            <button
-                type="button"
-                class="modal-close"
-                data-close-modal="roomModal">
-
+            <button class="close-btn"
+                    onclick="closeModal('roomModal')">
                 ×
-
             </button>
 
         </div>
@@ -1479,22 +1505,14 @@
 
             <div class="modal-body">
 
-                <div
-                    class="form-message"
-                    id="roomMessage">
-                </div>
-
-
                 <div class="form-group">
 
                     <label>
-                        Hostel
-                        <span class="required">*</span>
+                        Hostel *
                     </label>
 
-                    <select
-                        id="roomHostel"
-                        required>
+                    <select id="roomHostel"
+                            required>
 
                         <option value="">
                             Select hostel
@@ -1504,24 +1522,20 @@
 
                 </div>
 
-
-                <div class="form-row">
+                <div class="form-grid">
 
                     <div class="form-group">
 
                         <label>
-                            Room Number
-                            <span class="required">*</span>
+                            Room Number *
                         </label>
 
-                        <input
-                            type="text"
-                            id="roomNumber"
-                            placeholder="e.g. 101"
-                            required>
+                        <input type="text"
+                               id="roomNumber"
+                               required
+                               placeholder="e.g. 101">
 
                     </div>
-
 
                     <div class="form-group">
 
@@ -1529,18 +1543,16 @@
                             Floor
                         </label>
 
-                        <input
-                            type="number"
-                            id="roomFloor"
-                            min="0"
-                            placeholder="e.g. 1">
+                        <input type="number"
+                               id="roomFloor"
+                               min="0"
+                               placeholder="e.g. 1">
 
                     </div>
 
                 </div>
 
-
-                <div class="form-row">
+                <div class="form-grid">
 
                     <div class="form-group">
 
@@ -1570,23 +1582,20 @@
 
                     </div>
 
-
                     <div class="form-group">
 
                         <label>
                             Capacity
                         </label>
 
-                        <input
-                            type="number"
-                            id="roomCapacity"
-                            min="1"
-                            value="1">
+                        <input type="number"
+                               id="roomCapacity"
+                               min="1"
+                               value="1">
 
                     </div>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -1600,44 +1609,33 @@
                             Available
                         </option>
 
-                        <option value="full">
-                            Full
+                        <option value="occupied">
+                            Occupied
                         </option>
 
                         <option value="maintenance">
                             Maintenance
                         </option>
 
-                        <option value="inactive">
-                            Inactive
-                        </option>
-
                     </select>
 
                 </div>
 
-            </div>
+                <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn btn-light"
+                            onclick="closeModal('roomModal')">
+                        Cancel
+                    </button>
 
-            <div class="modal-footer">
+                    <button type="submit"
+                            class="btn btn-primary"
+                            id="saveRoomBtn">
+                        Add Room
+                    </button>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-close-modal="roomModal">
-
-                    Cancel
-
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="saveRoomBtn">
-
-                    Create Room
-
-                </button>
+                </div>
 
             </div>
 
@@ -1647,34 +1645,19 @@
 
 </div>
 
+<!-- ADD BED MODAL -->
 
-<!-- =========================================================
-     ADD BED MODAL
-========================================================= -->
+<div class="modal-overlay" id="bedModal">
 
-<div
-    class="modal-overlay"
-    id="bedModal">
-
-    <div
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="bedModalTitle">
+    <div class="modal">
 
         <div class="modal-header">
 
-            <h2 id="bedModalTitle">
-                🛏️ Add New Bed
-            </h2>
+            <h2>Add Bed</h2>
 
-            <button
-                type="button"
-                class="modal-close"
-                data-close-modal="bedModal">
-
+            <button class="close-btn"
+                    onclick="closeModal('bedModal')">
                 ×
-
             </button>
 
         </div>
@@ -1683,22 +1666,15 @@
 
             <div class="modal-body">
 
-                <div
-                    class="form-message"
-                    id="bedMessage">
-                </div>
-
-
                 <div class="form-group">
 
                     <label>
-                        Hostel
-                        <span class="required">*</span>
+                        Hostel *
                     </label>
 
-                    <select
-                        id="bedHostel"
-                        required>
+                    <select id="bedHostel"
+                            required
+                            onchange="loadRoomsForBed(this.value)">
 
                         <option value="">
                             Select hostel
@@ -1708,74 +1684,64 @@
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label>
-                        Room
-                        <span class="required">*</span>
+                        Room *
                     </label>
 
-                    <select
-                        id="bedRoom"
-                        required
-                        disabled>
+                    <select id="bedRoom"
+                            required>
 
                         <option value="">
-                            Select hostel first
+                            Select room
                         </option>
 
                     </select>
 
                 </div>
 
-
-                <div class="form-row">
+                <div class="form-grid">
 
                     <div class="form-group">
 
                         <label>
-                            Bed Number
-                            <span class="required">*</span>
+                            Bed Number *
                         </label>
 
-                        <input
-                            type="text"
-                            id="bedNumber"
-                            placeholder="e.g. A-1"
-                            required>
+                        <input type="text"
+                               id="bedNumber"
+                               required
+                               placeholder="e.g. A-1">
 
                     </div>
 
-
                     <div class="form-group">
 
                         <label>
-                            Bed Label
+                            Label
                         </label>
 
-                        <input
-                            type="text"
-                            id="bedLabel"
-                            placeholder="e.g. A-1 Lower">
+                        <input type="text"
+                               id="bedLabel"
+                               placeholder="e.g. A-1 Lower">
 
                     </div>
 
                 </div>
 
-
-                <div class="form-row">
+                <div class="form-grid">
 
                     <div class="form-group">
 
                         <label>
-                            Bed Position
+                            Position
                         </label>
 
                         <select id="bedPosition">
 
-                            <option value="single">
-                                Single
+                            <option value="">
+                                Not specified
                             </option>
 
                             <option value="lower">
@@ -1789,7 +1755,6 @@
                         </select>
 
                     </div>
-
 
                     <div class="form-group">
 
@@ -1811,38 +1776,27 @@
                                 Maintenance
                             </option>
 
-                            <option value="inactive">
-                                Inactive
-                            </option>
-
                         </select>
 
                     </div>
 
                 </div>
 
-            </div>
+                <div class="modal-footer">
 
+                    <button type="button"
+                            class="btn btn-light"
+                            onclick="closeModal('bedModal')">
+                        Cancel
+                    </button>
 
-            <div class="modal-footer">
+                    <button type="submit"
+                            class="btn btn-primary"
+                            id="saveBedBtn">
+                        Add Bed
+                    </button>
 
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-close-modal="bedModal">
-
-                    Cancel
-
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="saveBedBtn">
-
-                    Create Bed
-
-                </button>
+                </div>
 
             </div>
 
@@ -1852,1212 +1806,389 @@
 
 </div>
 
+<!-- TOAST -->
+
+<div class="toast" id="toast"></div>
 
 <script>
 
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
+/* =========================================================
+   HOSTELPRO ADMIN DASHBOARD
+   IMPORTANT:
+   This file DOES NOT create another Supabase client.
+   It uses window.supabaseClient from supabase-config.js.
+========================================================= */
 
-    const SUPABASE_URL =
-        "https://keeyaworqbjsjfekorhd.supabase.co";
+"use strict";
 
-    const SUPABASE_ANON_KEY =
-        "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+/* ---------------------------------------------------------
+   GLOBAL
+--------------------------------------------------------- */
 
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
+let hostelsCache = [];
+
+
+/* ---------------------------------------------------------
+   ELEMENT HELPERS
+--------------------------------------------------------- */
+
+function $(id){
+    return document.getElementById(id);
+}
+
+
+/* ---------------------------------------------------------
+   TOAST
+--------------------------------------------------------- */
+
+function showToast(message, type = "success"){
+
+    const toast = $("toast");
+
+    toast.textContent = message;
+
+    toast.className = "toast show " + type;
+
+    setTimeout(() => {
+
+        toast.className = "toast";
+
+    }, 3500);
+}
+
+
+/* ---------------------------------------------------------
+   ERROR
+--------------------------------------------------------- */
+
+function showDashboardError(message){
+
+    $("dashboardErrorText").textContent = message;
+
+    $("dashboardError").classList.add("show");
+
+    $("loadingScreen").classList.add("hidden");
+}
+
+
+/* ---------------------------------------------------------
+   INITIALS
+--------------------------------------------------------- */
+
+function initials(name){
+
+    if(!name){
+        return "AD";
+    }
+
+    const parts = String(name)
+        .trim()
+        .split(/\s+/);
+
+    if(parts.length === 1){
+        return parts[0]
+            .substring(0,2)
+            .toUpperCase();
+    }
+
+    return (
+        parts[0][0] +
+        parts[parts.length - 1][0]
+    ).toUpperCase();
+}
+
+
+/* ---------------------------------------------------------
+   MODALS
+--------------------------------------------------------- */
+
+function openModal(id){
+
+    $(id).classList.add("show");
+
+    if(id === "roomModal"){
+        loadHostelsIntoSelect("roomHostel");
+    }
+
+    if(id === "bedModal"){
+        loadHostelsIntoSelect("bedHostel");
+    }
+}
+
+
+function closeModal(id){
+
+    $(id).classList.remove("show");
+}
+
+
+/* ---------------------------------------------------------
+   CLOSE MODALS WHEN CLICKING OUTSIDE
+--------------------------------------------------------- */
+
+document.querySelectorAll(".modal-overlay")
+.forEach(modal => {
+
+    modal.addEventListener("click", function(event){
+
+        if(event.target === modal){
+            modal.classList.remove("show");
+        }
+
+    });
+
+});
+
+
+/* ---------------------------------------------------------
+   AUTHENTICATION CHECK
+--------------------------------------------------------- */
+
+async function checkAdmin(){
+
+    try{
+
+        console.log(
+            "HOSTELPRO: Checking administrator session..."
         );
 
+        if(!window.supabaseClient){
 
-    /* =========================================================
-       HELPER FUNCTIONS
-    ========================================================= */
-
-    function escapeHtml(value) {
-
-        if (
-            value === null ||
-            value === undefined
-        ) {
-            return "";
-        }
-
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-
-    function getInitials(name) {
-
-        if (!name) {
-            return "A";
-        }
-
-        const words =
-            name.trim().split(/\s+/);
-
-        if (words.length === 1) {
-
-            return words[0]
-                .substring(0, 2)
-                .toUpperCase();
-
-        }
-
-        return (
-            words[0][0] +
-            words[words.length - 1][0]
-        ).toUpperCase();
-    }
-
-
-    function showMessage(elementId, message, type) {
-
-        const element =
-            document.getElementById(elementId);
-
-        element.textContent = message;
-
-        element.className =
-            "form-message show " + type;
-    }
-
-
-    function clearMessage(elementId) {
-
-        const element =
-            document.getElementById(elementId);
-
-        element.textContent = "";
-
-        element.className =
-            "form-message";
-    }
-
-
-    /* =========================================================
-       MODAL FUNCTIONS
-    ========================================================= */
-
-    function openModal(modalId) {
-
-        document
-            .getElementById(modalId)
-            .classList.add("show");
-
-        document.body.style.overflow = "hidden";
-    }
-
-
-    function closeModal(modalId) {
-
-        document
-            .getElementById(modalId)
-            .classList.remove("show");
-
-        document.body.style.overflow = "";
-    }
-
-
-    document
-        .querySelectorAll("[data-close-modal]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    closeModal(
-                        this.dataset.closeModal
-                    );
-
-                }
+            console.error(
+                "HOSTELPRO: Supabase client is not available."
             );
 
-        });
-
-
-    document
-        .querySelectorAll(".modal-overlay")
-        .forEach(overlay => {
-
-            overlay.addEventListener(
-                "click",
-                function(event) {
-
-                    if (event.target === overlay) {
-
-                        closeModal(
-                            overlay.id
-                        );
-
-                    }
-
-                }
+            showDashboardError(
+                "Supabase configuration could not be loaded."
             );
-
-        });
-
-
-    document.addEventListener(
-        "keydown",
-        function(event) {
-
-            if (event.key !== "Escape") {
-                return;
-            }
-
-            document
-                .querySelectorAll(".modal-overlay.show")
-                .forEach(modal => {
-
-                    closeModal(modal.id);
-
-                });
-
-        }
-    );
-
-
-    /* =========================================================
-       OPEN BUTTONS
-    ========================================================= */
-
-    document
-        .getElementById("openHostelModal")
-        .addEventListener(
-            "click",
-            function() {
-
-                clearMessage("hostelMessage");
-
-                document
-                    .getElementById("hostelForm")
-                    .reset();
-
-                openModal("hostelModal");
-
-            }
-        );
-
-
-    document
-        .getElementById("openRoomModal")
-        .addEventListener(
-            "click",
-            async function() {
-
-                clearMessage("roomMessage");
-
-                document
-                    .getElementById("roomForm")
-                    .reset();
-
-                await loadHostelOptions(
-                    "roomHostel"
-                );
-
-                openModal("roomModal");
-
-            }
-        );
-
-
-    document
-        .getElementById("openBedModal")
-        .addEventListener(
-            "click",
-            async function() {
-
-                clearMessage("bedMessage");
-
-                document
-                    .getElementById("bedForm")
-                    .reset();
-
-                const roomSelect =
-                    document.getElementById(
-                        "bedRoom"
-                    );
-
-                roomSelect.innerHTML = `
-                    <option value="">
-                        Select hostel first
-                    </option>
-                `;
-
-                roomSelect.disabled = true;
-
-                await loadHostelOptions(
-                    "bedHostel"
-                );
-
-                openModal("bedModal");
-
-            }
-        );
-
-
-    /* =========================================================
-       CHECK ADMIN
-    ========================================================= */
-
-    async function loadAdmin() {
-
-        const {
-            data: {
-                user
-            },
-            error: authError
-        } =
-            await supabaseClient.auth.getUser();
-
-
-        if (
-            authError ||
-            !user
-        ) {
-
-            window.location.href =
-                "login.html";
 
             return null;
         }
 
 
         const {
-            data: profile,
+            data,
             error
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select(
-                    "full_name,email,role"
-                )
-                .eq(
-                    "id",
-                    user.id
-                )
-                .single();
+        } = await window.supabaseClient.auth.getUser();
 
 
-        if (
-            error ||
-            !profile
-        ) {
+        if(error){
 
-            alert(
-                "Your profile could not be found."
+            console.error(
+                "HOSTELPRO Auth error:",
+                error
             );
 
-            await supabaseClient.auth.signOut();
-
-            window.location.href =
-                "login.html";
+            showDashboardError(
+                "Your login session could not be verified. Please login again."
+            );
 
             return null;
         }
 
 
-        if (
-            profile.role !== "admin"
-        ) {
+        const user = data?.user;
 
-            alert(
-                "Access denied. Only administrators can access this page."
+
+        if(!user){
+
+            console.warn(
+                "HOSTELPRO: No authenticated user found."
             );
 
-            window.location.href =
-                "login.html";
+            window.location.href = "login.html";
 
             return null;
         }
 
+
+        console.log(
+            "HOSTELPRO USER ID:",
+            user.id
+        );
+
+
+        const {
+            data: profiles,
+            error: profileError
+        } = await window.supabaseClient
+            .from("profiles")
+            .select(
+                "id,full_name,email,role,status"
+            )
+            .eq("id", user.id)
+            .limit(1);
+
+
+        if(profileError){
+
+            console.error(
+                "HOSTELPRO Profile error:",
+                profileError
+            );
+
+            showDashboardError(
+                "Unable to load your administrator profile."
+            );
+
+            return null;
+        }
+
+
+        if(!profiles || profiles.length === 0){
+
+            console.error(
+                "HOSTELPRO: No profile found."
+            );
+
+            showDashboardError(
+                "Your HostelPro profile was not found."
+            );
+
+            await window.supabaseClient.auth.signOut();
+
+            return null;
+        }
+
+
+        const profile = profiles[0];
+
+
+        console.log(
+            "HOSTELPRO PROFILE:",
+            profile
+        );
+
+
+        /* ACCOUNT STATUS */
+
+        if(
+            profile.status &&
+            String(profile.status).toLowerCase() !== "active"
+        ){
+
+            showDashboardError(
+                "Your account is not active."
+            );
+
+            await window.supabaseClient.auth.signOut();
+
+            return null;
+        }
+
+
+        /* ROLE */
+
+        const role =
+            String(profile.role || "")
+            .trim()
+            .toLowerCase();
+
+
+        console.log(
+            "HOSTELPRO USER ROLE:",
+            role
+        );
+
+
+        if(role !== "admin"){
+
+            showDashboardError(
+                "Administrator access is required to open this dashboard."
+            );
+
+            await window.supabaseClient.auth.signOut();
+
+            return null;
+        }
+
+
+        /* DISPLAY NAME */
 
         const name =
             profile.full_name ||
+            profile.email ||
             user.email ||
             "Administrator";
 
 
-        document
-            .getElementById("adminName")
-            .textContent = name;
+        if($("adminName")){
+            $("adminName").textContent = name;
+        }
+
+        if($("welcomeName")){
+            $("welcomeName").textContent = name;
+        }
+
+        if($("adminAvatar")){
+            $("adminAvatar").textContent =
+                initials(name);
+        }
 
 
-        document
-            .getElementById("welcomeName")
-            .textContent = name;
+        console.log(
+            "HOSTELPRO: Admin verification successful."
+        );
 
 
-        document
-            .getElementById("adminAvatar")
-            .textContent =
-                getInitials(name);
+        return {
+            user,
+            profile
+        };
 
 
-        return profile;
-    }
+    }catch(error){
 
-
-    /* =========================================================
-       LOAD HOSTELS INTO SELECTS
-    ========================================================= */
-
-    async function loadHostelOptions(selectId) {
-
-        const select =
-            document.getElementById(selectId);
-
-
-        select.innerHTML = `
-            <option value="">
-                Loading hostels...
-            </option>
-        `;
-
-
-        const {
-            data,
+        console.error(
+            "HOSTELPRO Dashboard authentication error:",
             error
-        } =
-            await supabaseClient
-                .from("hostels")
-                .select(
-                    "id,name"
-                )
-                .order(
-                    "name",
-                    {
-                        ascending: true
-                    }
-                );
+        );
 
+        showDashboardError(
+            "Something went wrong while verifying your account."
+        );
 
-        if (error) {
-
-            console.error(
-                "Hostel loading error:",
-                error
-            );
-
-            select.innerHTML = `
-                <option value="">
-                    Unable to load hostels
-                </option>
-            `;
-
-            return;
-        }
-
-
-        if (
-            !data ||
-            data.length === 0
-        ) {
-
-            select.innerHTML = `
-                <option value="">
-                    No hostels available
-                </option>
-            `;
-
-            return;
-        }
-
-
-        select.innerHTML = `
-            <option value="">
-                Select hostel
-            </option>
-        `;
-
-
-        data.forEach(hostel => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                hostel.id;
-
-            option.textContent =
-                hostel.name;
-
-            select.appendChild(
-                option
-            );
-
-        });
-
+        return null;
     }
+}
 
 
-    /* =========================================================
-       LOAD ROOMS FOR SELECTED HOSTEL
-    ========================================================= */
+/* ---------------------------------------------------------
+   LOAD STATISTICS
+--------------------------------------------------------- */
 
-    async function loadRoomsForHostel(
-        hostelId
-    ) {
+async function loadStatistics(){
 
-        const roomSelect =
-            document.getElementById(
-                "bedRoom"
-            );
-
-
-        if (!hostelId) {
-
-            roomSelect.innerHTML = `
-                <option value="">
-                    Select hostel first
-                </option>
-            `;
-
-            roomSelect.disabled = true;
-
-            return;
-        }
-
-
-        roomSelect.disabled = true;
-
-        roomSelect.innerHTML = `
-            <option value="">
-                Loading rooms...
-            </option>
-        `;
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("rooms")
-                .select(
-                    "id,room_number"
-                )
-                .eq(
-                    "hostel_id",
-                    hostelId
-                )
-                .order(
-                    "room_number",
-                    {
-                        ascending: true
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Room loading error:",
-                error
-            );
-
-            roomSelect.innerHTML = `
-                <option value="">
-                    Unable to load rooms
-                </option>
-            `;
-
-            return;
-        }
-
-
-        if (
-            !data ||
-            data.length === 0
-        ) {
-
-            roomSelect.innerHTML = `
-                <option value="">
-                    No rooms in this hostel
-                </option>
-            `;
-
-            roomSelect.disabled = true;
-
-            return;
-        }
-
-
-        roomSelect.innerHTML = `
-            <option value="">
-                Select room
-            </option>
-        `;
-
-
-        data.forEach(room => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-            option.value =
-                room.id;
-
-            option.textContent =
-                "Room " +
-                room.room_number;
-
-            roomSelect.appendChild(
-                option
-            );
-
-        });
-
-
-        roomSelect.disabled = false;
-
-    }
-
-
-    /* =========================================================
-       BED HOSTEL CHANGE
-    ========================================================= */
-
-    document
-        .getElementById("bedHostel")
-        .addEventListener(
-            "change",
-            function() {
-
-                loadRoomsForHostel(
-                    this.value
-                );
-
-            }
-        );
-
-
-    /* =========================================================
-       ADD HOSTEL
-    ========================================================= */
-
-    document
-        .getElementById("hostelForm")
-        .addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const button =
-                    document.getElementById(
-                        "saveHostelBtn"
-                    );
-
-
-                clearMessage(
-                    "hostelMessage"
-                );
-
-
-                const name =
-                    document
-                        .getElementById(
-                            "hostelName"
-                        )
-                        .value
-                        .trim();
-
-
-                const code =
-                    document
-                        .getElementById(
-                            "hostelCode"
-                        )
-                        .value
-                        .trim();
-
-
-                const location =
-                    document
-                        .getElementById(
-                            "hostelLocation"
-                        )
-                        .value
-                        .trim();
-
-
-                const totalRooms =
-                    parseInt(
-                        document
-                            .getElementById(
-                                "hostelTotalRooms"
-                            )
-                            .value,
-                        10
-                    ) || 0;
-
-
-                const totalBeds =
-                    parseInt(
-                        document
-                            .getElementById(
-                                "hostelTotalBeds"
-                            )
-                            .value,
-                        10
-                    ) || 0;
-
-
-                const status =
-                    document
-                        .getElementById(
-                            "hostelStatus"
-                        )
-                        .value;
-
-
-                const description =
-                    document
-                        .getElementById(
-                            "hostelDescription"
-                        )
-                        .value
-                        .trim();
-
-
-                if (!name) {
-
-                    showMessage(
-                        "hostelMessage",
-                        "Please enter the hostel name.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                button.disabled = true;
-
-                button.textContent =
-                    "Creating...";
-
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("hostels")
-                        .insert([
-                            {
-                                name: name,
-                                hostel_code:
-                                    code || null,
-                                location:
-                                    location || null,
-                                total_rooms:
-                                    totalRooms,
-                                total_beds:
-                                    totalBeds,
-                                status: status,
-                                description:
-                                    description || null
-                            }
-                        ]);
-
-
-                button.disabled = false;
-
-                button.textContent =
-                    "Create Hostel";
-
-
-                if (error) {
-
-                    console.error(
-                        "Create hostel error:",
-                        error
-                    );
-
-                    showMessage(
-                        "hostelMessage",
-                        error.message ||
-                        "Unable to create hostel.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                showMessage(
-                    "hostelMessage",
-                    "Hostel created successfully.",
-                    "success"
-                );
-
-
-                await loadStatistics();
-
-
-                setTimeout(
-                    function() {
-
-                        closeModal(
-                            "hostelModal"
-                        );
-
-                    },
-                    900
-                );
-
-            }
-        );
-
-
-    /* =========================================================
-       ADD ROOM
-    ========================================================= */
-
-    document
-        .getElementById("roomForm")
-        .addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const button =
-                    document.getElementById(
-                        "saveRoomBtn"
-                    );
-
-
-                clearMessage(
-                    "roomMessage"
-                );
-
-
-                const hostelId =
-                    document
-                        .getElementById(
-                            "roomHostel"
-                        )
-                        .value;
-
-
-                const roomNumber =
-                    document
-                        .getElementById(
-                            "roomNumber"
-                        )
-                        .value
-                        .trim();
-
-
-                const floorValue =
-                    document
-                        .getElementById(
-                            "roomFloor"
-                        )
-                        .value;
-
-
-                const roomType =
-                    document
-                        .getElementById(
-                            "roomType"
-                        )
-                        .value;
-
-
-                const capacity =
-                    parseInt(
-                        document
-                            .getElementById(
-                                "roomCapacity"
-                            )
-                            .value,
-                        10
-                    ) || 1;
-
-
-                const status =
-                    document
-                        .getElementById(
-                            "roomStatus"
-                        )
-                        .value;
-
-
-                if (!hostelId) {
-
-                    showMessage(
-                        "roomMessage",
-                        "Please select a hostel.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                if (!roomNumber) {
-
-                    showMessage(
-                        "roomMessage",
-                        "Please enter the room number.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                button.disabled = true;
-
-                button.textContent =
-                    "Creating...";
-
-
-                /*
-                 * The main fields used here are:
-                 * hostel_id
-                 * room_number
-                 * status
-                 *
-                 * Additional fields are included
-                 * only where available in the
-                 * current HostelPro design.
-                 */
-
-                const roomData = {
-
-                    hostel_id:
-                        hostelId,
-
-                    room_number:
-                        roomNumber,
-
-                    status:
-                        status
-
-                };
-
-
-                /*
-                 * Add optional fields when
-                 * they have been supplied.
-                 */
-
-                if (floorValue !== "") {
-
-                    roomData.floor =
-                        parseInt(
-                            floorValue,
-                            10
-                        );
-                }
-
-
-                if (roomType) {
-
-                    roomData.room_type =
-                        roomType;
-                }
-
-
-                if (capacity) {
-
-                    roomData.capacity =
-                        capacity;
-                }
-
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("rooms")
-                        .insert([
-                            roomData
-                        ]);
-
-
-                button.disabled = false;
-
-                button.textContent =
-                    "Create Room";
-
-
-                if (error) {
-
-                    console.error(
-                        "Create room error:",
-                        error
-                    );
-
-                    showMessage(
-                        "roomMessage",
-                        error.message ||
-                        "Unable to create room.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                showMessage(
-                    "roomMessage",
-                    "Room created successfully.",
-                    "success"
-                );
-
-
-                await loadStatistics();
-
-
-                setTimeout(
-                    function() {
-
-                        closeModal(
-                            "roomModal"
-                        );
-
-                    },
-                    900
-                );
-
-            }
-        );
-
-
-    /* =========================================================
-       ADD BED
-    ========================================================= */
-
-    document
-        .getElementById("bedForm")
-        .addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const button =
-                    document.getElementById(
-                        "saveBedBtn"
-                    );
-
-
-                clearMessage(
-                    "bedMessage"
-                );
-
-
-                const roomId =
-                    document
-                        .getElementById(
-                            "bedRoom"
-                        )
-                        .value;
-
-
-                const bedNumber =
-                    document
-                        .getElementById(
-                            "bedNumber"
-                        )
-                        .value
-                        .trim();
-
-
-                const bedLabel =
-                    document
-                        .getElementById(
-                            "bedLabel"
-                        )
-                        .value
-                        .trim();
-
-
-                const bedPosition =
-                    document
-                        .getElementById(
-                            "bedPosition"
-                        )
-                        .value;
-
-
-                const status =
-                    document
-                        .getElementById(
-                            "bedStatus"
-                        )
-                        .value;
-
-
-                if (!roomId) {
-
-                    showMessage(
-                        "bedMessage",
-                        "Please select a room.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                if (!bedNumber) {
-
-                    showMessage(
-                        "bedMessage",
-                        "Please enter the bed number.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                button.disabled = true;
-
-                button.textContent =
-                    "Creating...";
-
-
-                const bedData = {
-
-                    room_id:
-                        roomId,
-
-                    bed_number:
-                        bedNumber,
-
-                    status:
-                        status,
-
-                    bed_position:
-                        bedPosition
-
-                };
-
-
-                if (bedLabel) {
-
-                    bedData.label =
-                        bedLabel;
-                }
-
-
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("beds")
-                        .insert([
-                            bedData
-                        ]);
-
-
-                button.disabled = false;
-
-                button.textContent =
-                    "Create Bed";
-
-
-                if (error) {
-
-                    console.error(
-                        "Create bed error:",
-                        error
-                    );
-
-                    showMessage(
-                        "bedMessage",
-                        error.message ||
-                        "Unable to create bed.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                showMessage(
-                    "bedMessage",
-                    "Bed created successfully.",
-                    "success"
-                );
-
-
-                await loadStatistics();
-
-
-                setTimeout(
-                    function() {
-
-                        closeModal(
-                            "bedModal"
-                        );
-
-                    },
-                    900
-                );
-
-            }
-        );
-
-
-    /* =========================================================
-       LOAD STATISTICS
-    ========================================================= */
-
-    async function loadStatistics() {
+    try{
 
         /* STUDENTS */
 
         const {
             count: studentCount,
             error: studentError
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select(
-                    "id",
-                    {
-                        count: "exact",
-                        head: true
-                    }
-                )
-                .eq(
-                    "role",
-                    "student"
-                );
+        } = await window.supabaseClient
+            .from("profiles")
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            )
+            .eq("role","student");
 
 
-        if (!studentError) {
+        if(studentError){
 
-            document
-                .getElementById(
-                    "studentsCount"
-                )
-                .textContent =
-                    studentCount || 0;
+            console.error(
+                "Student statistics error:",
+                studentError
+            );
+
+        }else{
+
+            $("totalStudents").textContent =
+                studentCount || 0;
 
         }
 
@@ -3067,26 +2198,28 @@
         const {
             count: hostelCount,
             error: hostelError
-        } =
-            await supabaseClient
-                .from("hostels")
-                .select(
-                    "id",
-                    {
-                        count: "exact",
-                        head: true
-                    }
-                );
+        } = await window.supabaseClient
+            .from("hostels")
+            .select(
+                "id",
+                {
+                    count:"exact",
+                    head:true
+                }
+            );
 
 
-        if (!hostelError) {
+        if(hostelError){
 
-            document
-                .getElementById(
-                    "hostelsCount"
-                )
-                .textContent =
-                    hostelCount || 0;
+            console.error(
+                "Hostel statistics error:",
+                hostelError
+            );
+
+        }else{
+
+            $("totalHostels").textContent =
+                hostelCount || 0;
 
         }
 
@@ -3096,219 +2229,189 @@
         const {
             data: beds,
             error: bedsError
-        } =
-            await supabaseClient
-                .from("beds")
-                .select(
-                    "id,status"
-                );
+        } = await window.supabaseClient
+            .from("beds")
+            .select(
+                "id,status"
+            );
 
 
-        if (
-            !bedsError &&
-            beds
-        ) {
+        if(bedsError){
+
+            console.error(
+                "Bed statistics error:",
+                bedsError
+            );
+
+        }else{
+
+            const allBeds = beds || [];
 
             const total =
-                beds.length;
-
+                allBeds.length;
 
             const occupied =
-                beds.filter(
+                allBeds.filter(
                     bed =>
-                        String(
-                            bed.status
-                        ).toLowerCase()
-                        === "occupied"
+                        String(bed.status || "")
+                        .toLowerCase() === "occupied"
                 ).length;
-
-
-            const available =
-                beds.filter(
-                    bed =>
-                        String(
-                            bed.status
-                        ).toLowerCase()
-                        === "available"
-                ).length;
-
 
             const maintenance =
-                beds.filter(
+                allBeds.filter(
                     bed =>
-                        String(
-                            bed.status
-                        ).toLowerCase()
-                        === "maintenance"
+                        String(bed.status || "")
+                        .toLowerCase() === "maintenance"
                 ).length;
 
+            const available =
+                allBeds.filter(
+                    bed =>
+                        String(bed.status || "")
+                        .toLowerCase() === "available"
+                ).length;
 
-            document
-                .getElementById(
-                    "bedsCount"
-                )
+            $("totalBeds").textContent = total;
+
+            $("occupiedBeds").textContent = occupied;
+
+            $("availableBeds").textContent = available;
+
+            $("maintenanceBeds").textContent =
+                maintenance;
+
+            let percentage = 0;
+
+            if(total > 0){
+                percentage =
+                    Math.round(
+                        (occupied / total) * 100
+                    );
+            }
+
+            $("occupancyPercentage")
                 .textContent =
-                    total;
+                percentage + "%";
 
-
-            document
-                .getElementById(
-                    "occupiedBeds"
-                )
-                .textContent =
-                    occupied;
-
-
-            document
-                .getElementById(
-                    "availableBeds"
-                )
-                .textContent =
-                    available;
-
-
-            document
-                .getElementById(
-                    "maintenanceBeds"
-                )
-                .textContent =
-                    maintenance;
-
-
-            const percentage =
-                total > 0
-                    ? Math.round(
-                        (
-                            occupied /
-                            total
-                        ) * 100
-                    )
-                    : 0;
-
-
-            document
-                .getElementById(
-                    "occupancyPercentage"
-                )
-                .textContent =
-                    percentage + "%";
-
-
-            document
-                .getElementById(
-                    "occupancyBar"
-                )
+            $("occupancyBar")
                 .style.width =
-                    percentage + "%";
-
+                percentage + "%";
         }
 
 
         /* MAINTENANCE */
 
         const {
-            count: maintenanceCount,
+            data: maintenanceData,
             error: maintenanceError
-        } =
-            await supabaseClient
-                .from("maintenance_requests")
-                .select(
-                    "id",
-                    {
-                        count: "exact",
-                        head: true
-                    }
-                )
-                .neq(
-                    "status",
-                    "completed"
-                );
-
-
-        if (!maintenanceError) {
-
-            document
-                .getElementById(
-                    "maintenanceCount"
-                )
-                .textContent =
-                    maintenanceCount || 0;
-
-        }
-
-    }
-
-
-    /* =========================================================
-       LOAD RECENT ALLOCATIONS
-    ========================================================= */
-
-    async function loadRecentAllocations() {
-
-        const table =
-            document.getElementById(
-                "allocationsTable"
+        } = await window.supabaseClient
+            .from("maintenance_requests")
+            .select(
+                "id,status"
             );
 
+
+        if(maintenanceError){
+
+            console.error(
+                "Maintenance statistics error:",
+                maintenanceError
+            );
+
+        }else{
+
+            const openMaintenance =
+                (maintenanceData || [])
+                .filter(item => {
+
+                    const status =
+                        String(item.status || "")
+                        .toLowerCase();
+
+                    return status !== "completed" &&
+                           status !== "closed";
+
+                }).length;
+
+            $("openMaintenance").textContent =
+                openMaintenance;
+        }
+
+
+    }catch(error){
+
+        console.error(
+            "HOSTELPRO Statistics Error:",
+            error
+        );
+
+    }
+}
+
+
+/* ---------------------------------------------------------
+   LOAD RECENT ALLOCATIONS
+--------------------------------------------------------- */
+
+async function loadRecentAllocations(){
+
+    const tbody =
+        $("allocationsTable");
+
+    try{
 
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .from("allocations")
-                .select(`
-                    id,
-                    status,
-                    allocation_date,
-                    student_id,
-                    bed_id,
+        } = await window.supabaseClient
+            .from("allocations")
+            .select(`
+                id,
+                status,
+                allocation_date,
+                student_id,
+                bed_id,
 
-                    profiles:student_id (
-                        full_name,
-                        email,
-                        student_id
-                    ),
+                profiles:student_id(
+                    full_name,
+                    student_id
+                ),
 
-                    beds:bed_id (
-                        bed_number,
-                        label,
-                        room_id,
+                beds:bed_id(
+                    bed_number,
+                    label,
+                    room_id,
 
-                        rooms:room_id (
-                            room_number,
-                            hostel_id,
+                    rooms:room_id(
+                        room_number,
+                        hostel_id,
 
-                            hostels:hostel_id (
-                                name
-                            )
+                        hostels:hostel_id(
+                            name
                         )
                     )
-                `)
-                .order(
-                    "allocation_date",
-                    {
-                        ascending: false
-                    }
                 )
-                .limit(5);
+            `)
+            .order(
+                "allocation_date",
+                {
+                    ascending:false
+                }
+            )
+            .limit(5);
 
 
-        if (error) {
+        if(error){
 
             console.error(
-                "Allocation error:",
+                "Allocations error:",
                 error
             );
 
-            table.innerHTML = `
+            tbody.innerHTML = `
                 <tr>
-                    <td
-                        colspan="6"
-                        class="loading">
-
-                        Unable to load allocations.
-
+                    <td colspan="7" class="empty">
+                        Unable to load recent allocations.
                     </td>
                 </tr>
             `;
@@ -3317,19 +2420,12 @@
         }
 
 
-        if (
-            !data ||
-            data.length === 0
-        ) {
+        if(!data || data.length === 0){
 
-            table.innerHTML = `
+            tbody.innerHTML = `
                 <tr>
-                    <td
-                        colspan="6"
-                        class="loading">
-
-                        No allocations found.
-
+                    <td colspan="7" class="empty">
+                        No allocations found yet.
                     </td>
                 </tr>
             `;
@@ -3338,212 +2434,943 @@
         }
 
 
-        table.innerHTML =
-            data.map(
-                allocation => {
+        tbody.innerHTML =
+            data.map(allocation => {
 
-                    const student =
-                        allocation.profiles ||
-                        {};
+                const profile =
+                    allocation.profiles;
 
-                    const bed =
-                        allocation.beds ||
-                        {};
+                const bed =
+                    allocation.beds;
 
-                    const room =
-                        bed.rooms ||
-                        {};
+                const room =
+                    bed?.rooms;
 
-                    const hostel =
-                        room.hostels ||
-                        {};
+                const hostel =
+                    room?.hostels;
 
 
-                    let status =
-                        allocation.status ||
-                        "active";
+                const studentName =
+                    profile?.full_name ||
+                    "Unknown Student";
+
+                const studentId =
+                    profile?.student_id ||
+                    allocation.student_id ||
+                    "—";
+
+                const hostelName =
+                    hostel?.name ||
+                    "—";
+
+                const roomNumber =
+                    room?.room_number ||
+                    "—";
+
+                const bedNumber =
+                    bed?.label ||
+                    bed?.bed_number ||
+                    "—";
 
 
-                    status =
-                        String(
-                            status
-                        ).toLowerCase();
-
-
-                    let statusClass =
-                        "active";
-
-
-                    if (
-                        status ===
-                        "pending"
-                    ) {
-
-                        statusClass =
-                            "pending";
-
-                    }
-
-
-                    if (
-                        status ===
-                        "completed"
-                    ) {
-
-                        statusClass =
-                            "completed";
-
-                    }
-
-
-                    if (
-                        status ===
-                            "cancelled" ||
-                        status ===
-                            "inactive"
-                    ) {
-
-                        statusClass =
-                            "cancelled";
-
-                    }
-
-
-                    return `
-                        <tr>
-
-                            <td>
-                                <strong>
-                                    ${escapeHtml(
-                                        student.full_name ||
-                                        "Unknown Student"
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    student.student_id ||
-                                    "-"
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    hostel.name ||
-                                    "-"
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    room.room_number ||
-                                    "-"
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    bed.label ||
-                                    bed.bed_number ||
-                                    "-"
-                                )}
-                            </td>
-
-                            <td>
-
-                                <span
-                                    class="status ${statusClass}">
-
-                                    ${escapeHtml(
-                                        status
-                                    )}
-
-                                </span>
-
-                            </td>
-
-                        </tr>
-                    `;
-
-                }
-            ).join("");
-
-    }
-
-
-    /* =========================================================
-       LOGOUT
-    ========================================================= */
-
-    document
-        .getElementById("logoutBtn")
-        .addEventListener(
-            "click",
-            async function(event) {
-
-                event.preventDefault();
-
-                await supabaseClient
-                    .auth
-                    .signOut();
-
-                window.location.href =
-                    "login.html";
-
-            }
-        );
-
-
-    /* =========================================================
-       MOBILE MENU
-    ========================================================= */
-
-    document
-        .getElementById("menuBtn")
-        .addEventListener(
-            "click",
-            function() {
-
-                document
-                    .getElementById(
-                        "sidebar"
+                const date =
+                    allocation.allocation_date
+                    ? new Date(
+                        allocation.allocation_date
+                    ).toLocaleDateString(
+                        "en-KE",
+                        {
+                            day:"2-digit",
+                            month:"short",
+                            year:"numeric"
+                        }
                     )
-                    .classList.toggle(
-                        "open"
-                    );
+                    : "—";
 
-            }
+
+                const status =
+                    String(
+                        allocation.status ||
+                        "active"
+                    ).toLowerCase();
+
+
+                let statusClass =
+                    "status-active";
+
+                if(status === "pending"){
+                    statusClass =
+                        "status-pending";
+                }
+
+                if(
+                    status === "ended" ||
+                    status === "cancelled" ||
+                    status === "inactive"
+                ){
+                    statusClass =
+                        "status-ended";
+                }
+
+
+                return `
+                    <tr>
+
+                        <td>
+                            <div class="student-cell">
+
+                                <div class="student-avatar">
+                                    ${initials(studentName)}
+                                </div>
+
+                                <div>
+                                    <strong>
+                                        ${escapeHtml(studentName)}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(String(studentId))}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(hostelName)}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(String(roomNumber))}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(String(bedNumber))}
+                        </td>
+
+                        <td>
+                            ${date}
+                        </td>
+
+                        <td>
+                            <span class="status ${statusClass}">
+                                ${capitalize(status)}
+                            </span>
+                        </td>
+
+                    </tr>
+                `;
+
+            }).join("");
+
+
+    }catch(error){
+
+        console.error(
+            "HOSTELPRO Allocation Error:",
+            error
         );
 
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    Error loading allocations.
+                </td>
+            </tr>
+        `;
+    }
+}
 
-    /* =========================================================
-       INITIALIZE
-    ========================================================= */
 
-    async function initDashboard() {
+/* ---------------------------------------------------------
+   LOAD HOSTELS
+--------------------------------------------------------- */
 
-        const admin =
-            await loadAdmin();
+async function loadHostels(){
+
+    try{
+
+        const {
+            data,
+            error
+        } = await window.supabaseClient
+            .from("hostels")
+            .select(
+                "id,name"
+            )
+            .order(
+                "name",
+                {
+                    ascending:true
+                }
+            );
 
 
-        if (!admin) {
+        if(error){
+
+            console.error(
+                "HOSTELPRO Hostel loading error:",
+                error
+            );
+
+            return [];
+        }
+
+
+        hostelsCache =
+            data || [];
+
+        return hostelsCache;
+
+
+    }catch(error){
+
+        console.error(
+            "HOSTELPRO Hostel error:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+/* ---------------------------------------------------------
+   LOAD HOSTELS INTO SELECT
+--------------------------------------------------------- */
+
+async function loadHostelsIntoSelect(selectId){
+
+    const select =
+        $(selectId);
+
+    if(!select){
+        return;
+    }
+
+
+    const hostels =
+        await loadHostels();
+
+
+    select.innerHTML = `
+        <option value="">
+            Select hostel
+        </option>
+    `;
+
+
+    hostels.forEach(hostel => {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            hostel.id;
+
+        option.textContent =
+            hostel.name;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+/* ---------------------------------------------------------
+   OPEN ROOM MODAL
+--------------------------------------------------------- */
+
+async function openRoomModal(){
+
+    await loadHostelsIntoSelect(
+        "roomHostel"
+    );
+
+    openModal("roomModal");
+}
+
+
+/* ---------------------------------------------------------
+   OPEN BED MODAL
+--------------------------------------------------------- */
+
+async function openBedModal(){
+
+    await loadHostelsIntoSelect(
+        "bedHostel"
+    );
+
+    $("bedRoom").innerHTML = `
+        <option value="">
+            Select room
+        </option>
+    `;
+
+    openModal("bedModal");
+}
+
+
+/* ---------------------------------------------------------
+   LOAD ROOMS FOR BED
+--------------------------------------------------------- */
+
+async function loadRoomsForBed(hostelId){
+
+    const select =
+        $("bedRoom");
+
+
+    select.innerHTML = `
+        <option value="">
+            Loading rooms...
+        </option>
+    `;
+
+
+    if(!hostelId){
+
+        select.innerHTML = `
+            <option value="">
+                Select room
+            </option>
+        `;
+
+        return;
+    }
+
+
+    try{
+
+        const {
+            data,
+            error
+        } = await window.supabaseClient
+            .from("rooms")
+            .select(
+                "id,room_number"
+            )
+            .eq(
+                "hostel_id",
+                hostelId
+            )
+            .order(
+                "room_number",
+                {
+                    ascending:true
+                }
+            );
+
+
+        if(error){
+
+            console.error(
+                "Room loading error:",
+                error
+            );
+
+            select.innerHTML = `
+                <option value="">
+                    Unable to load rooms
+                </option>
+            `;
+
             return;
         }
 
 
-        await Promise.all([
-            loadStatistics(),
-            loadRecentAllocations()
-        ]);
+        select.innerHTML = `
+            <option value="">
+                Select room
+            </option>
+        `;
 
+
+        (data || []).forEach(room => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                room.id;
+
+            option.textContent =
+                "Room " +
+                room.room_number;
+
+            select.appendChild(option);
+
+        });
+
+
+    }catch(error){
+
+        console.error(
+            "HOSTELPRO Room error:",
+            error
+        );
+
+        select.innerHTML = `
+            <option value="">
+                Error loading rooms
+            </option>
+        `;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   ADD HOSTEL
+--------------------------------------------------------- */
+
+$("hostelForm")
+.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const button =
+            $("saveHostelBtn");
+
+        button.disabled = true;
+
+        button.textContent =
+            "Adding...";
+
+
+        try{
+
+            const hostel = {
+
+                name:
+                    $("hostelName")
+                    .value
+                    .trim(),
+
+                hostel_code:
+                    $("hostelCode")
+                    .value
+                    .trim() || null,
+
+                location:
+                    $("hostelLocation")
+                    .value
+                    .trim() || null,
+
+                total_rooms:
+                    Number(
+                        $("hostelRooms")
+                        .value || 0
+                    ),
+
+                total_beds:
+                    Number(
+                        $("hostelBeds")
+                        .value || 0
+                    ),
+
+                status:
+                    $("hostelStatus")
+                    .value,
+
+                description:
+                    $("hostelDescription")
+                    .value
+                    .trim() || null
+
+            };
+
+
+            const {
+                error
+            } = await window.supabaseClient
+                .from("hostels")
+                .insert(hostel);
+
+
+            if(error){
+
+                console.error(
+                    "Add hostel error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "Unable to add hostel.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showToast(
+                "Hostel added successfully.",
+                "success"
+            );
+
+
+            $("hostelForm").reset();
+
+            closeModal(
+                "hostelModal"
+            );
+
+
+            await loadStatistics();
+
+            await loadHostels();
+
+
+        }catch(error){
+
+            console.error(
+                "HOSTELPRO Add Hostel Error:",
+                error
+            );
+
+            showToast(
+                "Something went wrong while adding the hostel.",
+                "error"
+            );
+
+
+        }finally{
+
+            button.disabled = false;
+
+            button.textContent =
+                "Add Hostel";
+        }
+
+    }
+);
+
+
+/* ---------------------------------------------------------
+   ADD ROOM
+--------------------------------------------------------- */
+
+$("roomForm")
+.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const button =
+            $("saveRoomBtn");
+
+        button.disabled = true;
+
+        button.textContent =
+            "Adding...";
+
+
+        try{
+
+            const room = {
+
+                hostel_id:
+                    $("roomHostel")
+                    .value,
+
+                room_number:
+                    $("roomNumber")
+                    .value
+                    .trim(),
+
+                floor:
+                    $("roomFloor")
+                    .value
+                    ? Number(
+                        $("roomFloor")
+                        .value
+                    )
+                    : null,
+
+                room_type:
+                    $("roomType")
+                    .value,
+
+                capacity:
+                    Number(
+                        $("roomCapacity")
+                        .value || 1
+                    ),
+
+                status:
+                    $("roomStatus")
+                    .value
+
+            };
+
+
+            const {
+                error
+            } = await window.supabaseClient
+                .from("rooms")
+                .insert(room);
+
+
+            if(error){
+
+                console.error(
+                    "Add room error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "Unable to add room.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showToast(
+                "Room added successfully.",
+                "success"
+            );
+
+
+            $("roomForm").reset();
+
+            closeModal(
+                "roomModal"
+            );
+
+
+            await loadStatistics();
+
+
+        }catch(error){
+
+            console.error(
+                "HOSTELPRO Add Room Error:",
+                error
+            );
+
+            showToast(
+                "Something went wrong while adding the room.",
+                "error"
+            );
+
+
+        }finally{
+
+            button.disabled = false;
+
+            button.textContent =
+                "Add Room";
+        }
+
+    }
+);
+
+
+/* ---------------------------------------------------------
+   ADD BED
+--------------------------------------------------------- */
+
+$("bedForm")
+.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const button =
+            $("saveBedBtn");
+
+        button.disabled = true;
+
+        button.textContent =
+            "Adding...";
+
+
+        try{
+
+            const bed = {
+
+                room_id:
+                    $("bedRoom")
+                    .value,
+
+                bed_number:
+                    $("bedNumber")
+                    .value
+                    .trim(),
+
+                status:
+                    $("bedStatus")
+                    .value,
+
+                bed_position:
+                    $("bedPosition")
+                    .value || null,
+
+                label:
+                    $("bedLabel")
+                    .value
+                    .trim() || null
+
+            };
+
+
+            const {
+                error
+            } = await window.supabaseClient
+                .from("beds")
+                .insert(bed);
+
+
+            if(error){
+
+                console.error(
+                    "Add bed error:",
+                    error
+                );
+
+                showToast(
+                    error.message ||
+                    "Unable to add bed.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            showToast(
+                "Bed added successfully.",
+                "success"
+            );
+
+
+            $("bedForm").reset();
+
+            $("bedRoom").innerHTML = `
+                <option value="">
+                    Select room
+                </option>
+            `;
+
+            closeModal(
+                "bedModal"
+            );
+
+
+            await loadStatistics();
+
+
+        }catch(error){
+
+            console.error(
+                "HOSTELPRO Add Bed Error:",
+                error
+            );
+
+            showToast(
+                "Something went wrong while adding the bed.",
+                "error"
+            );
+
+
+        }finally{
+
+            button.disabled = false;
+
+            button.textContent =
+                "Add Bed";
+        }
+
+    }
+);
+
+
+/* ---------------------------------------------------------
+   LOGOUT
+--------------------------------------------------------- */
+
+$("logoutBtn")
+.addEventListener(
+    "click",
+    async function(event){
+
+        event.preventDefault();
+
+
+        try{
+
+            await window.supabaseClient
+                .auth
+                .signOut();
+
+        }catch(error){
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+        }
+
+
+        window.location.href =
+            "login.html";
+    }
+);
+
+
+/* ---------------------------------------------------------
+   MOBILE SIDEBAR
+--------------------------------------------------------- */
+
+$("menuBtn")
+.addEventListener(
+    "click",
+    function(){
+
+        $("sidebar")
+            .classList
+            .toggle("open");
+
+    }
+);
+
+
+/* ---------------------------------------------------------
+   CLOSE MOBILE SIDEBAR WHEN LINK CLICKED
+--------------------------------------------------------- */
+
+document
+.querySelectorAll(".nav-link")
+.forEach(link => {
+
+    link.addEventListener(
+        "click",
+        function(){
+
+            $("sidebar")
+                .classList
+                .remove("open");
+
+        }
+    );
+
+});
+
+
+/* ---------------------------------------------------------
+   ESCAPE HTML
+--------------------------------------------------------- */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+
+/* ---------------------------------------------------------
+   CAPITALIZE
+--------------------------------------------------------- */
+
+function capitalize(value){
+
+    if(!value){
+        return "";
+    }
+
+    return String(value)
+        .charAt(0)
+        .toUpperCase() +
+        String(value)
+        .slice(1);
+}
+
+
+/* ---------------------------------------------------------
+   INITIALIZE
+--------------------------------------------------------- */
+
+async function init(){
+
+    console.log(
+        "HOSTELPRO: Initializing admin dashboard..."
+    );
+
+
+    /* Make sure config loaded */
+
+    if(!window.supabaseClient){
+
+        console.error(
+            "HOSTELPRO: window.supabaseClient missing."
+        );
+
+        showDashboardError(
+            "Supabase configuration is missing. Make sure supabase-config.js is in the HostelPro folder."
+        );
+
+        return;
     }
 
 
-    initDashboard();
+    /* Check admin */
+
+    const admin =
+        await checkAdmin();
+
+
+    if(!admin){
+
+        return;
+    }
+
+
+    /* Load dashboard */
+
+    await Promise.allSettled([
+
+        loadStatistics(),
+
+        loadRecentAllocations(),
+
+        loadHostels()
+
+    ]);
+
+
+    $("loadingScreen")
+        .classList
+        .add("hidden");
+
+
+    console.log(
+        "HOSTELPRO: Admin dashboard loaded successfully."
+    );
+}
+
+
+/* START */
+
+init();
 
 </script>
 
 </body>
 </html>
-
