@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HostelPro | Maintenance</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #172033;
+            color: white;
+            padding: 25px 15px;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 35px;
+            padding-left: 12px;
+        }
+
+        .logo span {
+            color: #2563eb;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #9ca3af;
+            margin: 22px 12px 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #dbe3f0;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: .2s;
+            font-size: 14px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .logout {
+            margin-top: 25px;
+            border: none;
+            background: #dc2626;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .user-box {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+            font-size: 14px;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        }
+
+        .stat-title {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* CONTENT */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-bottom: 20px;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            padding: 11px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #2563eb;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        /* REQUESTS */
+        .request {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 17px;
+            margin-bottom: 12px;
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .request-title {
+            font-weight: 700;
+        }
+
+        .request-date {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .request-description {
+            color: #4b5563;
+            font-size: 14px;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .badges {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .priority-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            text-align: center;
+            color: #6b7280;
+            padding: 40px 10px;
+        }
+
+        .message {
+            display: none;
+            padding: 11px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* MOBILE */
+        .menu-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: #172033;
+            color: white;
+            border: none;
+            padding: 10px 13px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: .3s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 75px 15px 25px;
+            }
+
+            .topbar {
+                display: block;
+            }
+
+            .user-box {
+                margin-top: 15px;
+                display: inline-block;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat {
+                padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 23px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<button class="menu-btn" id="menuBtn">☰</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        Hostel<span>Pro</span>
+    </div>
+
+    <a href="student_dashboard.html" class="nav-link">
+        🏠 Dashboard
+    </a>
+
+    <a href="student_profile.html" class="nav-link">
+        👤 My Profile
+    </a>
+
+    <a href="roomdetails.html" class="nav-link">
+        🛏️ My Accommodation
+    </a>
+
+    <div class="nav-title">Services</div>
+
+    <a href="maintenance.html" class="nav-link active">
+        🔧 Maintenance
+    </a>
+
+    <a href="messages.html" class="nav-link">
+        💬 Messages
+    </a>
+
+    <a href="announcements.html" class="nav-link">
+        📢 Announcements
+    </a>
+
+    <div class="nav-title">Support</div>
+
+    <a href="nexa.html" class="nav-link">
+        ✨ Nexa
+    </a>
+
+    <a href="help_support.html" class="nav-link">
+        ❓ Help & Support
+    </a>
+
+    <button class="logout" id="logoutBtn">
+        Logout
+    </button>
+
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <h1>Maintenance</h1>
+            <p>Report problems and track your maintenance requests.</p>
+        </div>
+
+        <div class="user-box">
+            Student: <strong id="studentName">Loading...</strong>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <section class="stats">
+
+        <div class="stat">
+            <div class="stat-title">Total Requests</div>
+            <div class="stat-number" id="totalRequests">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Pending</div>
+            <div class="stat-number" id="pendingRequests">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">In Progress</div>
+            <div class="stat-number" id="progressRequests">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">Completed</div>
+            <div class="stat-number" id="completedRequests">0</div>
+        </div>
+
+    </section>
+
+    <section class="content-grid">
+
+        <!-- NEW REQUEST -->
+        <div class="card">
+
+            <h2>Report a Problem</h2>
+
+            <div id="messageBox" class="message"></div>
+
+            <form id="maintenanceForm">
+
+                <div class="form-group">
+                    <label for="title">Problem Title</label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="e.g. Broken shower"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+
+                    <select id="category" required>
+                        <option value="">Select category</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Internet">Internet</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Security">Security</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+
+                    <select id="priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+
+                    <textarea
+                        id="description"
+                        placeholder="Describe the problem clearly..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    class="submit-btn"
+                    id="submitBtn"
+                >
+                    Submit Maintenance Request
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- REQUEST HISTORY -->
+        <div class="card">
+
+            <h2>My Maintenance Requests</h2>
+
+            <div id="requestsContainer">
+                <div class="empty">
+                    Loading maintenance requests...
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script>
+    let currentUser = null;
+    let currentProfile = null;
+
+    const supabaseClient = window.supabaseClient;
+
+    if (!supabaseClient) {
+        alert("HostelPro could not connect to Supabase.");
+        window.location.href = "login.html";
+    }
+
+    function escapeHtml(value) {
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function formatDate(date) {
+        if (!date) return "";
+
+        return new Date(date).toLocaleDateString("en-KE", {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        });
+    }
+
+    function showMessage(text, type) {
+        const box = document.getElementById("messageBox");
+
+        box.textContent = text;
+        box.className = "message " + type;
+
+        setTimeout(() => {
+            box.className = "message";
+            box.textContent = "";
+        }, 5000);
+    }
+
+    async function checkAccess() {
+
+        console.log("HOSTELPRO: Checking maintenance access...");
+
+        const {
+            data: {
+                user
+            },
+            error
+        } = await supabaseClient.auth.getUser();
+
+        if (error || !user) {
+            console.error("HOSTELPRO Auth error:", error);
+            window.location.href = "login.html";
+            return false;
+        }
+
+        currentUser = user;
+
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                phone,
+                role,
+                student_id,
+                gender,
+                date_of_birth,
+                status
+            `)
+            .eq("id", user.id)
+            .single();
+
+        if (profileError) {
+            console.error(
+                "HOSTELPRO Profile error:",
+                profileError
+            );
+
+            alert("Unable to load your profile.");
+            return false;
+        }
+
+        currentProfile = profile;
+
+        if (profile.status !== "active") {
+            alert("Your account is not active.");
+            await supabaseClient.auth.signOut();
+            window.location.href = "login.html";
+            return false;
+        }
+
+        if (
+    profile.role !== "student" &&
+    profile.role !== "admin" &&
+    profile.role !== "caretaker" &&
+    profile.role !== "warden"
+) {
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+    return false;
+}
+        }
+
+        document.getElementById("studentName").textContent =
+            profile.full_name || "Student";
+
+        return true;
+    }
+
+    async function loadRequests() {
+
+        const container =
+            document.getElementById("requestsContainer");
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("maintenance_requests")
+            .select(`
+                id,
+                title,
+                description,
+                category,
+                priority,
+                status,
+                created_at
+            `)
+            .eq("student_id", currentUser.id)
+            .order("created_at", {
+                ascending: false
+            });
+
+        if (error) {
+            console.error(
+                "HOSTELPRO Maintenance error:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="empty">
+                    Unable to load your maintenance requests.
+                </div>
+            `;
+
+            return;
+        }
+
+        updateStats(data || []);
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div class="empty">
+                    <div style="font-size:40px;margin-bottom:10px;">
+                        🔧
+                    </div>
+                    You have not submitted any maintenance requests yet.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = data.map(request => {
+
+            const status =
+                String(request.status || "pending")
+                    .toLowerCase();
+
+            const priority =
+                String(request.priority || "medium")
+                    .toLowerCase();
+
+            let statusClass = "status-pending";
+
+            if (
+                status === "in_progress" ||
+                status === "in progress"
+            ) {
+                statusClass = "status-progress";
+            } else if (status === "completed") {
+                statusClass = "status-completed";
+            } else if (status === "rejected") {
+                statusClass = "status-rejected";
+            }
+
+            return `
+                <div class="request">
+
+                    <div class="request-header">
+
+                        <div>
+                            <div class="request-title">
+                                ${escapeHtml(request.title)}
+                            </div>
+
+                            <div class="request-date">
+                                ${formatDate(request.created_at)}
+                            </div>
+                        </div>
+
+                        <div class="badges">
+
+                            <span class="badge priority-${priority}">
+                                ${escapeHtml(
+                                    request.priority || "Medium"
+                                )}
+                            </span>
+
+                            <span class="badge ${statusClass}">
+                                ${escapeHtml(
+                                    request.status || "Pending"
+                                )}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="request-description">
+                        ${escapeHtml(request.description)}
+                    </div>
+
+                    <div style="
+                        font-size:12px;
+                        color:#6b7280;
+                    ">
+                        Category:
+                        <strong>
+                            ${escapeHtml(
+                                request.category || "Other"
+                            )}
+                        </strong>
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+    }
+
+    function updateStats(requests) {
+
+        const total = requests.length;
+
+        const pending = requests.filter(request =>
+            String(request.status || "")
+                .toLowerCase() === "pending"
+        ).length;
+
+        const progress = requests.filter(request => {
+
+            const status =
+                String(request.status || "")
+                    .toLowerCase();
+
+            return (
+                status === "in_progress" ||
+                status === "in progress"
+            );
+
+        }).length;
+
+        const completed = requests.filter(request =>
+            String(request.status || "")
+                .toLowerCase() === "completed"
+        ).length;
+
+        document.getElementById("totalRequests")
+            .textContent = total;
+
+        document.getElementById("pendingRequests")
+            .textContent = pending;
+
+        document.getElementById("progressRequests")
+            .textContent = progress;
+
+        document.getElementById("completedRequests")
+            .textContent = completed;
+    }
+
+    document
+        .getElementById("maintenanceForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const submitBtn =
+                document.getElementById("submitBtn");
+
+            const title =
+                document.getElementById("title").value.trim();
+
+            const category =
+                document.getElementById("category").value;
+
+            const priority =
+                document.getElementById("priority").value;
+
+            const description =
+                document.getElementById("description")
+                    .value.trim();
+
+            if (!title || !category || !description) {
+                showMessage(
+                    "Please complete all required fields.",
+                    "error"
+                );
+
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+
+            const {
+                error
+            } = await supabaseClient
+                .from("maintenance_requests")
+                .insert([{
+                    student_id: currentUser.id,
+                    title: title,
+                    category: category,
+                    priority: priority,
+                    description: description,
+                    status: "pending"
+                }]);
+
+            if (error) {
+
+                console.error(
+                    "HOSTELPRO Submit maintenance error:",
+                    error
+                );
+
+                showMessage(
+                    "Unable to submit the request. Please try again.",
+                    "error"
+                );
+
+                submitBtn.disabled = false;
+                submitBtn.textContent =
+                    "Submit Maintenance Request";
+
+                return;
+            }
+
+            showMessage(
+                "Maintenance request submitted successfully.",
+                "success"
+            );
+
+            document
+                .getElementById("maintenanceForm")
+                .reset();
+
+            document.getElementById("priority")
+                .value = "medium";
+
+            submitBtn.disabled = false;
+            submitBtn.textContent =
+                "Submit Maintenance Request";
+
+            await loadRequests();
+        });
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async function() {
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href = "login.html";
+        });
+
+    document
+        .getElementById("menuBtn")
+        .addEventListener("click", function() {
+
+            document
+                .getElementById("sidebar")
+                .classList.toggle("open");
+        });
+
+    async function startMaintenance() {
+
+        const allowed = await checkAccess();
+
+        if (!allowed) return;
+
+        await loadRequests();
+
+        console.log(
+            "HOSTELPRO: Maintenance page loaded successfully."
+        );
+    }
+
+    startMaintenance();
+</script>
+
+</body>
+</html>
