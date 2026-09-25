@@ -113,6 +113,17 @@
         }
 
 
+        .register-btn {
+            background: #2563eb;
+
+            padding: 10px 16px;
+
+            border-radius: 7px;
+
+            color: white !important;
+        }
+
+
         /* =========================================
            HAMBURGER
         ========================================= */
@@ -224,6 +235,16 @@
             border: 1px solid #2563eb;
 
             color: #2563eb;
+        }
+
+        .register-mobile {
+            background: #2563eb;
+
+            color: white;
+
+            justify-content: center;
+
+            margin-top: 8px;
         }
 
 
@@ -934,6 +955,13 @@
 
             </a>
 
+            <a href="register.html"
+               class="register-btn">
+
+                Create Account
+
+            </a>
+
         </nav>
 
 
@@ -1032,6 +1060,15 @@
 
             🔐
             <span>Login</span>
+
+        </a>
+
+
+        <a href="register.html"
+           class="mobile-link register-mobile">
+
+            📝
+            <span>Create Account</span>
 
         </a>
 
@@ -1257,6 +1294,10 @@
                 Login
             </a>
 
+            <a href="register.html">
+                Create Account
+            </a>
+
             <a href="help.html">
                 Help
             </a>
@@ -1300,6 +1341,8 @@
     ========================================= */
 
     let allHostels = [];
+
+    let currentRole = null;
 
 
     /* =========================================
@@ -1385,6 +1428,90 @@
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#039;");
 
+    }
+
+
+    /* =========================================
+       ROLE / DELETE SECURITY
+    ========================================= */
+
+    async function loadCurrentRole() {
+
+        currentRole = null;
+
+        const { data: { user } } =
+            await supabaseClient.auth.getUser();
+
+        if (!user) {
+            return;
+        }
+
+        const { data: profile, error } =
+            await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (!error && profile) {
+            currentRole = String(profile.role || "")
+                .trim()
+                .toLowerCase();
+        }
+    }
+
+
+    function canDelete() {
+        return currentRole === "admin" || currentRole === "caretaker";
+    }
+
+
+    async function deleteHostel(hostelId) {
+
+        if (!canDelete()) {
+            alert("Only Admin or Caretaker accounts can delete a hostel.");
+            return;
+        }
+
+        const confirmed = confirm(
+            "Delete this hostel?\n\nThe hostel can only be deleted when it has no rooms. This action cannot be undone."
+        );
+
+        if (!confirmed) return;
+
+        try {
+
+            const { count, error: roomCheckError } =
+                await supabaseClient
+                    .from("rooms")
+                    .select("id", { count: "exact", head: true })
+                    .eq("hostel_id", hostelId);
+
+            if (roomCheckError) throw roomCheckError;
+
+            if ((count || 0) > 0) {
+                alert("This hostel cannot be deleted because it still has rooms. Delete the rooms first.");
+                return;
+            }
+
+            const { error } =
+                await supabaseClient
+                    .from("hostels")
+                    .delete()
+                    .eq("id", hostelId);
+
+            if (error) throw error;
+
+            alert("Hostel deleted successfully.");
+            await loadHostels();
+
+        } catch (error) {
+            console.error("Hostel deletion error:", error);
+            alert(
+                "Unable to delete the hostel. " +
+                (error.message || "Please check database permissions.")
+            );
+        }
     }
 
 
@@ -1629,6 +1756,18 @@
 
                     </a>
 
+                    ${currentRole === "admin" || currentRole === "caretaker" ? `
+                        <div class="management-actions">
+                            <button
+                                type="button"
+                                class="delete-button"
+                                onclick="deleteHostel('${String(hostel.id).replace("'", "\\'")}')"
+                            >
+                                🗑️ Delete Hostel
+                            </button>
+                        </div>
+                    ` : ""}
+
                 </div>
 
             `;
@@ -1731,7 +1870,10 @@
        START
     ========================================= */
 
-    loadHostels();
+    (async function () {
+        await loadCurrentRole();
+        loadHostels();
+    })();
 
 </script>
 

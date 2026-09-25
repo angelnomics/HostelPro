@@ -1,760 +1,957 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rooms | HostelPro</title>
 
-    <title>Rooms | HostelPro</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+body {
+    background: #f5f7fb;
+    color: #172033;
+}
 
-        body {
-            background: #f5f7fb;
-            color: #172033;
-        }
+a {
+    text-decoration: none;
+    color: inherit;
+}
 
-        /* HEADER */
-        header {
-            background: #172033;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+header {
+    background: #172033;
+    color: #fff;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
-        }
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+}
 
-        .logo span {
-            color: #2563eb;
-        }
+.logo span {
+    color: #2563eb;
+}
 
-        nav {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
+nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
+nav a {
+    color: #fff;
+    font-size: 14px;
+}
 
-        nav a:hover {
-            color: #60a5fa;
-        }
+nav a:hover {
+    color: #60a5fa;
+}
 
-        .hamburger {
-            display: none;
-            font-size: 28px;
-            cursor: pointer;
-        }
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
 
-        /* MOBILE MENU */
-        .mobile-menu {
-            display: none;
-            background: #172033;
-            padding: 15px 25px;
-        }
+.mobile-menu {
+    display: none;
+    background: #172033;
+    padding: 15px 25px;
+}
 
-        .mobile-menu a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+.mobile-menu a {
+    display: block;
+    color: #fff;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
 
-        .mobile-menu.open {
-            display: block;
-        }
+.mobile-menu.open {
+    display: block;
+}
 
-        /* MAIN */
-        main {
-            padding: 35px;
-            max-width: 1400px;
-            margin: auto;
-        }
+main {
+    padding: 35px;
+    max-width: 1400px;
+    margin: auto;
+}
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-        .page-header h1 {
-            font-size: 30px;
-            margin-bottom: 7px;
-        }
+.page-header h1 {
+    font-size: 30px;
+    margin-bottom: 7px;
+}
 
-        .page-header p {
-            color: #64748b;
-        }
+.page-header p {
+    color: #64748b;
+}
 
-        .add-btn {
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-        }
+.add-btn {
+    background: #2563eb;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
 
-        .add-btn:hover {
-            background: #1d4ed8;
-        }
+.add-btn:hover {
+    background: #1d4ed8;
+}
 
-        /* SEARCH */
-        .search-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 15px;
-        }
+.search-panel {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+}
 
-        .search-panel input,
-        .search-panel select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #dbe2ea;
-            border-radius: 7px;
-            outline: none;
-        }
+.search-panel input,
+.search-panel select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dbe2ea;
+    border-radius: 7px;
+    outline: none;
+}
 
-        .search-panel input:focus,
-        .search-panel select:focus {
-            border-color: #2563eb;
-        }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
 
-        /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
-        }
+.stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
 
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-        }
+.stat-card h3 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
 
-        .stat-card h3 {
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
+.stat-card p {
+    color: #64748b;
+    font-size: 14px;
+}
 
-        .stat-card p {
-            color: #64748b;
-            font-size: 14px;
-        }
+.rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+}
 
-        /* ROOM GRID */
-        .rooms-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+.room-card {
+    background: #fff;
+    border-radius: 13px;
+    padding: 22px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.06);
+}
 
-        .room-card {
-            background: white;
-            border-radius: 13px;
-            padding: 22px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            transition: 0.2s;
-        }
+.room-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
 
-        .room-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.09);
-        }
+.room-number {
+    font-size: 22px;
+    font-weight: bold;
+}
 
-        .room-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+.status {
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
 
-        .room-number {
-            font-size: 22px;
-            font-weight: bold;
-        }
+.status.available {
+    background: #dcfce7;
+    color: #166534;
+}
 
-        .status {
-            padding: 6px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
+.status.full {
+    background: #fee2e2;
+    color: #991b1b;
+}
 
-        .status.available {
-            background: #dcfce7;
-            color: #166534;
-        }
+.status.inactive {
+    background: #e2e8f0;
+    color: #475569;
+}
 
-        .status.full {
-            background: #fee2e2;
-            color: #991b1b;
-        }
+.room-info {
+    margin: 12px 0;
+}
 
-        .status.inactive {
-            background: #e2e8f0;
-            color: #475569;
-        }
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eef2f7;
+    font-size: 14px;
+}
 
-        .room-info {
-            margin: 12px 0;
-        }
+.info-row span {
+    color: #64748b;
+}
 
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eef2f7;
-            font-size: 14px;
-        }
+.room-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 
-        .info-row span:first-child {
-            color: #64748b;
-        }
+.view-btn {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 7px;
+    font-weight: bold;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
 
-        .room-actions {
-            margin-top: 18px;
-            display: flex;
-            gap: 10px;
-        }
+.view-btn:hover {
+    background: #dbeafe;
+}
 
-        .view-btn {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            background: #eff6ff;
-            color: #2563eb;
-            border-radius: 7px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 14px;
-        }
+.delete-btn {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px;
+    background: #fee2e2;
+    color: #b91c1c;
+    border-radius: 7px;
+    font-weight: bold;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+}
 
-        .view-btn:hover {
-            background: #dbeafe;
-        }
+.delete-btn:hover {
+    background: #fecaca;
+}
 
-        /* STATES */
-        .message {
-            background: white;
-            padding: 35px;
-            text-align: center;
-            border-radius: 12px;
-            color: #64748b;
-        }
+.message {
+    background: #fff;
+    padding: 35px;
+    text-align: center;
+    border-radius: 12px;
+    color: #64748b;
+}
 
-        .error {
-            color: #dc2626;
-        }
+.error {
+    color: #dc2626;
+}
 
-        /* NEXA */
-        .nexa {
-            position: fixed;
-            bottom: 22px;
-            left: 22px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            box-shadow: 0 5px 18px rgba(0,0,0,0.2);
-            z-index: 2000;
-        }
+.nexa {
+    position: fixed;
+    bottom: 22px;
+    left: 22px;
+    background: #2563eb;
+    color: #fff;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 5px 18px rgba(0,0,0,.2);
+    z-index: 2000;
+}
 
-        .nexa:hover {
-            background: #1d4ed8;
-            transform: scale(1.05);
-        }
+.nexa:hover {
+    background: #1d4ed8;
+}
 
-        /* FOOTER */
-        footer {
-            margin-top: 50px;
-            background: #172033;
-            color: white;
-            text-align: center;
-            padding: 25px;
-        }
+footer {
+    margin-top: 50px;
+    background: #172033;
+    color: #fff;
+    text-align: center;
+    padding: 25px;
+}
 
-        footer p {
-            color: #cbd5e1;
-            font-size: 14px;
-        }
+footer p {
+    color: #cbd5e1;
+    font-size: 14px;
+}
 
-        /* RESPONSIVE */
-        @media (max-width: 1000px) {
-            .rooms-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+@media (max-width: 1000px) {
+    .rooms-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
 
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+    .stats {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
 
-        @media (max-width: 750px) {
-            header {
-                padding: 15px 20px;
-            }
+@media (max-width: 750px) {
+    header {
+        padding: 15px 20px;
+    }
 
-            nav {
-                display: none;
-            }
+    nav {
+        display: none;
+    }
 
-            .hamburger {
-                display: block;
-            }
+    .hamburger {
+        display: block;
+    }
 
-            main {
-                padding: 25px 18px;
-            }
+    main {
+        padding: 25px 18px;
+    }
 
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-            .search-panel {
-                grid-template-columns: 1fr;
-            }
+    .search-panel {
+        grid-template-columns: 1fr;
+    }
 
-            .rooms-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+    .rooms-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
-        @media (max-width: 500px) {
-            .stats {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+@media (max-width: 500px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 </head>
 
 <body>
 
 <header>
-    <div class="logo">Hostel<span>Pro</span></div>
 
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="hostels.html">Hostels</a>
-        <a href="rooms.html">Rooms</a>
-        <a href="beds.html">Beds</a>
-        <a href="announcements.html">Announcements</a>
-        <a href="login.html">Login</a>
-        <a href="register.html">Create Account</a>
-    </nav>
+```
+<div class="logo">
+    Hostel<span>Pro</span>
+</div>
 
-    <div class="hamburger" id="hamburger">☰</div>
-</header>
-
-<div class="mobile-menu" id="mobileMenu">
+<nav>
     <a href="index.html">Home</a>
     <a href="hostels.html">Hostels</a>
     <a href="rooms.html">Rooms</a>
-    <a href="beds.html">Rooms & Beds</a>
+    <a href="beds.html">Beds</a>
     <a href="announcements.html">Announcements</a>
-    <a href="contact.html">Contact</a>
-    <a href="help.html">Help & Support</a>
     <a href="login.html">Login</a>
     <a href="register.html">Create Account</a>
+</nav>
+
+<div class="hamburger" id="hamburger">☰</div>
+```
+
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+
+```
+<a href="index.html">Home</a>
+<a href="hostels.html">Hostels</a>
+<a href="rooms.html">Rooms</a>
+<a href="beds.html">Rooms & Beds</a>
+<a href="announcements.html">Announcements</a>
+<a href="contact.html">Contact</a>
+<a href="help.html">Help & Support</a>
+<a href="login.html">Login</a>
+<a href="register.html">Create Account</a>
+```
+
 </div>
 
 <main>
 
-    <div class="page-header">
-        <div>
-            <h1>Rooms</h1>
-            <p>View hostel rooms, occupancy and available beds.</p>
-        </div>
+```
+<div class="page-header">
 
-        <a href="rooms.html" class="add-btn">↻ Refresh</a>
+    <div>
+        <h1>Rooms</h1>
+        <p>View hostel rooms, occupancy and available beds.</p>
     </div>
 
-    <!-- SEARCH AND FILTER -->
-    <section class="search-panel">
+    <button class="add-btn" onclick="loadRooms()">
+        ↻ Refresh
+    </button>
 
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search by room number or hostel..."
-        >
+</div>
 
-        <select id="hostelFilter">
-            <option value="">All Hostels</option>
-        </select>
 
-        <select id="statusFilter">
-            <option value="">All Status</option>
-            <option value="available">Available</option>
-            <option value="full">Full</option>
-            <option value="inactive">Inactive</option>
-        </select>
+<section class="search-panel">
 
-    </section>
+    <input
+        id="searchInput"
+        type="text"
+        placeholder="Search by room number or hostel..."
+    >
 
-    <!-- STATS -->
-    <section class="stats">
+    <select id="hostelFilter">
+        <option value="">All Hostels</option>
+    </select>
 
-        <div class="stat-card">
-            <h3 id="totalRooms">0</h3>
-            <p>Total Rooms</p>
-        </div>
+    <select id="statusFilter">
+        <option value="">All Status</option>
+        <option value="available">Available</option>
+        <option value="full">Full</option>
+        <option value="inactive">Inactive</option>
+    </select>
 
-        <div class="stat-card">
-            <h3 id="availableRooms">0</h3>
-            <p>Available Rooms</p>
-        </div>
+</section>
 
-        <div class="stat-card">
-            <h3 id="fullRooms">0</h3>
-            <p>Full Rooms</p>
-        </div>
 
-        <div class="stat-card">
-            <h3 id="totalBeds">0</h3>
-            <p>Total Beds</p>
-        </div>
+<section class="stats">
 
-    </section>
+    <div class="stat-card">
+        <h3 id="totalRooms">0</h3>
+        <p>Total Rooms</p>
+    </div>
 
-    <!-- ROOMS -->
-    <section id="roomsContainer" class="rooms-grid">
+    <div class="stat-card">
+        <h3 id="availableRooms">0</h3>
+        <p>Available Rooms</p>
+    </div>
 
-        <div class="message">
-            Loading rooms...
-        </div>
+    <div class="stat-card">
+        <h3 id="fullRooms">0</h3>
+        <p>Full Rooms</p>
+    </div>
 
-    </section>
+    <div class="stat-card">
+        <h3 id="totalBeds">0</h3>
+        <p>Total Beds</p>
+    </div>
+
+</section>
+
+
+<section id="roomsContainer" class="rooms-grid">
+
+    <div class="message">
+        Loading rooms...
+    </div>
+
+</section>
+```
 
 </main>
 
-<!-- NEXA AI -->
 <a href="nexa.html" class="nexa" title="Ask Nexa AI">
-    AI
+    Nexa
 </a>
 
 <footer>
     <p>© 2026 HostelPro. Hostel Management System.</p>
 </footer>
 
-
 <script>
 
-    /* ================================
-       SUPABASE CONFIGURATION
-    ================================= */
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
 
-    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
-    const { createClient } = supabase;
+const { createClient } = supabase;
 
-    const db = createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
+const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
 
-
-    /* ================================
-       VARIABLES
-    ================================= */
-
-    let allRooms = [];
+let allRooms = [];
+let currentRole = null;
 
 
-    /* ================================
-       MOBILE MENU
-    ================================= */
+/* =========================
+   MOBILE MENU
+========================= */
 
-    const hamburger = document.getElementById("hamburger");
-    const mobileMenu = document.getElementById("mobileMenu");
+const hamburger =
+    document.getElementById("hamburger");
 
-    hamburger.addEventListener("click", () => {
-        mobileMenu.classList.toggle("open");
-    });
+const mobileMenu =
+    document.getElementById("mobileMenu");
+
+hamburger.addEventListener("click", () => {
+    mobileMenu.classList.toggle("open");
+});
 
 
-    /* ================================
-       LOAD ROOMS
-    ================================= */
+/* =========================
+   LOAD USER ROLE
+========================= */
 
-    async function loadRooms() {
+async function loadCurrentRole() {
 
-        const container = document.getElementById("roomsContainer");
+    currentRole = null;
 
-        container.innerHTML = `
-            <div class="message">
-                Loading rooms...
-            </div>
-        `;
+    const {
+        data: { user }
+    } = await db.auth.getUser();
 
-        try {
-
-            /*
-             * Rooms are connected to hostels using hostel_id.
-             */
-
-            const { data, error } = await db
-                .from("rooms")
-                .select(`
-                    id,
-                    room_number,
-                    hostel_id,
-                    hostels:hostel_id (
-                        id,
-                        name,
-                        location
-                    )
-                `)
-                .order("room_number", { ascending: true });
-
-            if (error) {
-                throw error;
-            }
-
-            allRooms = data || [];
-
-            await loadBeds();
-
-            populateHostelFilter();
-
-            displayRooms();
-
-        } catch (error) {
-
-            console.error("Error loading rooms:", error);
-
-            container.innerHTML = `
-                <div class="message error">
-                    <h3>Unable to load rooms</h3>
-                    <p>${escapeHtml(error.message)}</p>
-                </div>
-            `;
-        }
+    if (!user) {
+        return;
     }
 
+    const {
+        data: profile,
+        error
+    } = await db
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    /* ================================
-       LOAD BED INFORMATION
-    ================================= */
+    if (error) {
+        console.error(
+            "Role loading error:",
+            error
+        );
+        return;
+    }
 
-    async function loadBeds() {
+    if (profile) {
+        currentRole =
+            String(
+                profile.role || ""
+            ).toLowerCase().trim();
+    }
+}
 
-        try {
 
-            const { data, error } = await db
-                .from("beds")
-                .select(`
+function canDelete() {
+
+    return (
+        currentRole === "admin" ||
+        currentRole === "caretaker"
+    );
+}
+
+
+/* =========================
+   LOAD ROOMS
+========================= */
+
+async function loadRooms() {
+
+    const container =
+        document.getElementById("roomsContainer");
+
+    container.innerHTML = `
+        <div class="message">
+            Loading rooms...
+        </div>
+    `;
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db
+            .from("rooms")
+            .select(`
+                id,
+                room_number,
+                hostel_id,
+                hostels:hostel_id (
                     id,
-                    room_id,
-                    bed_number,
-                    status,
-                    label,
-                    bed_position
-                `);
+                    name,
+                    location
+                )
+            `)
+            .order("room_number", {
+                ascending: true
+            });
 
-            if (error) {
-                throw error;
-            }
+        if (error) {
+            throw error;
+        }
 
-            const beds = data || [];
+        allRooms = data || [];
 
-            allRooms = allRooms.map(room => {
+        await loadBeds();
 
-                const roomBeds = beds.filter(
+        populateHostelFilter();
+
+        displayRooms();
+
+    } catch (error) {
+
+        console.error(
+            "Load rooms error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="message error">
+                <h3>Unable to load rooms</h3>
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
+            </div>
+        `;
+    }
+}
+
+
+/* =========================
+   LOAD BEDS
+========================= */
+
+async function loadBeds() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await db
+            .from("beds")
+            .select(`
+                id,
+                room_id,
+                bed_number,
+                status,
+                label,
+                bed_position
+            `);
+
+        if (error) {
+            throw error;
+        }
+
+        const beds = data || [];
+
+
+        allRooms = allRooms.map(room => {
+
+            const roomBeds =
+                beds.filter(
                     bed => bed.room_id === room.id
                 );
 
-                const availableBeds = roomBeds.filter(
-                    bed =>
-                        String(bed.status || "").toLowerCase() === "available"
-                ).length;
-
-                const occupiedBeds = roomBeds.filter(
-                    bed =>
-                        String(bed.status || "").toLowerCase() === "occupied"
-                ).length;
-
-                return {
-                    ...room,
-                    beds: roomBeds,
-                    totalBeds: roomBeds.length,
-                    availableBeds,
-                    occupiedBeds
-                };
-
-            });
-
-        } catch (error) {
-
-            console.error("Error loading beds:", error);
-
-            /*
-             * If beds cannot be loaded, rooms can still be displayed.
-             */
-
-            allRooms = allRooms.map(room => ({
+            return {
                 ...room,
-                beds: [],
-                totalBeds: 0,
-                availableBeds: 0,
-                occupiedBeds: 0
-            }));
-        }
-    }
+                beds: roomBeds,
+                totalBeds: roomBeds.length,
 
+                availableBeds:
+                    roomBeds.filter(
+                        bed =>
+                            String(
+                                bed.status || ""
+                            ).toLowerCase() ===
+                            "available"
+                    ).length,
 
-    /* ================================
-       HOSTEL FILTER
-    ================================= */
-
-    function populateHostelFilter() {
-
-        const filter = document.getElementById("hostelFilter");
-
-        const hostels = {};
-
-        allRooms.forEach(room => {
-
-            if (room.hostels) {
-                hostels[room.hostels.id] = room.hostels.name;
-            }
+                occupiedBeds:
+                    roomBeds.filter(
+                        bed =>
+                            String(
+                                bed.status || ""
+                            ).toLowerCase() ===
+                            "occupied"
+                    ).length
+            };
 
         });
 
-        filter.innerHTML = `<option value="">All Hostels</option>`;
+    } catch (error) {
 
-        Object.keys(hostels)
-            .sort((a, b) =>
-                hostels[a].localeCompare(hostels[b])
+        console.warn(
+            "Beds loading error:",
+            error
+        );
+
+        allRooms = allRooms.map(room => ({
+            ...room,
+            beds: [],
+            totalBeds: 0,
+            availableBeds: 0,
+            occupiedBeds: 0
+        }));
+    }
+}
+
+
+/* =========================
+   HOSTEL FILTER
+========================= */
+
+function populateHostelFilter() {
+
+    const filter =
+        document.getElementById("hostelFilter");
+
+    const hostels = {};
+
+    allRooms.forEach(room => {
+
+        if (room.hostels) {
+            hostels[room.hostels.id] =
+                room.hostels.name;
+        }
+
+    });
+
+
+    filter.innerHTML =
+        '<option value="">All Hostels</option>';
+
+
+    Object.keys(hostels)
+        .sort((a, b) =>
+            hostels[a].localeCompare(
+                hostels[b]
             )
-            .forEach(id => {
+        )
+        .forEach(id => {
 
-                const option = document.createElement("option");
+            const option =
+                document.createElement("option");
 
-                option.value = id;
-                option.textContent = hostels[id];
+            option.value = id;
+            option.textContent =
+                hostels[id];
 
-                filter.appendChild(option);
-            });
+            filter.appendChild(option);
+
+        });
+}
+
+
+/* =========================
+   ROOM STATUS
+========================= */
+
+function getRoomStatus(room) {
+
+    if (room.totalBeds === 0) {
+        return "available";
     }
 
+    if (room.availableBeds > 0) {
+        return "available";
+    }
 
-    /* ================================
-       DISPLAY ROOMS
-    ================================= */
+    if (
+        room.totalBeds > 0 &&
+        room.availableBeds === 0
+    ) {
+        return "full";
+    }
 
-    function displayRooms() {
-
-        const container = document.getElementById("roomsContainer");
-
-        const search =
-            document.getElementById("searchInput")
-                .value
-                .trim()
-                .toLowerCase();
-
-        const hostel =
-            document.getElementById("hostelFilter").value;
-
-        const status =
-            document.getElementById("statusFilter").value;
+    return "inactive";
+}
 
 
-        let rooms = allRooms.filter(room => {
+/* =========================
+   STATISTICS
+========================= */
+
+function updateStats() {
+
+    document.getElementById(
+        "totalRooms"
+    ).textContent = allRooms.length;
+
+
+    document.getElementById(
+        "availableRooms"
+    ).textContent =
+        allRooms.filter(
+            room =>
+                getRoomStatus(room) ===
+                "available"
+        ).length;
+
+
+    document.getElementById(
+        "fullRooms"
+    ).textContent =
+        allRooms.filter(
+            room =>
+                getRoomStatus(room) ===
+                "full"
+        ).length;
+
+
+    document.getElementById(
+        "totalBeds"
+    ).textContent =
+        allRooms.reduce(
+            (total, room) =>
+                total + (room.totalBeds || 0),
+            0
+        );
+}
+
+
+/* =========================
+   DISPLAY ROOMS
+========================= */
+
+function displayRooms() {
+
+    const container =
+        document.getElementById(
+            "roomsContainer"
+        );
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value
+         .trim()
+         .toLowerCase();
+
+    const hostel =
+        document.getElementById(
+            "hostelFilter"
+        ).value;
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const rooms =
+        allRooms.filter(room => {
 
             const roomNumber =
-                String(room.room_number || "").toLowerCase();
+                String(
+                    room.room_number || ""
+                ).toLowerCase();
 
             const hostelName =
-                String(room.hostels?.name || "").toLowerCase();
+                String(
+                    room.hostels?.name || ""
+                ).toLowerCase();
 
-            const matchesSearch =
+            const searchMatch =
                 !search ||
                 roomNumber.includes(search) ||
                 hostelName.includes(search);
 
-            const matchesHostel =
+            const hostelMatch =
                 !hostel ||
-                String(room.hostel_id) === String(hostel);
+                String(room.hostel_id) ===
+                String(hostel);
 
-            let roomStatus = getRoomStatus(room);
+            const roomStatus =
+                getRoomStatus(room);
 
-            const matchesStatus =
+            const statusMatch =
                 !status ||
                 roomStatus === status;
 
             return (
-                matchesSearch &&
-                matchesHostel &&
-                matchesStatus
+                searchMatch &&
+                hostelMatch &&
+                statusMatch
             );
-
         });
 
 
-        updateStats();
+    updateStats();
 
 
-        if (rooms.length === 0) {
+    if (!rooms.length) {
 
-            container.innerHTML = `
-                <div class="message" style="grid-column:1/-1;">
-                    <h3>No rooms found</h3>
-                    <p>There are no rooms matching your search.</p>
-                </div>
-            `;
+        container.innerHTML = `
+            <div
+                class="message"
+                style="grid-column:1/-1"
+            >
+                <h3>No rooms found</h3>
+                <p>
+                    There are no rooms matching
+                    your search.
+                </p>
+            </div>
+        `;
 
-            return;
-        }
+        return;
+    }
 
 
-        container.innerHTML = rooms.map(room => {
+    container.innerHTML =
+        rooms.map(room => {
 
-            const roomStatus = getRoomStatus(room);
+            const roomStatus =
+                getRoomStatus(room);
 
-            const statusText =
-                roomStatus.charAt(0).toUpperCase() +
-                roomStatus.slice(1);
+            let deleteButton = "";
+
+            if (canDelete()) {
+
+                const safeId =
+                    String(room.id)
+                        .replace(/'/g, "\\'");
+
+                deleteButton = `
+                    <button
+                        class="delete-btn"
+                        onclick="deleteRoom('${safeId}')"
+                    >
+                        🗑️ Delete
+                    </button>
+                `;
+            }
 
 
             return `
@@ -763,11 +960,15 @@
                     <div class="room-top">
 
                         <div class="room-number">
-                            Room ${escapeHtml(room.room_number)}
+                            Room ${escapeHtml(
+                                room.room_number
+                            )}
                         </div>
 
                         <span class="status ${roomStatus}">
-                            ${statusText}
+                            ${capitalize(
+                                roomStatus
+                            )}
                         </span>
 
                     </div>
@@ -778,16 +979,24 @@
                         <div class="info-row">
                             <span>Hostel</span>
                             <strong>
-                                ${escapeHtml(room.hostels?.name || "Not assigned")}
+                                ${escapeHtml(
+                                    room.hostels?.name ||
+                                    "Not assigned"
+                                )}
                             </strong>
                         </div>
+
 
                         <div class="info-row">
                             <span>Location</span>
                             <strong>
-                                ${escapeHtml(room.hostels?.location || "—")}
+                                ${escapeHtml(
+                                    room.hostels?.location ||
+                                    "—"
+                                )}
                             </strong>
                         </div>
+
 
                         <div class="info-row">
                             <span>Total Beds</span>
@@ -796,12 +1005,14 @@
                             </strong>
                         </div>
 
+
                         <div class="info-row">
                             <span>Available Beds</span>
                             <strong>
                                 ${room.availableBeds}
                             </strong>
                         </div>
+
 
                         <div class="info-row">
                             <span>Occupied Beds</span>
@@ -822,6 +1033,7 @@
                             View Room
                         </a>
 
+
                         <a
                             href="beds.html?room_id=${encodeURIComponent(room.id)}"
                             class="view-btn"
@@ -829,124 +1041,189 @@
                             View Beds
                         </a>
 
+
+                        ${deleteButton}
+
                     </div>
 
                 </div>
             `;
 
         }).join("");
+}
+
+
+/* =========================
+   DELETE ROOM
+========================= */
+
+async function deleteRoom(roomId) {
+
+    if (!canDelete()) {
+
+        alert(
+            "Only Admin or Caretaker accounts can delete a room."
+        );
+
+        return;
     }
 
 
-    /* ================================
-       ROOM STATUS
-    ================================= */
+    const confirmed =
+        confirm(
+            "Delete this room?\n\n" +
+            "The room can only be deleted " +
+            "when it has no beds.\n\n" +
+            "This action cannot be undone."
+        );
 
-    function getRoomStatus(room) {
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
 
         /*
-         * If the room has no beds yet,
-         * treat it as available so administrators
-         * can still open and configure it.
+         * Check for beds before deleting.
          */
 
-        if (room.totalBeds === 0) {
-            return "available";
+        const {
+            count,
+            error: bedCheckError
+        } = await db
+            .from("beds")
+            .select("id", {
+                count: "exact",
+                head: true
+            })
+            .eq("room_id", roomId);
+
+
+        if (bedCheckError) {
+            throw bedCheckError;
         }
 
-        if (room.availableBeds > 0) {
-            return "available";
-        }
 
-        if (
-            room.totalBeds > 0 &&
-            room.availableBeds === 0
-        ) {
-            return "full";
-        }
+        if ((count || 0) > 0) {
 
-        return "inactive";
-    }
-
-
-    /* ================================
-       UPDATE STATISTICS
-    ================================= */
-
-    function updateStats() {
-
-        const total =
-            allRooms.length;
-
-        const available =
-            allRooms.filter(
-                room => getRoomStatus(room) === "available"
-            ).length;
-
-        const full =
-            allRooms.filter(
-                room => getRoomStatus(room) === "full"
-            ).length;
-
-        const beds =
-            allRooms.reduce(
-                (sum, room) =>
-                    sum + (room.totalBeds || 0),
-                0
+            alert(
+                "This room cannot be deleted because it still has beds.\n\n" +
+                "Delete the beds first, then delete the room."
             );
 
+            return;
+        }
 
-        document.getElementById("totalRooms").textContent =
-            total;
 
-        document.getElementById("availableRooms").textContent =
-            available;
+        /*
+         * Delete room.
+         */
 
-        document.getElementById("fullRooms").textContent =
-            full;
+        const {
+            error
+        } = await db
+            .from("rooms")
+            .delete()
+            .eq("id", roomId);
 
-        document.getElementById("totalBeds").textContent =
-            beds;
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert(
+            "Room deleted successfully."
+        );
+
+
+        await loadRooms();
+
+    } catch (error) {
+
+        console.error(
+            "Delete room error:",
+            error
+        );
+
+        alert(
+            "Unable to delete the room.\n\n" +
+            (
+                error.message ||
+                "Please check your database permissions."
+            )
+        );
+    }
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function capitalize(value) {
+
+    if (!value) {
+        return "Unknown";
     }
 
-
-    /* ================================
-       SEARCH EVENTS
-    ================================= */
-
-    document
-        .getElementById("searchInput")
-        .addEventListener("input", displayRooms);
-
-    document
-        .getElementById("hostelFilter")
-        .addEventListener("change", displayRooms);
-
-    document
-        .getElementById("statusFilter")
-        .addEventListener("change", displayRooms);
+    return (
+        value.charAt(0).toUpperCase() +
+        value.slice(1)
+    );
+}
 
 
-    /* ================================
-       SECURITY / HTML ESCAPE
-    ================================= */
+function escapeHtml(value) {
 
-    function escapeHtml(value) {
-
-        return String(value ?? "")
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 
-    /* ================================
-       START
-    ================================= */
+/* =========================
+   SEARCH EVENTS
+========================= */
 
-    loadRooms();
+document
+    .getElementById("searchInput")
+    .addEventListener(
+        "input",
+        displayRooms
+    );
+
+document
+    .getElementById("hostelFilter")
+    .addEventListener(
+        "change",
+        displayRooms
+    );
+
+document
+    .getElementById("statusFilter")
+    .addEventListener(
+        "change",
+        displayRooms
+    );
+
+
+/* =========================
+   START APPLICATION
+========================= */
+
+(async function () {
+
+    await loadCurrentRole();
+
+    await loadRooms();
+
+})();
 
 </script>
 

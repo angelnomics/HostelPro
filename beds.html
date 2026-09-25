@@ -1,1744 +1,1326 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Beds | HostelPro</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f7fb;
-            color: #172033;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background: #172033;
-            color: white;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .brand {
-            padding: 24px 20px;
-            font-size: 23px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,.1);
-        }
-
-        .brand span {
-            color: #22c55e;
-        }
-
-        .nav {
-            padding: 15px 10px;
-        }
-
-        .nav-title {
-            color: #94a3b8;
-            font-size: 11px;
-            text-transform: uppercase;
-            padding: 15px 12px 8px;
-            letter-spacing: 1px;
-        }
-
-        .nav a {
-            display: block;
-            padding: 12px 14px;
-            border-radius: 8px;
-            color: #cbd5e1;
-            margin-bottom: 3px;
-            font-size: 14px;
-        }
-
-        .nav a:hover,
-        .nav a.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        /* MAIN */
-        .main {
-            margin-left: 250px;
-            width: calc(100% - 250px);
-            min-height: 100vh;
-        }
-
-        .topbar {
-            height: 70px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .topbar h1 {
-            font-size: 22px;
-        }
-
-        .admin-label {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .page-heading {
-            margin-bottom: 25px;
-        }
-
-        .page-heading h2 {
-            font-size: 28px;
-            margin-bottom: 6px;
-        }
-
-        .page-heading p {
-            color: #64748b;
-        }
-
-        /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 20px;
-        }
-
-        .stat-card .label {
-            color: #64748b;
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .number {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        /* CONTROLS */
-        .controls {
-            background: white;
-            padding: 18px;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            display: grid;
-            grid-template-columns: 1fr 180px 180px;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #dbe1e8;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #2563eb;
-        }
-
-        /* TABLE */
-        .table-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-header h3 {
-            font-size: 17px;
-        }
-
-        .bed-count {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 950px;
-        }
-
-        th,
-        td {
-            padding: 15px 18px;
-            text-align: left;
-            border-bottom: 1px solid #edf0f4;
-            font-size: 14px;
-        }
-
-        th {
-            background: #f8fafc;
-            color: #64748b;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        tr:hover td {
-            background: #fafcff;
-        }
-
-        .bed-label {
-            font-size: 17px;
-            font-weight: bold;
-            color: #2563eb;
-        }
-
-        .position {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        .room-number {
-            font-weight: 600;
-        }
-
-        .hostel-name {
-            font-weight: 600;
-        }
-
-        .hostel-location {
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        .student-name {
-            font-weight: 600;
-        }
-
-        .student-id {
-            color: #64748b;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        /* STATUS */
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-available {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-occupied {
-            background: #dbeafe;
-            color: #1d4ed8;
-        }
-
-        .status-maintenance {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-reserved {
-            background: #ede9fe;
-            color: #6d28d9;
-        }
-
-        .status-unknown {
-            background: #e2e8f0;
-            color: #475569;
-        }
-
-        .not-assigned {
-            color: #94a3b8;
-            font-style: italic;
-        }
-
-        .loading,
-        .empty,
-        .error {
-            padding: 40px 20px;
-            text-align: center;
-            color: #64748b;
-        }
-
-        .error {
-            color: #dc2626;
-        }
-
-        /* BED VISUAL */
-        .bed-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            background: #eff6ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .bed-cell {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* NEXA */
-        .nexa {
-            position: fixed;
-            left: 22px;
-            bottom: 22px;
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            background: #2563eb;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 13px;
-            box-shadow: 0 8px 25px rgba(37,99,235,.3);
-            z-index: 1100;
-        }
-
-        .nexa:hover {
-            background: #1d4ed8;
-        }
-
-        /* MOBILE */
-        .menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 25px;
-            cursor: pointer;
-            color: #172033;
-        }
-
-        .mobile-overlay {
-            display: none;
-        }
-
-        @media (max-width: 1100px) {
-            .stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .controls {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .controls input {
-                grid-column: 1 / -1;
-            }
-        }
-
-        @media (max-width: 768px) {
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: .3s;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .main {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .menu-btn {
-                display: block;
-            }
-
-            .topbar {
-                padding: 0 18px;
-            }
-
-            .content {
-                padding: 20px 15px;
-            }
-
-            .controls {
-                grid-template-columns: 1fr;
-            }
-
-            .controls input {
-                grid-column: auto;
-            }
-
-            .mobile-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,.4);
-                z-index: 900;
-            }
-
-            .mobile-overlay.show {
-                display: block;
-            }
-        }
-
-        @media (max-width: 550px) {
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .page-heading h2 {
-                font-size: 23px;
-            }
-
-            .admin-label {
-                display: none;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beds | HostelPro</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: #172033;
+    color: #fff;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.brand {
+    padding: 24px 20px;
+    font-size: 23px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.brand span {
+    color: #22c55e;
+}
+
+.nav {
+    padding: 15px 10px;
+}
+
+.nav-title {
+    color: #94a3b8;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 15px 12px 8px;
+    letter-spacing: 1px;
+}
+
+.nav a {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 8px;
+    color: #cbd5e1;
+    margin-bottom: 3px;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.nav a:hover,
+.nav a.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 70px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar h1 {
+    font-size: 22px;
+}
+
+.admin-label {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.content {
+    padding: 30px;
+}
+
+.page-heading {
+    margin-bottom: 25px;
+}
+
+.page-heading h2 {
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+.page-heading p {
+    color: #64748b;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.stat-card .label {
+    color: #64748b;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-card .number {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.controls {
+    background: #fff;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 1fr 180px 180px;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dbe1e8;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background: #fff;
+}
+
+.table-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bed-count {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1100px;
+}
+
+th,
+td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid #edf0f4;
+    font-size: 14px;
+}
+
+th {
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.bed-label {
+    font-size: 17px;
+    font-weight: bold;
+    color: #2563eb;
+}
+
+.position {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.room-number,
+.hostel-name,
+.student-name {
+    font-weight: 600;
+}
+
+.hostel-location,
+.student-id {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-available {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-occupied {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-maintenance {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-reserved {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.status-unknown {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.not-assigned {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.loading,
+.empty,
+.error {
+    padding: 40px 20px;
+    text-align: center;
+    color: #64748b;
+}
+
+.error {
+    color: #dc2626;
+}
+
+.bed-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bed-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: #eff6ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.action-cell {
+    white-space: nowrap;
+}
+
+.delete-btn {
+    border: none;
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #fecaca;
+}
+
+.nexa {
+    position: fixed;
+    left: 22px;
+    bottom: 22px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 13px;
+    box-shadow: 0 8px 25px rgba(37,99,235,.3);
+    z-index: 1100;
+    text-decoration: none;
+}
+
+.menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+    color: #172033;
+}
+
+.mobile-overlay {
+    display: none;
+}
+
+@media (max-width: 1100px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .controls input {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: .3s;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .topbar {
+        padding: 0 18px;
+    }
+
+    .content {
+        padding: 20px 15px;
+    }
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+    .controls input {
+        grid-column: auto;
+    }
+
+    .mobile-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.4);
+        z-index: 900;
+    }
+
+    .mobile-overlay.show {
+        display: block;
+    }
+}
+
+@media (max-width: 550px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .page-heading h2 {
+        font-size: 23px;
+    }
+
+    .admin-label {
+        display: none;
+    }
+}
+</style>
+
 </head>
 
 <body>
 
 <div class="layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar">
 
-        <div class="brand">
-            Hostel<span>Pro</span>
-        </div>
 
-        <nav class="nav">
+<div class="brand">
+    Hostel<span>Pro</span>
+</div>
 
-            <div class="nav-title">Main</div>
+<nav class="nav">
 
-            <a href="admin_dashboard.html">
-                🏠 Dashboard
-            </a>
+    <div class="nav-title">Main</div>
 
-            <a href="hostels.html">
-                🏢 Hostels
-            </a>
+    <a href="admin_dashboard.html">🏠 Dashboard</a>
+    <a href="hostels.html">🏢 Hostels</a>
+    <a href="rooms.html">🚪 Rooms</a>
+    <a href="beds.html" class="active">🛏️ Beds</a>
+    <a href="students.html">🎓 Students</a>
+    <a href="allocations.html">📋 Allocations</a>
 
-            <a href="rooms.html">
-                🚪 Rooms
-            </a>
+    <div class="nav-title">Management</div>
 
-            <a href="beds.html" class="active">
-                🛏️ Beds
-            </a>
+    <a href="caretakers.html">👨‍💼 Caretakers</a>
+    <a href="wardens.html">👨‍🏫 Wardens</a>
+    <a href="maintenance.html">🔧 Maintenance</a>
+    <a href="discipline.html">⚠️ Discipline</a>
+    <a href="security.html">🛡️ Security</a>
+    <a href="tasks.html">✅ Tasks</a>
 
-            <a href="students_dashboard.html">
-                🎓 Students
-            </a>
+    <div class="nav-title">Communication</div>
 
-            <a href="allocations.html">
-                📋 Allocations
-            </a>
+    <a href="messages.html">💬 Messages</a>
+    <a href="announcements.html">📢 Announcements</a>
 
-            <div class="nav-title">Management</div>
+    <div class="nav-title">System</div>
 
-            <a href="caretakers.html">
-                👨‍💼 Caretakers
-            </a>
+    <a href="reports.html">📊 Reports</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="nexa.html">✨ Nexa</a>
 
-            <a href="wardens.html">
-                👨‍🏫 Wardens
-            </a>
+</nav>
 
-            <a href="maintenance.html">
-                🔧 Maintenance
-            </a>
 
-            <a href="discipline.html">
-                ⚠️ Discipline
-            </a>
+</aside>
 
-            <a href="security.html">
-                🛡️ Security
-            </a>
+<div class="mobile-overlay" id="overlay"></div>
 
-            <a href="tasks.html">
-                ✅ Tasks
-            </a>
+<main class="main">
 
-            <div class="nav-title">Communication</div>
+<header class="topbar">
 
-            <a href="messages.html">
-                💬 Messages
-            </a>
 
-            <a href="announcements.html">
-                📢 Announcements
-            </a>
+<div style="display:flex;align-items:center;gap:15px">
+    <button class="menu-btn" id="menuBtn">☰</button>
+    <h1>Beds</h1>
+</div>
 
-            <div class="nav-title">System</div>
+<div class="admin-label">HostelPro Management</div>
 
-            <a href="reports.html">
-                📊 Reports
-            </a>
 
-            <a href="settings.html">
-                ⚙️ Settings
-            </a>
+</header>
 
-            <a href="nexa.html">
-                ✨ Nexa
-            </a>
+<section class="content">
 
-        </nav>
 
-    </aside>
+<div class="page-heading">
+    <h2>Beds</h2>
+    <p>Manage and monitor all beds, rooms, hostels and current occupants.</p>
+</div>
 
+<div class="stats">
 
-    <div class="mobile-overlay" id="overlay"></div>
+    <div class="stat-card">
+        <div class="label">Total Beds</div>
+        <div class="number" id="totalBeds">0</div>
+    </div>
 
+    <div class="stat-card">
+        <div class="label">Available Beds</div>
+        <div class="number" id="availableBeds">0</div>
+    </div>
 
-    <!-- MAIN -->
-    <main class="main">
+    <div class="stat-card">
+        <div class="label">Occupied Beds</div>
+        <div class="number" id="occupiedBeds">0</div>
+    </div>
 
-        <header class="topbar">
+    <div class="stat-card">
+        <div class="label">Maintenance</div>
+        <div class="number" id="maintenanceBeds">0</div>
+    </div>
 
-            <div style="display:flex;align-items:center;gap:15px;">
+</div>
 
-                <button class="menu-btn" id="menuBtn">
-                    ☰
-                </button>
+<div class="controls">
 
-                <h1>Beds</h1>
+    <input
+        id="searchInput"
+        type="text"
+        placeholder="Search by bed, room, hostel or student..."
+    >
 
-            </div>
-
-            <div class="admin-label">
-                HostelPro Management
-            </div>
-
-        </header>
-
-
-        <section class="content">
-
-            <div class="page-heading">
-
-                <h2>Beds</h2>
-
-                <p>
-                    Manage and monitor all beds, rooms, hostels and current occupants.
-                </p>
-
-            </div>
-
-
-            <!-- STATS -->
-
-            <div class="stats">
-
-                <div class="stat-card">
-
-                    <div class="label">
-                        Total Beds
-                    </div>
-
-                    <div class="number" id="totalBeds">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="label">
-                        Available Beds
-                    </div>
-
-                    <div class="number" id="availableBeds">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="label">
-                        Occupied Beds
-                    </div>
-
-                    <div class="number" id="occupiedBeds">
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="label">
-                        Maintenance
-                    </div>
-
-                    <div class="number" id="maintenanceBeds">
-                        0
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- FILTERS -->
-
-            <div class="controls">
-
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search by bed, room, hostel or student..."
-                >
-
-
-                <select id="statusFilter">
-
-                    <option value="all">
-                        All Statuses
-                    </option>
-
-                    <option value="available">
-                        Available
-                    </option>
-
-                    <option value="occupied">
-                        Occupied
-                    </option>
-
-                    <option value="maintenance">
-                        Maintenance
-                    </option>
-
-                    <option value="reserved">
-                        Reserved
-                    </option>
-
-                </select>
-
-
-                <select id="positionFilter">
-
-                    <option value="all">
-                        All Positions
-                    </option>
-
-                    <option value="lower">
-                        Lower / Down
-                    </option>
-
-                    <option value="upper">
-                        Upper
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- TABLE -->
-
-            <div class="table-card">
-
-                <div class="table-header">
-
-                    <h3>
-                        Hostel Beds
-                    </h3>
-
-                    <div
-                        class="bed-count"
-                        id="bedCount"
-                    >
-                        0 beds
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Bed</th>
-
-                                <th>Position</th>
-
-                                <th>Room</th>
-
-                                <th>Hostel</th>
-
-                                <th>Student</th>
-
-                                <th>Status</th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="bedsTable">
-
-                            <tr>
-
-                                <td
-                                    colspan="6"
-                                    class="loading"
-                                >
-                                    Loading beds...
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
+    <select id="statusFilter">
+        <option value="all">All Statuses</option>
+        <option value="available">Available</option>
+        <option value="occupied">Occupied</option>
+        <option value="maintenance">Maintenance</option>
+        <option value="reserved">Reserved</option>
+    </select>
+
+    <select id="positionFilter">
+        <option value="all">All Positions</option>
+        <option value="lower">Lower / Down</option>
+        <option value="upper">Upper</option>
+    </select>
+
+</div>
+
+<div class="table-card">
+
+    <div class="table-header">
+        <h3>Hostel Beds</h3>
+        <div class="bed-count" id="bedCount">0 beds</div>
+    </div>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Bed</th>
+                    <th>Position</th>
+                    <th>Room</th>
+                    <th>Hostel</th>
+                    <th>Student</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="bedsTable">
+                <tr>
+                    <td colspan="7" class="loading">
+                        Loading beds...
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
 
 
-<!-- NEXA -->
+</section>
 
-<a
-    href="nexa.html"
-    class="nexa"
-    title="Nexa"
->
-    Nexa
-</a>
+</main>
 
+</div>
+
+<a href="nexa.html" class="nexa" title="Nexa">Nexa</a>
 
 <script>
 
-    /* =========================================
-       SUPABASE
-    ========================================= */
+const SUPABASE_URL =
+    "https://keeyaworqbjsjfekorhd.supabase.co";
 
-    const SUPABASE_URL = "https://keeyaworqbjsjfekorhd.supabase.co";
+const SUPABASE_ANON_KEY =
+    "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
 
-    const SUPABASE_ANON_KEY = "sb_publishable_BqwK9AWNmr07j6maco-EEQ_Tafq7rJ9";
+const { createClient } = supabase;
+
+const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+let beds = [];
+let activeAllocations = [];
+let currentRole = null;
+
+
+/* =========================
+   LOAD CURRENT USER ROLE
+========================= */
+
+async function loadCurrentRole() {
+
+    currentRole = null;
 
     const {
-        createClient
-    } = supabase;
+        data: { user }
+    } = await db.auth.getUser();
 
-    const db = createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+    if (!user) {
+        return;
+    }
+
+    const { data: profile, error } = await db
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Role loading error:", error);
+        return;
+    }
+
+    if (profile) {
+        currentRole = String(
+            profile.role || ""
+        ).toLowerCase().trim();
+    }
+}
+
+
+function canDelete() {
+    return (
+        currentRole === "admin" ||
+        currentRole === "caretaker"
     );
+}
 
 
-    /* =========================================
-       VARIABLES
-    ========================================= */
+/* =========================
+   LOAD BEDS
+========================= */
 
-    let beds = [];
+async function loadBeds() {
 
-    let activeAllocations = [];
+    const table = document.getElementById("bedsTable");
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="7" class="loading">
+                Loading beds...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const {
+            data: bedData,
+            error: bedError
+        } = await db
+            .from("beds")
+            .select(`
+                id,
+                room_id,
+                bed_number,
+                status,
+                created_at,
+                updated_at,
+                bed_position,
+                label,
+                rooms:room_id (
+                    id,
+                    room_number,
+                    hostel_id,
+                    hostels:hostel_id (
+                        id,
+                        name,
+                        location
+                    )
+                )
+            `)
+            .order("bed_number", {
+                ascending: true
+            });
+
+        if (bedError) {
+            throw bedError;
+        }
+
+        beds = bedData || [];
 
 
-    /* =========================================
-       LOAD BEDS
-    ========================================= */
+        const {
+            data: allocationData,
+            error: allocationError
+        } = await db
+            .from("allocations")
+            .select(`
+                id,
+                student_id,
+                bed_id,
+                status,
+                profiles:student_id (
+                    id,
+                    full_name,
+                    student_id
+                )
+            `)
+            .eq("status", "active");
 
-    async function loadBeds() {
+        if (allocationError) {
+            throw allocationError;
+        }
 
-        const table =
-            document.getElementById("bedsTable");
+        activeAllocations = allocationData || [];
 
+        updateStats();
+        renderBeds();
+
+    } catch (error) {
+
+        console.error("Load beds error:", error);
 
         table.innerHTML = `
             <tr>
-                <td colspan="6" class="loading">
-                    Loading beds...
+                <td colspan="7" class="error">
+                    Failed to load beds.<br>
+                    ${escapeHtml(error.message || "Unknown error")}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+/* =========================
+   GET OCCUPANT
+========================= */
+
+function getOccupant(id) {
+
+    const allocation = activeAllocations.find(
+        item => item.bed_id === id
+    );
+
+    return allocation?.profiles || null;
+}
+
+
+/* =========================
+   BED POSITION
+========================= */
+
+function getPosition(bed) {
+
+    const position = String(
+        bed.bed_position || ""
+    ).toLowerCase();
+
+    if (
+        position.includes("lower") ||
+        position.includes("down")
+    ) {
+        return "Lower / Down";
+    }
+
+    if (
+        position.includes("upper") ||
+        position.includes("up")
+    ) {
+        return "Upper";
+    }
+
+    const label = String(
+        bed.label || bed.bed_number || ""
+    ).toUpperCase();
+
+    if (label.endsWith("-1")) {
+        return "Lower / Down";
+    }
+
+    if (label.endsWith("-2")) {
+        return "Upper";
+    }
+
+    return "Not specified";
+}
+
+
+/* =========================
+   BED STATUS
+========================= */
+
+function getStatus(bed) {
+
+    if (getOccupant(bed.id)) {
+        return "occupied";
+    }
+
+    return String(
+        bed.status || "available"
+    ).toLowerCase().trim();
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+function updateStats() {
+
+    document.getElementById("totalBeds").textContent =
+        beds.length;
+
+    document.getElementById("availableBeds").textContent =
+        beds.filter(
+            bed => getStatus(bed) === "available"
+        ).length;
+
+    document.getElementById("occupiedBeds").textContent =
+        beds.filter(
+            bed => getStatus(bed) === "occupied"
+        ).length;
+
+    document.getElementById("maintenanceBeds").textContent =
+        beds.filter(
+            bed => getStatus(bed) === "maintenance"
+        ).length;
+}
+
+
+/* =========================
+   RENDER BEDS
+========================= */
+
+function renderBeds() {
+
+    const search =
+        document
+            .getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
+
+    const statusFilter =
+        document.getElementById("statusFilter").value;
+
+    const positionFilter =
+        document.getElementById("positionFilter").value;
+
+
+    const filtered = beds.filter(bed => {
+
+        const room = bed.rooms;
+        const hostel = room?.hostels;
+        const occupant = getOccupant(bed.id);
+        const position = getPosition(bed);
+        const status = getStatus(bed);
+
+        const text = `
+            ${bed.label || ""}
+            ${bed.bed_number || ""}
+            ${position}
+            ${room?.room_number || ""}
+            ${hostel?.name || ""}
+            ${hostel?.location || ""}
+            ${occupant?.full_name || ""}
+            ${occupant?.student_id || ""}
+        `.toLowerCase();
+
+
+        return (
+            (!search || text.includes(search)) &&
+            (statusFilter === "all" || status === statusFilter) &&
+            (
+                positionFilter === "all" ||
+                (
+                    positionFilter === "lower" &&
+                    position === "Lower / Down"
+                ) ||
+                (
+                    positionFilter === "upper" &&
+                    position === "Upper"
+                )
+            )
+        );
+
+    });
+
+
+    document.getElementById("bedCount").textContent =
+        `${filtered.length} bed${filtered.length === 1 ? "" : "s"}`;
+
+
+    const table =
+        document.getElementById("bedsTable");
+
+
+    if (!filtered.length) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    No beds found.
                 </td>
             </tr>
         `;
 
-
-        try {
-
-            /* GET ALL BEDS */
-
-            const {
-                data: bedData,
-                error: bedError
-            } = await db
-                .from("beds")
-                .select(`
-                    id,
-                    room_id,
-                    bed_number,
-                    status,
-                    created_at,
-                    updated_at,
-                    bed_position,
-                    label,
-
-                    rooms:room_id (
-                        id,
-                        room_number,
-                        hostel_id,
-
-                        hostels:hostel_id (
-                            id,
-                            name,
-                            location
-                        )
-                    )
-                `)
-                .order("bed_number", {
-                    ascending: true
-                });
+        return;
+    }
 
 
-            if (bedError) {
+    table.innerHTML = filtered.map(bed => {
 
-                throw bedError;
+        const room = bed.rooms;
+        const hostel = room?.hostels;
+        const occupant = getOccupant(bed.id);
+        const position = getPosition(bed);
+        const status = getStatus(bed);
 
-            }
+        let statusClass = "status-unknown";
 
+        if (status === "available") {
+            statusClass = "status-available";
+        }
 
-            beds = bedData || [];
+        if (status === "occupied") {
+            statusClass = "status-occupied";
+        }
 
+        if (status === "maintenance") {
+            statusClass = "status-maintenance";
+        }
 
-            /* GET ACTIVE ALLOCATIONS */
-
-            const {
-                data: allocationData,
-                error: allocationError
-            } = await db
-                .from("allocations")
-                .select(`
-                    id,
-                    student_id,
-                    bed_id,
-                    status,
-
-                    profiles:student_id (
-                        id,
-                        full_name,
-                        student_id
-                    )
-                `)
-                .eq("status", "active");
+        if (status === "reserved") {
+            statusClass = "status-reserved";
+        }
 
 
-            if (allocationError) {
+        let actionHtml = "—";
 
-                throw allocationError;
+        if (canDelete()) {
 
-            }
+            const safeId =
+                String(bed.id).replace(/'/g, "\\'");
 
-
-            activeAllocations =
-                allocationData || [];
-
-
-            updateStats();
-
-            renderBeds();
-
-
-        } catch (error) {
-
-            console.error(
-                "Error loading beds:",
-                error
-            );
-
-
-            table.innerHTML = `
-                <tr>
-                    <td
-                        colspan="6"
-                        class="error"
-                    >
-                        Failed to load beds.
-                        <br>
-                        ${escapeHtml(
-                            error.message ||
-                            "Unknown error"
-                        )}
-                    </td>
-                </tr>
+            actionHtml = `
+                <button
+                    class="delete-btn"
+                    onclick="deleteBed('${safeId}')"
+                >
+                    🗑️ Delete
+                </button>
             `;
-
-        }
-
-    }
-
-
-    /* =========================================
-       GET BED OCCUPANT
-    ========================================= */
-
-    function getOccupant(bedId) {
-
-        const allocation =
-            activeAllocations.find(
-                item =>
-                    item.bed_id === bedId
-            );
-
-
-        if (
-            !allocation ||
-            !allocation.profiles
-        ) {
-
-            return null;
-
         }
 
 
-        return allocation.profiles;
+        return `
+            <tr>
 
-    }
+                <td>
 
+                    <div class="bed-cell">
 
-    /* =========================================
-       GET BED POSITION
-    ========================================= */
+                        <div class="bed-icon">
+                            🛏️
+                        </div>
 
-    function getPosition(bed) {
+                        <div>
 
-        let position =
-            bed.bed_position ||
-            "";
-
-
-        position =
-            String(position)
-            .toLowerCase();
-
-
-        if (
-            position.includes("lower") ||
-            position.includes("down")
-        ) {
-
-            return "Lower / Down";
-
-        }
-
-
-        if (
-            position.includes("upper") ||
-            position.includes("up")
-        ) {
-
-            return "Upper";
-
-        }
-
-
-        /*
-            If bed_position is empty,
-            use the bed label.
-
-            A-1 = lower
-            A-2 = upper
-        */
-
-        const label =
-            String(
-                bed.label ||
-                bed.bed_number ||
-                ""
-            ).toUpperCase();
-
-
-        if (
-            label.endsWith("-1")
-        ) {
-
-            return "Lower / Down";
-
-        }
-
-
-        if (
-            label.endsWith("-2")
-        ) {
-
-            return "Upper";
-
-        }
-
-
-        return "Not specified";
-
-    }
-
-
-    /* =========================================
-       NORMALIZE STATUS
-    ========================================= */
-
-    function getStatus(bed) {
-
-        const occupant =
-            getOccupant(bed.id);
-
-
-        /*
-            Active allocation means
-            the bed is occupied.
-        */
-
-        if (occupant) {
-
-            return "occupied";
-
-        }
-
-
-        const status =
-            String(
-                bed.status ||
-                "available"
-            )
-            .toLowerCase()
-            .trim();
-
-
-        return status;
-
-    }
-
-
-    /* =========================================
-       UPDATE STATISTICS
-    ========================================= */
-
-    function updateStats() {
-
-        const total =
-            beds.length;
-
-
-        const available =
-            beds.filter(
-                bed =>
-                    getStatus(bed) ===
-                    "available"
-            ).length;
-
-
-        const occupied =
-            beds.filter(
-                bed =>
-                    getStatus(bed) ===
-                    "occupied"
-            ).length;
-
-
-        const maintenance =
-            beds.filter(
-                bed =>
-                    getStatus(bed) ===
-                    "maintenance"
-            ).length;
-
-
-        document.getElementById(
-            "totalBeds"
-        ).textContent = total;
-
-
-        document.getElementById(
-            "availableBeds"
-        ).textContent = available;
-
-
-        document.getElementById(
-            "occupiedBeds"
-        ).textContent = occupied;
-
-
-        document.getElementById(
-            "maintenanceBeds"
-        ).textContent = maintenance;
-
-    }
-
-
-    /* =========================================
-       RENDER BEDS
-    ========================================= */
-
-    function renderBeds() {
-
-        const search =
-            document
-                .getElementById(
-                    "searchInput"
-                )
-                .value
-                .toLowerCase()
-                .trim();
-
-
-        const statusFilter =
-            document.getElementById(
-                "statusFilter"
-            ).value;
-
-
-        const positionFilter =
-            document.getElementById(
-                "positionFilter"
-            ).value;
-
-
-        const filtered =
-            beds.filter(bed => {
-
-                const room =
-                    bed.rooms;
-
-
-                const hostel =
-                    room
-                    ? room.hostels
-                    : null;
-
-
-                const occupant =
-                    getOccupant(bed.id);
-
-
-                const position =
-                    getPosition(bed);
-
-
-                const status =
-                    getStatus(bed);
-
-
-                /*
-                   Guard every field with `|| ""` so a
-                   missing name/student_id can't leak the
-                   literal words "undefined" or "null" into
-                   the searchable text (which would then
-                   wrongly match if someone typed "undefined").
-                */
-
-                const searchableText = `
-
-                    ${bed.label || ""}
-
-                    ${bed.bed_number || ""}
-
-                    ${position || ""}
-
-                    ${room
-                        ? (room.room_number || "")
-                        : ""}
-
-                    ${hostel
-                        ? (hostel.name || "")
-                        : ""}
-
-                    ${hostel
-                        ? (hostel.location || "")
-                        : ""}
-
-                    ${occupant
-                        ? (occupant.full_name || "")
-                        : ""}
-
-                    ${occupant
-                        ? (occupant.student_id || "")
-                        : ""}
-
-                `.toLowerCase();
-
-
-                const matchesSearch =
-                    !search ||
-                    searchableText.includes(
-                        search
-                    );
-
-
-                const matchesStatus =
-                    statusFilter === "all" ||
-                    status === statusFilter;
-
-
-                let matchesPosition = true;
-
-
-                if (
-                    positionFilter ===
-                    "lower"
-                ) {
-
-                    matchesPosition =
-                        position ===
-                        "Lower / Down";
-
-                }
-
-
-                if (
-                    positionFilter ===
-                    "upper"
-                ) {
-
-                    matchesPosition =
-                        position ===
-                        "Upper";
-
-                }
-
-
-                return (
-                    matchesSearch &&
-                    matchesStatus &&
-                    matchesPosition
-                );
-
-            });
-
-
-        document.getElementById(
-            "bedCount"
-        ).textContent =
-            `${filtered.length} bed${
-                filtered.length === 1
-                    ? ""
-                    : "s"
-            }`;
-
-
-        const table =
-            document.getElementById(
-                "bedsTable"
-            );
-
-
-        if (
-            filtered.length === 0
-        ) {
-
-            table.innerHTML = `
-                <tr>
-                    <td
-                        colspan="6"
-                        class="empty"
-                    >
-                        No beds found.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        table.innerHTML =
-            filtered
-            .map(bed => {
-
-                const room =
-                    bed.rooms;
-
-
-                const hostel =
-                    room
-                    ? room.hostels
-                    : null;
-
-
-                const occupant =
-                    getOccupant(
-                        bed.id
-                    );
-
-
-                const position =
-                    getPosition(
-                        bed
-                    );
-
-
-                const status =
-                    getStatus(
-                        bed
-                    );
-
-
-                let statusClass =
-                    "status-unknown";
-
-
-                if (
-                    status ===
-                    "available"
-                ) {
-
-                    statusClass =
-                        "status-available";
-
-                }
-
-
-                if (
-                    status ===
-                    "occupied"
-                ) {
-
-                    statusClass =
-                        "status-occupied";
-
-                }
-
-
-                if (
-                    status ===
-                    "maintenance"
-                ) {
-
-                    statusClass =
-                        "status-maintenance";
-
-                }
-
-
-                if (
-                    status ===
-                    "reserved"
-                ) {
-
-                    statusClass =
-                        "status-reserved";
-
-                }
-
-
-                const displayLabel =
-                    bed.label ||
-                    bed.bed_number ||
-                    "—";
-
-
-                return `
-
-                    <tr>
-
-                        <!-- BED -->
-
-                        <td>
-
-                            <div class="bed-cell">
-
-                                <div class="bed-icon">
-                                    🛏️
-                                </div>
-
-                                <div>
-
-                                    <div class="bed-label">
-                                        ${escapeHtml(
-                                            displayLabel
-                                        )}
-                                    </div>
-
-                                    <div class="position">
-                                        Bed ${escapeHtml(
-                                            String(
-                                                bed.bed_number ||
-                                                "—"
-                                            )
-                                        )}
-                                    </div>
-
-                                </div>
-
+                            <div class="bed-label">
+                                ${escapeHtml(
+                                    bed.label ||
+                                    bed.bed_number ||
+                                    "—"
+                                )}
                             </div>
 
-                        </td>
+                            <div class="position">
+                                Bed ${escapeHtml(
+                                    String(
+                                        bed.bed_number || "—"
+                                    )
+                                )}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
 
 
-                        <!-- POSITION -->
-
-                        <td>
-
-                            ${escapeHtml(
-                                position
-                            )}
-
-                        </td>
+                <td>
+                    ${escapeHtml(position)}
+                </td>
 
 
-                        <!-- ROOM -->
+                <td>
 
-                        <td>
+                    ${
+                        room
+                        ? `
+                            <div class="room-number">
+                                Room ${escapeHtml(
+                                    String(room.room_number)
+                                )}
+                            </div>
+                        `
+                        : `
+                            <span class="not-assigned">
+                                Not assigned
+                            </span>
+                        `
+                    }
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        hostel
+                        ? `
+                            <div class="hostel-name">
+                                ${escapeHtml(hostel.name)}
+                            </div>
 
                             ${
-                                room
-
-                                ?
-
-                                `<div class="room-number">
-                                    Room ${escapeHtml(
-                                        String(
-                                            room.room_number
-                                        )
-                                    )}
-                                </div>`
-
-                                :
-
-                                `<span class="not-assigned">
-                                    Not assigned
-                                </span>`
-                            }
-
-                        </td>
-
-
-                        <!-- HOSTEL -->
-
-                        <td>
-
-                            ${
-                                hostel
-
-                                ?
-
-                                `
-                                <div class="hostel-name">
-                                    ${escapeHtml(
-                                        hostel.name
-                                    )}
-                                </div>
-
-                                ${
-                                    hostel.location
-
-                                    ?
-
-                                    `<div class="hostel-location">
+                                hostel.location
+                                ? `
+                                    <div class="hostel-location">
                                         ${escapeHtml(
                                             hostel.location
                                         )}
-                                    </div>`
-
-                                    :
-
-                                    ""
-                                }
+                                    </div>
                                 `
-
-                                :
-
-                                `<span class="not-assigned">
-                                    Not assigned
-                                </span>`
+                                : ""
                             }
+                        `
+                        : `
+                            <span class="not-assigned">
+                                Not assigned
+                            </span>
+                        `
+                    }
 
-                        </td>
+                </td>
 
 
-                        <!-- STUDENT -->
+                <td>
 
-                        <td>
+                    ${
+                        occupant
+                        ? `
+                            <div class="student-name">
+                                ${escapeHtml(
+                                    occupant.full_name ||
+                                    "Student"
+                                )}
+                            </div>
 
                             ${
-                                occupant
-
-                                ?
-
-                                `
-                                <div class="student-name">
-                                    ${escapeHtml(
-                                        occupant.full_name ||
-                                        "Student"
-                                    )}
-                                </div>
-
-                                ${
-                                    occupant.student_id
-
-                                    ?
-
-                                    `<div class="student-id">
+                                occupant.student_id
+                                ? `
+                                    <div class="student-id">
                                         ${escapeHtml(
                                             occupant.student_id
                                         )}
-                                    </div>`
-
-                                    :
-
-                                    ""
-                                }
+                                    </div>
                                 `
-
-                                :
-
-                                `<span class="not-assigned">
-                                    No student
-                                </span>`
+                                : ""
                             }
-
-                        </td>
-
-
-                        <!-- STATUS -->
-
-                        <td>
-
-                            <span
-                                class="status ${statusClass}"
-                            >
-                                ${escapeHtml(
-                                    capitalize(
-                                        status
-                                    )
-                                )}
+                        `
+                        : `
+                            <span class="not-assigned">
+                                No student
                             </span>
+                        `
+                    }
 
-                        </td>
+                </td>
 
-                    </tr>
 
-                `;
+                <td>
 
+                    <span class="status ${statusClass}">
+                        ${escapeHtml(
+                            capitalize(status)
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td class="action-cell">
+                    ${actionHtml}
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+/* =========================
+   DELETE BED
+========================= */
+
+async function deleteBed(id) {
+
+    if (!canDelete()) {
+
+        alert(
+            "Only Admin or Caretaker accounts can delete a bed."
+        );
+
+        return;
+    }
+
+
+    const occupant = getOccupant(id);
+
+    if (occupant) {
+
+        alert(
+            "This bed cannot be deleted because it is currently allocated to a student. End the allocation first."
+        );
+
+        return;
+    }
+
+
+    const confirmed = confirm(
+        "Delete this bed?\n\nThis action cannot be undone."
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        /*
+         * Check whether this bed has ANY allocation
+         * history before deleting it.
+         */
+
+        const {
+            count,
+            error: allocationCheckError
+        } = await db
+            .from("allocations")
+            .select("id", {
+                count: "exact",
+                head: true
             })
-            .join("");
-
-    }
+            .eq("bed_id", id);
 
 
-    /* =========================================
-       CAPITALIZE
-    ========================================= */
-
-    function capitalize(value) {
-
-        if (!value) {
-            return "Unknown";
+        if (allocationCheckError) {
+            throw allocationCheckError;
         }
 
-        return value.charAt(0).toUpperCase()
-            + value.slice(1);
 
-    }
+        if ((count || 0) > 0) {
 
-
-    /* =========================================
-       ESCAPE HTML
-    ========================================= */
-
-    function escapeHtml(value) {
-
-        return String(value)
-
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-
-            .replace(
-                /</g,
-                "&lt;"
-            )
-
-            .replace(
-                />/g,
-                "&gt;"
-            )
-
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-
-            .replace(
-                /'/g,
-                "&#039;"
+            alert(
+                "This bed cannot be deleted because allocation records exist for it. Preserve the allocation history instead."
             );
 
-    }
-
-
-    /* =========================================
-       SEARCH
-    ========================================= */
-
-    document
-        .getElementById(
-            "searchInput"
-        )
-        .addEventListener(
-            "input",
-            renderBeds
-        );
-
-
-    document
-        .getElementById(
-            "statusFilter"
-        )
-        .addEventListener(
-            "change",
-            renderBeds
-        );
-
-
-    document
-        .getElementById(
-            "positionFilter"
-        )
-        .addEventListener(
-            "change",
-            renderBeds
-        );
-
-
-    /* =========================================
-       MOBILE MENU
-    ========================================= */
-
-    const menuBtn =
-        document.getElementById(
-            "menuBtn"
-        );
-
-
-    const sidebar =
-        document.getElementById(
-            "sidebar"
-        );
-
-
-    const overlay =
-        document.getElementById(
-            "overlay"
-        );
-
-
-    menuBtn.addEventListener(
-        "click",
-        () => {
-
-            sidebar.classList.toggle(
-                "open"
-            );
-
-            overlay.classList.toggle(
-                "show"
-            );
-
+            return;
         }
+
+
+        const {
+            error
+        } = await db
+            .from("beds")
+            .delete()
+            .eq("id", id);
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert("Bed deleted successfully.");
+
+        await loadBeds();
+
+    } catch (error) {
+
+        console.error(
+            "Delete bed error:",
+            error
+        );
+
+        alert(
+            "Unable to delete the bed.\n\n" +
+            (error.message ||
+                "Please check your database permissions.")
+        );
+    }
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function capitalize(value) {
+
+    if (!value) {
+        return "Unknown";
+    }
+
+    return (
+        value.charAt(0).toUpperCase() +
+        value.slice(1)
     );
+}
 
 
-    overlay.addEventListener(
-        "click",
-        () => {
+function escapeHtml(value) {
 
-            sidebar.classList.remove(
-                "open"
-            );
-
-            overlay.classList.remove(
-                "show"
-            );
-
-        }
-    );
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 
-    /* =========================================
-       START
-    ========================================= */
+/* =========================
+   SEARCH / FILTER EVENTS
+========================= */
 
-    loadBeds();
+document
+    .getElementById("searchInput")
+    .addEventListener("input", renderBeds);
+
+document
+    .getElementById("statusFilter")
+    .addEventListener("change", renderBeds);
+
+document
+    .getElementById("positionFilter")
+    .addEventListener("change", renderBeds);
+
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+const menuBtn =
+    document.getElementById("menuBtn");
+
+const sidebar =
+    document.getElementById("sidebar");
+
+const overlay =
+    document.getElementById("overlay");
+
+
+menuBtn.addEventListener("click", () => {
+
+    sidebar.classList.toggle("open");
+    overlay.classList.toggle("show");
+
+});
+
+
+overlay.addEventListener("click", () => {
+
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+
+});
+
+
+/* =========================
+   START
+========================= */
+
+(async function () {
+
+    await loadCurrentRole();
+
+    await loadBeds();
+
+})();
 
 </script>
 
